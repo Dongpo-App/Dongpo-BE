@@ -1,0 +1,3 @@
+kakao:
+  restapi_key: 273eccbad80d75dcdb920f67a48c8520
+  redirect_url: http://localhost:8080/oauth2/kakao/callback
