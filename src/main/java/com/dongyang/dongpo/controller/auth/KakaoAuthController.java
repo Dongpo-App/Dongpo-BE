@@ -1,14 +1,13 @@
 package com.dongyang.dongpo.controller.auth;
 
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-@RestController("/kakao")
+@RestController
+@RequestMapping("/kakao")
 public class KakaoAuthController {
 
-    @Value("${kakao.restapi_key}")
-    private String restapi_key;
-
-    @Value("${kakao.redirect_url}")
-    private String redirect_url;
+    @GetMapping("/callback")
+    public String callback(@RequestParam("code") String code){
+        return code;
+    }
 }

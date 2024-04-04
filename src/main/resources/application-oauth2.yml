@@ -1,3 +1,10 @@
 kakao:
-  restapi_key: 273eccbad80d75dcdb920f67a48c8520
-  redirect_url: http://localhost:8080/oauth2/kakao/callback
+  provider:
+    authorization_url: https://kauth.kakao.com/oauth/authorize
+    token_url: https://kauth.kakao.com/oauth/token
+    user_info_url: https://kapi.kakao.com/v2/user/me
+  reg:
+    restapi_key: 273eccbad80d75dcdb920f67a48c8520
+    client_secret: 8kla5yUmtWPqHLDRlPufAKgH07Bklcec
+    client_authentication_method: client_secret_post
+    redirect_url: http://localhost:8080/kakao/callback
