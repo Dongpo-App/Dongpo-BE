@@ -1,5 +1,6 @@
 package com.dongyang.dongpo.jwt;
 
+import com.dongyang.dongpo.domain.member.Role;
 import com.dongyang.dongpo.dto.JwtToken;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
@@ -32,31 +33,28 @@ public class JwtTokenProvider {
     }
 
 
-    public JwtToken createToken(Authentication authentication){
-        String authorities = authentication.getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority)
-                .collect(Collectors.joining(","));
-
+    public JwtToken createToken(String email, Role role){
         Date now = new Date();
         Date accessTokenExpiredTime = new Date(now.getTime() + ACCESSTOKEN_VALIDTIME);
         Date refreshTokenExpiredTime = new Date(now.getTime() + REFRESHTOKEN_VALIDTIME);
+        Claims claims = Jwts.claims().setSubject(email);
 
         String accessToken = Jwts.builder()
-                .claim("auth", authorities)
-                .setSubject(authentication.getName())
+                .setClaims(claims)
                 .setIssuedAt(now)
                 .setExpiration(accessTokenExpiredTime)
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
 
         String refreshToken = Jwts.builder()
+                .setClaims(claims)
                 .setExpiration(refreshTokenExpiredTime)
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
 
         return JwtToken.builder()
                 .grantType("Bearer")
-                .authorization(authorities)
+                .clamis(email)
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .build();

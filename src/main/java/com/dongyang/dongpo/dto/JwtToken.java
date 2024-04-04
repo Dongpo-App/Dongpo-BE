@@ -10,7 +10,7 @@ import lombok.Data;
 public class JwtToken {
 
     private String grantType;
-    private String authorization;
+    private String clamis;
     private String accessToken;
     private String refreshToken;
 }

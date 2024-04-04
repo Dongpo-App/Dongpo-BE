@@ -2,6 +2,8 @@ package com.dongyang.dongpo.service.oauth2;
 
 
 import com.dongyang.dongpo.repository.MemberRepository;
+import com.dongyang.dongpo.service.member.MemberService;
+import com.dongyang.dongpo.service.member.SignService;
 import lombok.RequiredArgsConstructor;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,6 +20,7 @@ import reactor.core.publisher.Mono;
 @RequiredArgsConstructor
 public class OAuth2Service {
 
+    private final SignService signService;
     private final MemberRepository memberRepository;
 
     @Value("${kakao.client_id}")
@@ -27,7 +30,7 @@ public class OAuth2Service {
     private String kakaoRedirectUrl;
 
 
-    public Mono<Mono<String>> kakaoCallBack(String code) {
+    public void kakaoCallBack(String code) {
         WebClient webClient = WebClient.builder()
                 .baseUrl("https://kauth.kakao.com/oauth/token")
                 .defaultHeader("Content-Type", "application/x-www-form-urlencoded;charset=utf-8")
@@ -46,32 +49,37 @@ public class OAuth2Service {
                 .retrieve()
                 .bodyToMono(String.class);
 
-        return response.map(responseBody -> {
+        response.map(responseBody -> {
             JSONObject jsonObject = new JSONObject(responseBody);
             String accessToken = jsonObject.getString("access_token");
-            return getKakaoUserInfo(accessToken);
+            getKakaoUserInfo(accessToken);
         });
     }
 
-    public Mono<String> getKakaoUserInfo(String accessToken){
+    public void getKakaoUserInfo(String accessToken){
         WebClient webClient = WebClient.builder()
                 .baseUrl("https://kapi.kakao.com/v2/user/me")
                 .defaultHeader("Content-Type", "application/x-www-form-urlencoded;charset=utf-8")
                 .defaultHeader("Authorization", "Bearer "+accessToken)
                 .build();
 
-        return webClient.post()
+        webClient.post()
                 .retrieve()
                 .bodyToMono(String.class)
                 .map(responseBody -> {
                     JSONObject jsonObject = new JSONObject(responseBody);
                     JSONObject kakaoAccount = jsonObject.getJSONObject("kakao_account");
                     JSONObject profile = kakaoAccount.getJSONObject("profile");
-                    return profile.getString("nickname");
+                    String email = profile.getString("email"); // 임시
+                    validateMember(email);
                 })
-                .onErrorResume(error -> {
-                    error.printStackTrace();
-                    return Mono.just("error");
-                });
+                .onErrorResume(Throwable::printStackTrace);
+    }
+
+    private void validateMember(String email) {
+        if (memberRepository.existsByEmail(email))
+            signService.SignIn(email);
+        else
+            signService.SignUp(email);;
     }
 }
