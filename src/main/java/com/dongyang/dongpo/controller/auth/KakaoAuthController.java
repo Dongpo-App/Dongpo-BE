@@ -14,7 +14,7 @@ public class KakaoAuthController {
     private final OAuth2Service oAuth2Service;
 
     @GetMapping("/callback")
-    public String callback(@RequestParam("code") String code) throws JsonProcessingException {
-        return oAuth2Service.kakaoCallBack(code);
+    public Mono<String> callback(@RequestParam("code") String code) throws JsonProcessingException {
+        return oAuth2Service.kakaoCallBack(code).block();
     }
 }

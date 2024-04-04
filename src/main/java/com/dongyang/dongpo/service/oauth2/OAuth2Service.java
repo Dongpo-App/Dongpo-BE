@@ -1,7 +1,6 @@
 package com.dongyang.dongpo.service.oauth2;
 
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -14,15 +13,13 @@ import reactor.core.publisher.Mono;
 @Service
 public class OAuth2Service {
 
-    @Value("${kakao.reg.client_id}")
+    @Value("${kakao.client_id}")
     private String kakaoClientId;
 
-    @Value("${kakao.reg.redirect_url}")
+    @Value("${kakao.redirect_url}")
     private String kakaoRedirectUrl;
 
-
-
-    public String kakaoCallBack(String code) throws JsonProcessingException {
+    public Mono<Mono<String>> kakaoCallBack(String code) {
         WebClient webClient = WebClient.builder()
                 .baseUrl("https://kauth.kakao.com/oauth/token")
                 .defaultHeader("Content-Type", "application/x-www-form-urlencoded;charset=utf-8")
@@ -41,17 +38,33 @@ public class OAuth2Service {
                 .retrieve()
                 .bodyToMono(String.class);
 
-        response.subscribe(
-                responseBody -> {
+        return response.map(responseBody -> {
+            JSONObject jsonObject = new JSONObject(responseBody);
+            String accessToken = jsonObject.getString("access_token");
+            return getKakaoUserInfo(accessToken);
+        });
+    }
+
+    public Mono<String> getKakaoUserInfo(String accessToken){
+        WebClient webClient = WebClient.builder()
+                .baseUrl("https://kapi.kakao.com/v2/user/me")
+                .defaultHeader("Content-Type", "application/x-www-form-urlencoded;charset=utf-8")
+                .defaultHeader("Authorization", "Bearer "+accessToken)
+                .build();
+
+        return webClient.post()
+                .retrieve()
+                .bodyToMono(String.class)
+                .map(responseBody -> {
                     JSONObject jsonObject = new JSONObject(responseBody);
-                    String accessToken = jsonObject.getString("access_token");
-                    System.out.println("Access Token: " + accessToken);
-                },
-                error -> {
-
-                }
-        );
-
-        return "a";
+                    JSONObject kakaoAccount = jsonObject.getJSONObject("kakao_account");
+                    JSONObject profile = kakaoAccount.getJSONObject("profile");
+                    String nickname = profile.getString("nickname");
+                    return nickname;
+                })
+                .onErrorResume(error -> {
+                    error.printStackTrace();
+                    return Mono.just("error");
+                });
     }
 }
