@@ -11,7 +11,4 @@ public class KakaoAuthController {
 
     @Value("${kakao.redirect_url}")
     private String redirect_url;
-
-
-
 }
