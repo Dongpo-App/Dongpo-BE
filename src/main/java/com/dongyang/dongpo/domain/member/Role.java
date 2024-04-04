@@ -1,5 +1,5 @@
 package com.dongyang.dongpo.domain.member;
 
 public enum Role {
-    ADMIN, MEMBER, OWNER
+    ROLE_ADMIN, ROLE_MEMBER, ROLE_OWNER
 }

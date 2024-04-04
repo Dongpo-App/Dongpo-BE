@@ -1,9 +1,12 @@
 package com.dongyang.dongpo.service.oauth2;
 
 
+import com.dongyang.dongpo.repository.MemberRepository;
+import lombok.RequiredArgsConstructor;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -11,13 +14,18 @@ import reactor.core.publisher.Mono;
 
 
 @Service
+@Transactional(readOnly = true)
+@RequiredArgsConstructor
 public class OAuth2Service {
+
+    private final MemberRepository memberRepository;
 
     @Value("${kakao.client_id}")
     private String kakaoClientId;
 
     @Value("${kakao.redirect_url}")
     private String kakaoRedirectUrl;
+
 
     public Mono<Mono<String>> kakaoCallBack(String code) {
         WebClient webClient = WebClient.builder()
@@ -59,8 +67,7 @@ public class OAuth2Service {
                     JSONObject jsonObject = new JSONObject(responseBody);
                     JSONObject kakaoAccount = jsonObject.getJSONObject("kakao_account");
                     JSONObject profile = kakaoAccount.getJSONObject("profile");
-                    String nickname = profile.getString("nickname");
-                    return nickname;
+                    return profile.getString("nickname");
                 })
                 .onErrorResume(error -> {
                     error.printStackTrace();
