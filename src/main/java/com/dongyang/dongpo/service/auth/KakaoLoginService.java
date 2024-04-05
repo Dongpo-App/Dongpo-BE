@@ -70,7 +70,7 @@ public class KakaoLoginService{
         JSONObject kakaoAccount = jsonObject.getJSONObject("kakao_account");
 
         String email = kakaoAccount.getString("email");
-        Long id = jsonObject.getLong("id");
+        String id = jsonObject.getString("id");
 
         memberRegValidate(email);
         return UserInfo.builder()
