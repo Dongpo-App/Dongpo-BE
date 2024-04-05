@@ -2,15 +2,15 @@ package com.dongyang.dongpo.dto.auth;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Builder
-@Getter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class KakaoAccessTokenResponse {
+@Builder
+public class UserInfo {
 
-    private String accessToken;
-
+    private Long id;
+    private String email;
 }

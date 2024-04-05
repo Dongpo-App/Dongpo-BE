@@ -33,10 +33,10 @@ public class SignService {
         memberRepository.save(member);
     }
 
-    public void SignIn(String email) {
-        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(email);
-        Member member = memberRepository.findByEmail(email).orElseThrow(NoSuchElementException::new);
-
-        jwtTokenProvider.createToken(email, Role.ROLE_MEMBER);
-    }
+//    public void SignIn(String email) {
+//        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(email);
+//        Member member = memberRepository.findByEmail(email).orElseThrow(NoSuchElementException::new);
+//
+//        jwtTokenProvider.createToken(email, Role.ROLE_MEMBER);
+//    }
 }
