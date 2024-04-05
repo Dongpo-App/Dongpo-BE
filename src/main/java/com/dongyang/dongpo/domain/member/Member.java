@@ -26,8 +26,12 @@ public class Member implements UserDetails {
     private String email;
     private String name;
     private String nickname;
+
+    @Enumerated(EnumType.STRING)
     private Gender gender;
-    private int SocialId;
+    private String socialId;
+
+    @Enumerated(EnumType.STRING)
     private SocialType socialType;
 
     @Enumerated(EnumType.STRING)

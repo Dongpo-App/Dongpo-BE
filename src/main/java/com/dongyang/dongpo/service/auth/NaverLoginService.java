@@ -1,30 +1,31 @@
 package com.dongyang.dongpo.service.auth;
 
+import com.dongyang.dongpo.domain.member.SocialType;
 import com.dongyang.dongpo.dto.auth.UserInfo;
+import com.dongyang.dongpo.service.member.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 
 @Service
-@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class NaverLoginService {
+
+    private final MemberService memberService;
 
     @Value("${naver.client_id}")
     private String clientId;
     @Value("${naver.client_secret}")
     private String clientSecret;
-    @Value("${naver.redirect_url}")
-    private String redirectUrl;
 
 
-    public UserInfo naverCallback(String code, String state) {
+    public ResponseEntity naverCallback(String code, String state) {
         WebClient webClient = WebClient.builder()
                 .baseUrl("https://nid.naver.com/oauth2.0/token")
                 .defaultHeader("Content-Type", "application/x-www-form-urlencoded;charset=utf-8")
@@ -49,7 +50,7 @@ public class NaverLoginService {
         return getNaverUserInfo(accessToken);
     }
 
-    public UserInfo getNaverUserInfo(String accessToken) {
+    public ResponseEntity getNaverUserInfo(String accessToken) {
         WebClient webClient = WebClient.builder()
                 .baseUrl("https://openapi.naver.com/v1/nid/me")
                 .defaultHeader("Authorization", "Bearer " + accessToken)
@@ -66,9 +67,10 @@ public class NaverLoginService {
         String email = response.getString("email");
         String id = response.getString("id");
 
-        return UserInfo.builder()
+        return memberService.socialSave(UserInfo.builder()
                 .id(id)
                 .email(email)
-                .build();
+                .provider(SocialType.NAVER)
+                .build());
     }
 }

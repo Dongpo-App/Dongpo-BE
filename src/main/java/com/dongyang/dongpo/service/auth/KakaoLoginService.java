@@ -1,13 +1,15 @@
 package com.dongyang.dongpo.service.auth;
 
 
+import com.dongyang.dongpo.domain.member.SocialType;
 import com.dongyang.dongpo.dto.auth.UserInfo;
 import com.dongyang.dongpo.repository.MemberRepository;
+import com.dongyang.dongpo.service.member.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.BodyInserters;
@@ -15,10 +17,10 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 
 @Service
-@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class KakaoLoginService{
 
+    private final MemberService memberService;
     private final MemberRepository memberRepository;
 
     @Value("${kakao.client_id}")
@@ -28,7 +30,7 @@ public class KakaoLoginService{
     private String redirectUrl;
 
 
-    public UserInfo kakaoCallBack(String code) {
+    public ResponseEntity kakaoCallBack(String code) {
         WebClient webClient = WebClient.builder()
                 .baseUrl("https://kauth.kakao.com/oauth/token")
                 .defaultHeader("Content-Type", "application/x-www-form-urlencoded;charset=utf-8")
@@ -54,7 +56,7 @@ public class KakaoLoginService{
 
 
 
-    public UserInfo getKakaoUserInfo(String accessToken) {
+    public ResponseEntity getKakaoUserInfo(String accessToken) {
         WebClient webClient = WebClient.builder()
                 .baseUrl("https://kapi.kakao.com/v2/user/me")
                 .defaultHeader("Content-Type", "application/x-www-form-urlencoded;charset=utf-8")
@@ -70,23 +72,21 @@ public class KakaoLoginService{
         JSONObject kakaoAccount = jsonObject.getJSONObject("kakao_account");
 
         String email = kakaoAccount.getString("email");
-        String id = jsonObject.getString("id");
+        String id = String.valueOf(jsonObject.getLong("id"));
 
         memberRegValidate(email);
-        return UserInfo.builder()
+        return memberService.socialSave(UserInfo.builder()
                 .id(id)
                 .email(email)
-                .build();
+                .provider(SocialType.KAKAO)
+                .build());
     }
 
     private void memberRegValidate(String email){
         if (memberRepository.existsByEmail(email)){
             // token 발급
         }else {
-            /*
-            에러처리,
-            프론트로 커스텀에러 전달후 유저 추가정보 받아옴
-             */
+
         }
     }
 }
