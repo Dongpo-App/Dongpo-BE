@@ -19,7 +19,7 @@ public class StoreVisitCert {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id", insertable=false, updatable=false)
+    @JoinColumn(name = "member_Id")
     private Member memberId;
 
     @ManyToOne(fetch = FetchType.LAZY)
