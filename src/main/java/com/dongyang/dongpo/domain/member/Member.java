@@ -2,80 +2,69 @@ package com.dongyang.dongpo.domain.member;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.ColumnDefault;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDateTime;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
 
 @Entity
 @Getter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Member implements UserDetails {
+@Table(name="member_table")
+public class Member {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long memberId;
 
-    private String email;
-    private String name;
-    private String nickname;
+    @Column(unique = true)
+    private String memberEmail;
+
+    // @Column(nullable = false)
+    private String memberName;
+
+    // @Column(nullable = false)
+    private String memberNickname;
+
+    private String memberProfilePic;
 
     @Enumerated(EnumType.STRING)
-    private Gender gender;
-    private String socialId;
+    // @Column(nullable = false)
+    private Role memberRole;
 
     @Enumerated(EnumType.STRING)
+    private Gender memberGender;
+
+    private Integer memberAgeGroup;
+
+    @Enumerated(EnumType.STRING)
+    // @Column(nullable = false)
     private SocialType socialType;
 
+    // @Column(nullable = false)
+    private String socialId;
+
+    // @Column(nullable = false)
+    private LocalDateTime signupDate;
+
+    private LocalDateTime leaveDate;
+
     @Enumerated(EnumType.STRING)
-    private Role role;
+    // @Column(nullable = false)
+    private Status memberStatus;
 
-    private LocalDateTime signup_date;
-
-    @ColumnDefault("null")
-    private LocalDateTime leave_date;
-
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        Set<GrantedAuthority> authorities = new HashSet<>();
-        authorities.add(new SimpleGrantedAuthority(role.name()));
-        return authorities;
+    public enum Role {
+        ROLE_MEMBER, ROLE_ADMIN
     }
 
-    @Override
-    public String getPassword() {
-        return null;
+    public enum Gender {
+        GEN_MALE, GEN_FEMALE
     }
 
-    @Override
-    public String getUsername() {
-        return email;
+    public enum SocialType {
+        KAKAO, APPLE, NAVER
     }
 
-    @Override
-    public boolean isAccountNonExpired() { // 계정 만료
-        return true;
-    }
-
-    @Override
-    public boolean isAccountNonLocked() { // 계정 잠금
-        return true;
-    }
-
-    @Override
-    public boolean isCredentialsNonExpired() { // 자격증명 만료
-        return true;
-    }
-
-    @Override
-    public boolean isEnabled() { // 계정 활성화
-        return true;
+    public enum Status {
+        ACTIVE, INACTIVE, LEAVE
     }
 }
