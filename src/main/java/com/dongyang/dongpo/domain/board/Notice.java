@@ -15,13 +15,13 @@ import java.time.LocalDateTime;
 public class Notice {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long noticeId;
+    private Long id;
 
     @Column(length = 64)
-    private String noticeTitle;
+    private String title;
 
     @Column(columnDefinition = "TEXT")
-    private String noticeText;
+    private String text;
 
     @Column(columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP")
     private LocalDateTime registerDate;

@@ -13,10 +13,11 @@ import lombok.*;
 public class Title {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long titleId;
+    private Long id;
 
-    @Column(unique = true)
-    private String titleName;
+    @Column(unique = true, length = 64)
+    private String name;
 
+    @Column(length = 128)
     private String titleDesc;
 }

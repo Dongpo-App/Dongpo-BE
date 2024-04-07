@@ -17,13 +17,13 @@ import java.time.LocalTime;
 public class Store {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long storeId;
+    private Long id;
 
     @Column(length = 128)
-    private String storeName;
+    private String name;
 
     @Column(length = 255)
-    private String storeLocation;
+    private String location;
 
     private LocalTime openTime;
 
@@ -33,15 +33,16 @@ public class Store {
 
     @ManyToOne
     @JoinColumn(name = "registered_by")
-    private Member registeredBy;
+    private Member registeredMemberId;
 
+    @Column(columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP")
     private LocalDateTime registerDate;
 
     @Column(length = 24)
     private String registerIp;
 
     @Enumerated(EnumType.STRING)
-    private StoreStatus storeStatus = StoreStatus.ACTIVE;
+    private StoreStatus status = StoreStatus.ACTIVE;
 
     private Integer reportCount = 0;
 

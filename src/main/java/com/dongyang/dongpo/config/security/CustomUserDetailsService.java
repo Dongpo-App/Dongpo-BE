@@ -1,6 +1,5 @@
 package com.dongyang.dongpo.config.security;
 
-import com.dongyang.dongpo.domain.member.Member;
 import com.dongyang.dongpo.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;

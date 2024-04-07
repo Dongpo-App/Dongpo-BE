@@ -1,6 +1,6 @@
 package com.dongyang.dongpo.service.auth;
 
-import com.dongyang.dongpo.domain.member.SocialType;
+import com.dongyang.dongpo.domain.member.Member.SocialType;
 import com.dongyang.dongpo.dto.auth.UserInfo;
 import com.dongyang.dongpo.service.member.MemberService;
 import lombok.RequiredArgsConstructor;

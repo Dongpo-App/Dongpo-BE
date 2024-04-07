@@ -17,18 +17,18 @@ import java.time.LocalDateTime;
 public class ReviewReport {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long reportId;
+    private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "report_writer")
-    private Member reportWriter;
+    private Member memberId;
 
     @Column(columnDefinition = "TEXT")
-    private String reportText;
+    private String text;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "reporting_review_id")
-    private StoreReview reportingReviewId;
+    private StoreReview reviewId;
 
     @Column(columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP")
     private LocalDateTime issueDate;
@@ -37,7 +37,7 @@ public class ReviewReport {
     private String issueIp;
 
     @Enumerated(EnumType.STRING)
-    private ReportStatus reportStatus = ReportStatus.OPEN;
+    private ReportStatus status = ReportStatus.OPEN;
 
     public enum ReportStatus {
         OPEN, PROCEEDING, CLOSED

@@ -16,15 +16,15 @@ import java.time.LocalDateTime;
 public class StoreVisitCert {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long certId;
+    private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "cert_by")
-    private Member certBy;
+    @JoinColumn(name = "id", insertable=false, updatable=false)
+    private Member memberId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "cert_store")
-    private Store certStore;
+    private Store storeId;
 
     private boolean isVisitSuccessful;
 

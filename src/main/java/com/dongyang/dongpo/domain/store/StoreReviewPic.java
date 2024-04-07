@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 public class StoreReviewPic {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long picId;
+    private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "review_id")

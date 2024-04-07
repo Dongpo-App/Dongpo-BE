@@ -2,8 +2,14 @@ package com.dongyang.dongpo.domain.member;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDateTime;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -11,46 +17,83 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name="member_table")
-public class Member {
+public class Member implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long memberId;
+    private Long id;
 
-    @Column(unique = true)
-    private String memberEmail;
+    @Column(unique = true, length = 64)
+    private String email;
 
-    // @Column(nullable = false)
-    private String memberName;
+    @Column(length = 32)
+    private String name;
 
-    // @Column(nullable = false)
-    private String memberNickname;
+    @Column(length = 32)
+    private String nickname;
 
-    private String memberProfilePic;
-
-    @Enumerated(EnumType.STRING)
-    // @Column(nullable = false)
-    private Role memberRole;
+    @Column(length = 128)
+    private String profilePic;
 
     @Enumerated(EnumType.STRING)
-    private Gender memberGender;
-
-    private Integer memberAgeGroup;
+    private Role role;
 
     @Enumerated(EnumType.STRING)
-    // @Column(nullable = false)
+    private Gender gender;
+
+    private Integer ageGroup;
+
+    @Enumerated(EnumType.STRING)
     private SocialType socialType;
 
-    // @Column(nullable = false)
+    @Column(length = 128)
     private String socialId;
 
-    // @Column(nullable = false)
+    @Column(columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP")
     private LocalDateTime signupDate;
 
     private LocalDateTime leaveDate;
 
     @Enumerated(EnumType.STRING)
-    // @Column(nullable = false)
-    private Status memberStatus;
+    private Status status;
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        Set<GrantedAuthority> authorities = new HashSet<>();
+        authorities.add(new SimpleGrantedAuthority(role.name()));
+        return authorities;
+    }
+
+    @Override
+    public String getPassword() {
+        return null;
+    }
+
+    @Override
+    public String getUsername() {
+        return email;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+//        return !memberStatus.equals(Status.LEAVE);
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+//        return !memberStatus.equals(Status.INACTIVE);
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
 
     public enum Role {
         ROLE_MEMBER, ROLE_ADMIN

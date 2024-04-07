@@ -2,7 +2,6 @@ package com.dongyang.dongpo.service.member;
 
 import com.dongyang.dongpo.domain.RefreshToken;
 import com.dongyang.dongpo.domain.member.Member;
-import com.dongyang.dongpo.domain.member.Role;
 import com.dongyang.dongpo.dto.JwtToken;
 import com.dongyang.dongpo.dto.auth.UserInfo;
 import com.dongyang.dongpo.jwt.JwtTokenProvider;
@@ -31,8 +30,8 @@ public class MemberService {
                 .email(userInfo.getEmail())
                 .socialId(userInfo.getId())
                 .socialType(userInfo.getProvider())
-                .role(Role.ROLE_MEMBER)  // 임시 Role
-                .signup_date(LocalDateTime.now())
+                .role(Member.Role.ROLE_MEMBER)  // 임시 Role
+                .signupDate(LocalDateTime.now())
                 .build();
 
         memberRepository.save(member);

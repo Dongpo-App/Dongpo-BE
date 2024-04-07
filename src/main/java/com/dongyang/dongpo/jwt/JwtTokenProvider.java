@@ -1,6 +1,6 @@
 package com.dongyang.dongpo.jwt;
 
-import com.dongyang.dongpo.domain.member.Role;
+import com.dongyang.dongpo.domain.member.Member.Role;
 import com.dongyang.dongpo.dto.JwtToken;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
