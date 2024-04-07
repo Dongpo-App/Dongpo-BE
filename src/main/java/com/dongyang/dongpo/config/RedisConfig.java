@@ -1,4 +1,4 @@
-package com.dongyang.dongpo.config.security;
+package com.dongyang.dongpo.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

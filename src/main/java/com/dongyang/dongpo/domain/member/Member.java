@@ -24,11 +24,14 @@ public class Member implements UserDetails {
     private Long id;
 
     private String email;
+
     private String name;
+
     private String nickname;
 
     @Enumerated(EnumType.STRING)
     private Gender gender;
+
     private String socialId;
 
     @Enumerated(EnumType.STRING)
