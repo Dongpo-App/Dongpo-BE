@@ -35,5 +35,4 @@ public class SwaggerConfig {
                 .addSecurityItem(securityRequirement)
                 .info(info);
     }
-
 }

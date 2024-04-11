@@ -2,12 +2,10 @@ package com.dongyang.dongpo.controller.auth;
 
 import com.dongyang.dongpo.service.auth.KakaoLoginService;
 import com.dongyang.dongpo.service.auth.NaverLoginService;
+import com.dongyang.dongpo.service.token.TokenService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/auth")
@@ -16,6 +14,7 @@ public class AuthController {
 
     private final KakaoLoginService kakaoLoginService;
     private final NaverLoginService naverLoginService;
+    private final TokenService tokenService;
 
     @GetMapping("/kakao/callback")
     public ResponseEntity callback(@RequestParam("code") String code) {
@@ -32,5 +31,10 @@ public class AuthController {
     @GetMapping("/apple/callback")
     public ResponseEntity callback(){
         return null;
+    }
+
+    @PostMapping("/ressiue")
+    public ResponseEntity ressiue(@RequestHeader("Authorization") String accessToken) throws Exception {
+        return tokenService.reissueAccessToken(accessToken);
     }
 }

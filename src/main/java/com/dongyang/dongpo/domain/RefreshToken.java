@@ -4,6 +4,7 @@ import jakarta.persistence.Id;
 import lombok.Builder;
 import lombok.Getter;
 import org.springframework.data.redis.core.RedisHash;
+import org.springframework.data.redis.core.index.Indexed;
 
 @Getter
 @Builder
@@ -13,6 +14,11 @@ public class RefreshToken {
     @Id
     private Long id;
 
+    @Indexed
     private String email;
     private String refreshToken;
+
+    public void updateRefreshToken(String refreshToken) {
+        this.refreshToken = refreshToken;
+    }
 }

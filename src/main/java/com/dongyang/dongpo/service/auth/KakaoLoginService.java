@@ -47,7 +47,7 @@ public class KakaoLoginService{
                 .body(BodyInserters.fromFormData(params))
                 .retrieve()
                 .bodyToMono(String.class)
-                .block(); // Blocking call to wait for response
+                .block();
 
         JSONObject jsonObject = new JSONObject(responseBody);
         String accessToken = jsonObject.getString("access_token");

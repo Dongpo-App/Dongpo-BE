@@ -32,6 +32,7 @@ public class MemberService {
                 .socialType(userInfo.getProvider())
                 .role(Member.Role.ROLE_MEMBER)  // 임시 Role
                 .signupDate(LocalDateTime.now())
+                .status(Member.Status.ACTIVE)
                 .build();
 
         memberRepository.save(member);

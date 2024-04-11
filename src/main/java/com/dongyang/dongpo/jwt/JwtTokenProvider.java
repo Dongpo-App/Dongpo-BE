@@ -38,6 +38,7 @@ public class JwtTokenProvider {
         Date accessTokenExpiredTime = new Date(now.getTime() + ACCESSTOKEN_VALIDTIME);
         Date refreshTokenExpiredTime = new Date(now.getTime() + REFRESHTOKEN_VALIDTIME);
         Claims claims = Jwts.claims().setSubject(email);
+        claims.put("role", role);
 
         String accessToken = Jwts.builder()
                 .setClaims(claims)
@@ -75,11 +76,11 @@ public class JwtTokenProvider {
     public Authentication getAuthentication(String accessToken) {
         Claims claims = parseClaims(accessToken);
 
-        if (claims.get("auth") == null)
+        if (claims == null || claims.get("role") == null)
             throw new RuntimeException("권한정보없음");   // 임시
 
         Collection<? extends GrantedAuthority> authorities =
-                Arrays.stream(claims.get("auth").toString().split(","))
+                Arrays.stream(claims.get("role").toString().split(","))
                         .map(SimpleGrantedAuthority::new)
                         .toList();
 
@@ -87,7 +88,7 @@ public class JwtTokenProvider {
         return new UsernamePasswordAuthenticationToken(principal, "", authorities);
     }
 
-    private Claims parseClaims(String accessToken) {
+    public Claims parseClaims(String accessToken) {
         try{
             return Jwts.parserBuilder()
                     .setSigningKey(key)
