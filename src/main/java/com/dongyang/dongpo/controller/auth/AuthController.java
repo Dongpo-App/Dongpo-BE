@@ -33,8 +33,8 @@ public class AuthController {
         return null;
     }
 
-    @PostMapping("/ressiue")
-    public ResponseEntity ressiue(@RequestHeader("Authorization") String accessToken) throws Exception {
+    @PostMapping("/reissue")
+    public ResponseEntity reissue(@RequestHeader("Authorization") String accessToken) throws Exception {
         return tokenService.reissueAccessToken(accessToken);
     }
 }

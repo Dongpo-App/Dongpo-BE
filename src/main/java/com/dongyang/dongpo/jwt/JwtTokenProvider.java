@@ -5,6 +5,8 @@ import com.dongyang.dongpo.dto.JwtToken;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -18,11 +20,11 @@ import java.security.Key;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
-import java.util.stream.Collectors;
 
 @Component
 public class JwtTokenProvider {
 
+    private static final Logger log = LoggerFactory.getLogger(JwtTokenProvider.class);
     private final Key key;
     private final long ACCESSTOKEN_VALIDTIME = 1000L * 60 * 30; // 30분
     private final long REFRESHTOKEN_VALIDTIME = 1000L * 60 * 60 * 24 * 7; // 7일
@@ -55,7 +57,7 @@ public class JwtTokenProvider {
 
         return JwtToken.builder()
                 .grantType("Bearer")
-                .clamis(email)
+                .claims(email)
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .build();
@@ -95,8 +97,18 @@ public class JwtTokenProvider {
                     .build()
                     .parseClaimsJws(accessToken)
                     .getBody();
-        } catch (Exception e){              // 임시
-            return null;
+        } catch (SecurityException e){              // 임시
+            log.info(e.getMessage());
+        } catch (ExpiredJwtException e){
+            log.info(e.getMessage());
+        } catch (MalformedJwtException e){
+            log.info(e.getMessage());
+        } catch (UnsupportedJwtException e){
+            log.info(e.getMessage());
+        } catch (JwtException e){
+            log.info(e.getMessage());
         }
+
+        return null;
     }
 }

@@ -47,4 +47,6 @@ public class MemberService {
 
         return ResponseEntity.ok(jwtToken);
     }
+
+    
 }
