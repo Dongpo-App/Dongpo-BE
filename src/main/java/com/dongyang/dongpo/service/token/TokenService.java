@@ -19,8 +19,8 @@ public class TokenService {
     private final MemberRepository memberRepository;
 
 
-    public ResponseEntity reissueAccessToken(String accessToken) throws Exception {
-        String email = jwtTokenProvider.parseClaims(accessToken).getSubject();
+    public ResponseEntity reissueAccessToken(String token) throws Exception {
+        String email = jwtTokenProvider.parseClaims(token).getSubject();
         Member member = memberRepository.findByEmail(email)
                 .orElseThrow(Exception::new);  // 임시
 
