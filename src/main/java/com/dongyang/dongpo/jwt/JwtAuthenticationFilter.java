@@ -36,12 +36,9 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
 
     private String resolveToken(HttpServletRequest servletRequest) throws Exception{
         String token = servletRequest.getHeader("Authorization");
-        if (!token.startsWith("Bearer ")) {
+        if (token == null || !token.startsWith("Bearer "))
             throw new CustomWorngTokenException();
-        }
-        if (StringUtils.hasText(token)){
-            return token.substring(7);
-        }
-        return null;
+
+        return token.substring(7);
     }
 }

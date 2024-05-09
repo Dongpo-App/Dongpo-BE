@@ -45,8 +45,7 @@ public class JwtTokenProvider {
         String accessToken = Jwts.builder()
                 .setClaims(claims)
                 .setIssuedAt(now)
-//                .setExpiration(accessTokenExpiredTime)
-//                .setExpiration(now)
+                .setExpiration(accessTokenExpiredTime)
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
 
@@ -104,8 +103,8 @@ public class JwtTokenProvider {
         return new UsernamePasswordAuthenticationToken(principal, "", authorities);
     }
 
-    public Claims parseClaims(String accessToken) {
-            return Jwts.parserBuilder()
+    public Claims parseClaims(String accessToken){
+        return Jwts.parserBuilder()
                     .setSigningKey(key)
                     .build()
                     .parseClaimsJws(accessToken)

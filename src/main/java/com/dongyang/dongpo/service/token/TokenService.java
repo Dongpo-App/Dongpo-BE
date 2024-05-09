@@ -8,7 +8,6 @@ import com.dongyang.dongpo.jwt.JwtTokenProvider;
 import com.dongyang.dongpo.jwt.exception.CustomExpiredException;
 import com.dongyang.dongpo.repository.MemberRepository;
 import com.dongyang.dongpo.repository.RefreshTokenRepository;
-import io.jsonwebtoken.ExpiredJwtException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
