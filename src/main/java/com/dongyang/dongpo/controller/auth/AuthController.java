@@ -37,4 +37,9 @@ public class AuthController {
     public ResponseEntity reissue(@RequestHeader("Authorization") String refreshToken) throws Exception {
         return tokenService.reissueAccessToken(refreshToken);
     }
+
+    @GetMapping("/test")
+    public String test(){
+        return "tㅓㅇ공";
+    }
 }

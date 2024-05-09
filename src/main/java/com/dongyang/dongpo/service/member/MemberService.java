@@ -26,15 +26,7 @@ public class MemberService {
 
     @Transactional
     public ResponseEntity<?> socialSave(UserInfo userInfo){
-        Member member = Member.builder()
-                .email(userInfo.getEmail())
-                .socialId(userInfo.getId())
-                .socialType(userInfo.getProvider())
-                .role(Member.Role.ROLE_MEMBER)  // 임시 Role
-                .signupDate(LocalDateTime.now())
-                .status(Member.Status.ACTIVE)
-                .build();
-
+        Member member = Member.toEntity(userInfo);
         memberRepository.save(member);
 
         JwtToken jwtToken = jwtTokenProvider.createToken(member.getEmail(), member.getRole());

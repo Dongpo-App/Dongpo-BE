@@ -13,5 +13,4 @@ public class JwtToken {
     private String claims;
     private String accessToken;
     private String refreshToken;
-
 }

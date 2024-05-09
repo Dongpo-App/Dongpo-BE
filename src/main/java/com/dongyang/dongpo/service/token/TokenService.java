@@ -3,9 +3,12 @@ package com.dongyang.dongpo.service.token;
 import com.dongyang.dongpo.domain.RefreshToken;
 import com.dongyang.dongpo.domain.member.Member;
 import com.dongyang.dongpo.dto.JwtToken;
+import com.dongyang.dongpo.exception.member.MemberNotFoundException;
 import com.dongyang.dongpo.jwt.JwtTokenProvider;
+import com.dongyang.dongpo.jwt.exception.CustomExpiredException;
 import com.dongyang.dongpo.repository.MemberRepository;
 import com.dongyang.dongpo.repository.RefreshTokenRepository;
+import io.jsonwebtoken.ExpiredJwtException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -22,10 +25,10 @@ public class TokenService {
     public ResponseEntity reissueAccessToken(String token) throws Exception {
         String email = jwtTokenProvider.parseClaims(token).getSubject();
         Member member = memberRepository.findByEmail(email)
-                .orElseThrow(Exception::new);  // 임시
+                .orElseThrow(MemberNotFoundException::new);
 
         RefreshToken refreshToken = refreshTokenRepository.findByEmail(email)
-                .orElseThrow(Exception::new);  // 임시
+                .orElseThrow(CustomExpiredException::new);
 
         JwtToken jwtToken = jwtTokenProvider.createToken(email, member.getRole());
         refreshToken.updateRefreshToken(jwtToken.getRefreshToken());
