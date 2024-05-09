@@ -22,8 +22,9 @@ public class Store {
     @Column(length = 128)
     private String name;
 
-    @Column(length = 255)
-    private String location;
+    private double locationLat;
+
+    private double locationLng;
 
     private LocalTime openTime;
 
