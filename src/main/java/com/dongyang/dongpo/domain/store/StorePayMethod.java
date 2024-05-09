@@ -17,7 +17,7 @@ public class StorePayMethod {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "store_id", insertable = false, updatable = false)
     @MapsId
-    private Store storeId;
+    private Store id;
 
     @Enumerated(EnumType.STRING)
     private PayMethod payMethod;

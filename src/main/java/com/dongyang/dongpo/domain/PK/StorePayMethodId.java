@@ -13,6 +13,6 @@ import java.io.Serializable;
 @EqualsAndHashCode
 @NoArgsConstructor
 public class StorePayMethodId implements Serializable {
-    private Long storeId;
+    private Long id;
     private StorePayMethod.PayMethod payMethod;
 }

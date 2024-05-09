@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 public class NoticePic {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long picId;
+    private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "notice_id")

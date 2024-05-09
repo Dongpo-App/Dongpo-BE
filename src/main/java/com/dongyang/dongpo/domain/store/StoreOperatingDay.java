@@ -17,7 +17,7 @@ public class StoreOperatingDay {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "store_id")
     @MapsId
-    private Store storeId;
+    private Store id;
 
     @Id
     @Enumerated(EnumType.STRING)

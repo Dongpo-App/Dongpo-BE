@@ -18,6 +18,8 @@ application-oauth2.yml
 bin/
 !**/src/main/**/bin/
 !**/src/test/**/bin/
+src/main/resources/application-dev.yml
+src/main/resources/application-oauth2.yml
 
 ### IntelliJ IDEA ###
 .idea
@@ -41,3 +43,4 @@ out/
 ### profile
 /src/main/resources/application-common.yml
 /src/main/resources/application-dev.yml
+/src/main/resources/application-deploy.yml

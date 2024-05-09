@@ -16,20 +16,20 @@ import java.time.LocalDateTime;
 public class StoreReview {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long reviewId;
+    private Long id;
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "store_id")
-    private Store store;
+    private Store storeId;
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "review_writer")
-    private Member reviewWriter;
+    @JoinColumn(name = "writer_id")
+    private Member writerId;
 
     private Integer reviewStar;
 
     @Column(columnDefinition = "TEXT")
-    private String reviewText;
+    private String text;
 
     @Column(length = 128)
     private String reviewPic;
@@ -41,7 +41,7 @@ public class StoreReview {
     private String registerIp;
 
     @Enumerated(EnumType.STRING)
-    private ReviewStatus reviewStatus = ReviewStatus.VISIBLE;
+    private ReviewStatus status = ReviewStatus.VISIBLE;
 
     private Integer reportCount = 0;
 

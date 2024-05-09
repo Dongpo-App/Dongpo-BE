@@ -13,6 +13,6 @@ import java.io.Serializable;
 @NoArgsConstructor
 @EqualsAndHashCode
 public class StoreOperatingDayId implements Serializable {
-    private Long storeId;
+    private Long id;
     private StoreOperatingDay.OperatingDay operatingDay;
 }
