@@ -2,6 +2,7 @@ package com.dongyang.dongpo.jwt;
 
 import com.dongyang.dongpo.domain.member.Member.Role;
 import com.dongyang.dongpo.dto.JwtToken;
+import com.dongyang.dongpo.jwt.exception.*;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -26,14 +27,13 @@ public class JwtTokenProvider {
 
     private static final Logger log = LoggerFactory.getLogger(JwtTokenProvider.class);
     private final Key key;
-    private final long ACCESSTOKEN_VALIDTIME = 1000L * 60 * 30; // 30분
-    private final long REFRESHTOKEN_VALIDTIME = 1000L * 60 * 60 * 24 * 7; // 7일
+    private final long ACCESSTOKEN_VALIDTIME = 1800000; // 30분
+    private final long REFRESHTOKEN_VALIDTIME = 604800000; // 7일
 
     public JwtTokenProvider(@Value("${jwt.secret}") String secretKey) {
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         this.key = Keys.hmacShaKeyFor(keyBytes);
     }
-
 
     public JwtToken createToken(String email, Role role){
         Date now = new Date();
@@ -46,7 +46,6 @@ public class JwtTokenProvider {
                 .setClaims(claims)
                 .setIssuedAt(now)
                 .setExpiration(accessTokenExpiredTime)
-//                .setExpiration(now)
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
 
@@ -64,23 +63,36 @@ public class JwtTokenProvider {
                 .build();
     }
 
-    public boolean validateToken(String token) {
+    public boolean validateToken(String token) throws Exception {
         try {
             Jwts.parserBuilder()
                     .setSigningKey(key)
                     .build()
                     .parseClaimsJws(token);
             return true;
-        } catch (Exception e){                          // 임시
-            return false;
+        } catch (SecurityException | MalformedJwtException | SignatureException e){
+            log.error(e.getMessage());
+            throw new CustomMalformedException(); // jwt서명이 유효하지 않음
+        } catch (UnsupportedJwtException e){
+            log.error(e.getMessage());
+            throw new CustomUnsupportedException();  // 지원하지않는 jwt 토큰
+        } catch (ExpiredJwtException e){
+            log.error(e.getMessage());
+            throw new CustomExpiredException();  // 토큰 시간 만료
+        } catch (IllegalArgumentException e){
+            log.error(e.getMessage());
+            throw new CustomWorngTokenException(); // claims 없음
+        } catch (ClaimJwtException e) {
+            log.error(e.getMessage());
+            throw new CustomClaimsException(); // Claim 검증 실패
         }
     }
 
-    public Authentication getAuthentication(String accessToken) {
+    public Authentication getAuthentication(String accessToken) throws Exception {
         Claims claims = parseClaims(accessToken);
 
         if (claims == null || claims.get("role") == null)
-            throw new RuntimeException("권한정보없음");   // 임시
+            throw new CustomClaimsException();
 
         Collection<? extends GrantedAuthority> authorities =
                 Arrays.stream(claims.get("role").toString().split(","))
@@ -91,25 +103,11 @@ public class JwtTokenProvider {
         return new UsernamePasswordAuthenticationToken(principal, "", authorities);
     }
 
-    public Claims parseClaims(String accessToken) {
-        try{
-            return Jwts.parserBuilder()
+    public Claims parseClaims(String accessToken){
+        return Jwts.parserBuilder()
                     .setSigningKey(key)
                     .build()
                     .parseClaimsJws(accessToken)
                     .getBody();
-        } catch (SecurityException e){              // 임시
-            log.info(e.getMessage());
-        } catch (ExpiredJwtException e){
-            log.info(e.getMessage());
-        } catch (MalformedJwtException e){
-            log.info(e.getMessage());
-        } catch (UnsupportedJwtException e){
-            log.info(e.getMessage());
-        } catch (JwtException e){
-            log.info(e.getMessage());
-        }
-
-        return null;
     }
 }

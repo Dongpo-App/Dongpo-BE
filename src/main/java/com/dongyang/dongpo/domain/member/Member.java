@@ -1,5 +1,6 @@
 package com.dongyang.dongpo.domain.member;
 
+import com.dongyang.dongpo.dto.auth.UserInfo;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
@@ -55,6 +56,16 @@ public class Member implements UserDetails {
 
     @Enumerated(EnumType.STRING)
     private Status status;
+
+    public static Member toEntity(UserInfo userInfo){
+        return Member.builder()
+                .email(userInfo.getEmail())
+                .socialId(userInfo.getId())
+                .socialType(userInfo.getProvider())
+                .role(Member.Role.ROLE_MEMBER)  // 임시 Role
+                .status(Member.Status.ACTIVE)
+                .build();
+    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
