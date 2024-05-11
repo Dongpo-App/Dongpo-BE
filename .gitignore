@@ -4,6 +4,8 @@ build/
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
 !**/src/test/**/build/
+application-dev.yml
+application-oauth2.yml
 
 ### STS ###
 .apt_generated
@@ -16,6 +18,8 @@ build/
 bin/
 !**/src/main/**/bin/
 !**/src/test/**/bin/
+src/main/resources/application-dev.yml
+src/main/resources/application-oauth2.yml
 
 ### IntelliJ IDEA ###
 .idea
@@ -35,3 +39,8 @@ out/
 
 ### VS Code ###
 .vscode/
+
+### profile
+/src/main/resources/application-common.yml
+/src/main/resources/application-dev.yml
+/src/main/resources/application-deploy.yml
