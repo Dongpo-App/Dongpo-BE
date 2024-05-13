@@ -41,8 +41,10 @@ public class StoreReview {
     private String registerIp;
 
     @Enumerated(EnumType.STRING)
+    @Builder.Default
     private ReviewStatus status = ReviewStatus.VISIBLE;
 
+    @Builder.Default
     private Integer reportCount = 0;
 
     public enum ReviewStatus {

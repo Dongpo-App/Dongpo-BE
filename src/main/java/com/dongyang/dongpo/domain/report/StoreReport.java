@@ -36,6 +36,7 @@ public class StoreReport {
     private String issueIp;
 
     @Enumerated(EnumType.STRING)
+    @Builder.Default
     private ReportStatus status = ReportStatus.OPEN;
 
     public enum ReportStatus {

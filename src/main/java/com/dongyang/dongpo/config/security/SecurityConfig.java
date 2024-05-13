@@ -1,6 +1,5 @@
 package com.dongyang.dongpo.config.security;
 
-import com.dongyang.dongpo.jwt.CustomAuthenticationEntryPoint;
 import com.dongyang.dongpo.jwt.JwtAuthenticationFilter;
 import com.dongyang.dongpo.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
@@ -31,7 +30,7 @@ public class SecurityConfig {
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/test").authenticated()
+                        .requestMatchers("/auth/test", "/store").authenticated()
                         .anyRequest().permitAll()
                 )
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class)

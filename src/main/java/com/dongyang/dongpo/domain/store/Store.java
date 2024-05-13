@@ -9,7 +9,6 @@ import java.time.LocalTime;
 
 @Entity
 @Getter
-@Setter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -29,21 +28,23 @@ public class Store {
 
     private LocalTime closeTime;
 
-    private boolean isToiletValid = false;
+    private boolean isToiletValid;
 
     @ManyToOne
-    @JoinColumn(name = "registered_by")
-    private Member registeredMemberId;
+    private Member member;
 
     @Column(columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP")
-    private LocalDateTime registerDate;
+    @Builder.Default
+    private LocalDateTime registerDate = LocalDateTime.now();
 
     @Column(length = 24)
     private String registerIp;
 
     @Enumerated(EnumType.STRING)
+    @Builder.Default
     private StoreStatus status = StoreStatus.ACTIVE;
 
+    @Builder.Default
     private Integer reportCount = 0;
 
     public enum StoreStatus {
