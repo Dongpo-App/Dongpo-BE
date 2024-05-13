@@ -14,5 +14,7 @@ public class UserInfo {
 
     private String id;
     private String email;
+    private Member.Gender gender;
+    private String age;
     private Member.SocialType provider;
 }

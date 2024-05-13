@@ -1,6 +1,7 @@
 package com.dongyang.dongpo.service.auth;
 
 
+import com.dongyang.dongpo.domain.member.Member;
 import com.dongyang.dongpo.domain.member.Member.SocialType;
 import com.dongyang.dongpo.dto.auth.UserInfo;
 import com.dongyang.dongpo.repository.MemberRepository;
@@ -73,11 +74,23 @@ public class KakaoLoginService{
 
         String email = kakaoAccount.getString("email");
         String id = String.valueOf(jsonObject.getLong("id"));
+        String age = kakaoAccount.getString("age_range");
+        Member.Gender gender;
+
+        if (kakaoAccount.getString("gender").equals("female"))
+            gender = Member.Gender.GEN_FEMALE;
+        else if (kakaoAccount.getString("gender").equals("male"))
+            gender = Member.Gender.GEN_MALE;
+        else
+            gender = Member.Gender.NONE;
+
 
         memberRegValidate(email);
         return memberService.socialSave(UserInfo.builder()
                 .id(id)
                 .email(email)
+                .age(age)
+                .gender(gender)
                 .provider(SocialType.KAKAO)
                 .build());
     }

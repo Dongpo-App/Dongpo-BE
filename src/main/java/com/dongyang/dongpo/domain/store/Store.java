@@ -29,6 +29,8 @@ public class Store {
 
     private double longitude;
 
+    private String address;
+
     private LocalTime openTime;
 
     private LocalTime closeTime;
@@ -38,7 +40,6 @@ public class Store {
     @ManyToOne(fetch = FetchType.LAZY)
     private Member member;
 
-    @Column(columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP")
     @Builder.Default
     private LocalDateTime registerDate = LocalDateTime.now();
 
@@ -75,7 +76,7 @@ public class Store {
         return StoreDto.builder()
                 .id(id)
                 .name(name)
-                .location(location)
+                .address(address)
                 .memberId(member.getId())
                 .openTime(openTime)
                 .closeTime(closeTime)
@@ -90,7 +91,7 @@ public class Store {
         return StoreDto.builder()
                 .id(id)
                 .name(name)
-                .location(location)
+                .address(address)
                 .memberId(member.getId())
                 .openTime(openTime)
                 .closeTime(closeTime)
@@ -105,7 +106,7 @@ public class Store {
 
     public void update(StoreDto storeDto){
         this.name = storeDto.getName();
-        this.location = storeDto.getLocation();
+        this.address = storeDto.getAddress();
         this.openTime = storeDto.getOpenTime();
         this.closeTime = storeDto.getCloseTime();
         this.isToiletValid = storeDto.isToiletValid();

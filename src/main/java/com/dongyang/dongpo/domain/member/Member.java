@@ -41,7 +41,7 @@ public class Member implements UserDetails {
     @Enumerated(EnumType.STRING)
     private Gender gender;
 
-    private Integer ageGroup;
+    private String ageGroup;
 
     @Enumerated(EnumType.STRING)
     private SocialType socialType;
@@ -49,8 +49,8 @@ public class Member implements UserDetails {
     @Column(length = 128)
     private String socialId;
 
-    @Column(columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP")
-    private LocalDateTime signupDate;
+    @Builder.Default
+    private LocalDateTime signupDate = LocalDateTime.now();
 
     private LocalDateTime leaveDate;
 
@@ -60,6 +60,8 @@ public class Member implements UserDetails {
     public static Member toEntity(UserInfo userInfo){
         return Member.builder()
                 .email(userInfo.getEmail())
+                .ageGroup(userInfo.getAge())
+                .gender(userInfo.getGender())
                 .socialId(userInfo.getId())
                 .socialType(userInfo.getProvider())
                 .role(Member.Role.ROLE_MEMBER)  // 임시 Role
@@ -111,7 +113,7 @@ public class Member implements UserDetails {
     }
 
     public enum Gender {
-        GEN_MALE, GEN_FEMALE
+        GEN_MALE, NONE, GEN_FEMALE
     }
 
     public enum SocialType {

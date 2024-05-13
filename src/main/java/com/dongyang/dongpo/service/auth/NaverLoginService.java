@@ -1,5 +1,6 @@
 package com.dongyang.dongpo.service.auth;
 
+import com.dongyang.dongpo.domain.member.Member;
 import com.dongyang.dongpo.domain.member.Member.SocialType;
 import com.dongyang.dongpo.dto.auth.UserInfo;
 import com.dongyang.dongpo.service.member.MemberService;
@@ -65,10 +66,21 @@ public class NaverLoginService {
         JSONObject response = jsonObject.getJSONObject("response");
 
         String email = response.getString("email");
+        String age = response.getString("age");
         String id = response.getString("id");
+        Member.Gender gender;
+
+        if (response.getString("gender").equals("F"))
+            gender = Member.Gender.GEN_FEMALE;
+        else if (response.getString("gender").equals("M"))
+            gender = Member.Gender.GEN_MALE;
+        else
+            gender = Member.Gender.NONE;
 
         return memberService.socialSave(UserInfo.builder()
                 .id(id)
+                .gender(gender)
+                .age(age)
                 .email(email)
                 .provider(SocialType.NAVER)
                 .build());
