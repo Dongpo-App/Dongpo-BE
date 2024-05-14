@@ -1,9 +1,9 @@
 package com.dongyang.dongpo.dto.store;
 
-import com.dongyang.dongpo.domain.member.Member;
 import com.dongyang.dongpo.domain.store.OperatingDay;
 import com.dongyang.dongpo.domain.store.PayMethod;
 import com.dongyang.dongpo.domain.store.Store;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -16,26 +16,17 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class AddStoreRequest {
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class StoreResponse {
 
     private String name;
     private String location;
     private LocalTime openTime;
     private LocalTime closeTime;
+    private Long memberId;
     private boolean isToiletValid;
+    private Store.StoreStatus status;
     private List<OperatingDay> operatingDays;
     private List<PayMethod> payMethods;
 
-    public Store toStore(Member member){
-        return Store.builder()
-                .name(name)
-                .location(location)
-                .openTime(openTime)
-                .closeTime(closeTime)
-                .member(member)
-                .isToiletValid(isToiletValid)
-                .operatingDays(operatingDays)
-                .payMethods(payMethods)
-                .build();
-    }
 }

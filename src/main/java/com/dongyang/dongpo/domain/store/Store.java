@@ -1,11 +1,13 @@
 package com.dongyang.dongpo.domain.store;
 
 import com.dongyang.dongpo.domain.member.Member;
+import com.dongyang.dongpo.dto.store.StoreResponse;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.List;
 
 @Entity
 @Getter
@@ -47,7 +49,33 @@ public class Store {
     @Builder.Default
     private Integer reportCount = 0;
 
+    @ElementCollection(targetClass = PayMethod.class)
+    @Enumerated(EnumType.STRING)
+    @CollectionTable(name = "store_pay_method", joinColumns = @JoinColumn(name = "store_id"))
+    @Column(name = "payMethod")
+    private List<PayMethod> payMethods;
+
+    @ElementCollection(targetClass = OperatingDay.class)
+    @Enumerated(EnumType.STRING)
+    @CollectionTable(name = "store_operating_day", joinColumns = @JoinColumn(name = "store_id"))
+    @Column(name = "operatingDay")
+    private List<OperatingDay> operatingDays;
+
     public enum StoreStatus {
         ACTIVE, INACTIVE, HIDDEN, CLOSED
+    }
+
+    public StoreResponse toResponse(){
+        return StoreResponse.builder()
+                .name(name)
+                .location(location)
+                .memberId(member.getId())
+                .openTime(openTime)
+                .closeTime(closeTime)
+                .isToiletValid(isToiletValid)
+                .operatingDays(operatingDays)
+                .payMethods(payMethods)
+                .status(status)
+                .build();
     }
 }
