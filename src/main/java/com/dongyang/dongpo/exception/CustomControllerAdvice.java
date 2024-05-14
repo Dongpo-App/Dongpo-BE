@@ -1,15 +1,12 @@
 package com.dongyang.dongpo.exception;
 
 import com.dongyang.dongpo.exception.member.MemberNotFoundException;
+import com.dongyang.dongpo.exception.store.StoreNotFoundException;
 import com.dongyang.dongpo.jwt.exception.*;
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.MalformedJwtException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-
-import java.security.SignatureException;
 
 @RestControllerAdvice
 public class CustomControllerAdvice {
@@ -46,4 +43,13 @@ public class CustomControllerAdvice {
     public ResponseEntity handleMemberNotFoundException() {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("회원을 찾지 못하였습니다.");
     }
+
+    @ExceptionHandler(StoreNotFoundException.class)
+    public ResponseEntity handleStoreNotFoundException() {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("점포를 찾지 못하였습니다.");
+    }
+
+    /**
+     * ------------- 404 -------------
+     */
 }

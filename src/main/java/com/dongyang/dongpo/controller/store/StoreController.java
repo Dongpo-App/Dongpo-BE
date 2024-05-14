@@ -1,6 +1,6 @@
 package com.dongyang.dongpo.controller.store;
 
-import com.dongyang.dongpo.dto.store.AddStoreRequest;
+import com.dongyang.dongpo.dto.store.StoreDto;
 import com.dongyang.dongpo.service.store.StoreService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -15,32 +15,28 @@ public class StoreController {
 
     @GetMapping("")
     public ResponseEntity allStore(){
-
         return storeService.allStore();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity detailStore(@PathVariable Long id,
-                                      @RequestHeader("Authorization") String accessToken){
-
-        return ResponseEntity.ok().build();
+    public ResponseEntity detailStore(@PathVariable Long id) throws Exception {
+        return storeService.detailStore(id);
     }
 
     @PostMapping("")
-    public ResponseEntity addStore(@RequestBody AddStoreRequest request,
+    public ResponseEntity addStore(@RequestBody StoreDto request,
                                    @RequestHeader("Authorization") String accessToken) throws Exception {
         return storeService.addStore(request, accessToken);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity deleteStore(@PathVariable Long id,
-                                      @RequestHeader("Authorization") String accessToken){
-        return ResponseEntity.ok().build();
+    public ResponseEntity deleteStore(@PathVariable Long id){
+        return storeService.deleteStore(id);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity updateStore(@PathVariable Long id,
-                                      @RequestHeader("Authorization") String accessToken){
-        return ResponseEntity.ok().build();
+                                      @RequestBody StoreDto request) throws Exception {
+        return storeService.updateStore(id, request);
     }
 }

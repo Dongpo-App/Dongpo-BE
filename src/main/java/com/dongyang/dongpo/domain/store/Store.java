@@ -1,7 +1,7 @@
 package com.dongyang.dongpo.domain.store;
 
 import com.dongyang.dongpo.domain.member.Member;
-import com.dongyang.dongpo.dto.store.StoreResponse;
+import com.dongyang.dongpo.dto.store.StoreDto;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -65,8 +65,9 @@ public class Store {
         ACTIVE, INACTIVE, HIDDEN, CLOSED
     }
 
-    public StoreResponse toResponse(){
-        return StoreResponse.builder()
+    public StoreDto toResponse(){
+        return StoreDto.builder()
+                .id(id)
                 .name(name)
                 .location(location)
                 .memberId(member.getId())
@@ -77,5 +78,15 @@ public class Store {
                 .payMethods(payMethods)
                 .status(status)
                 .build();
+    }
+
+    public void update(StoreDto storeDto){
+        this.name = name;
+        this.location = location;
+        this.openTime = openTime;
+        this.closeTime = closeTime;
+        this.isToiletValid = isToiletValid;
+        this.payMethods = payMethods;
+        this.operatingDays = operatingDays;
     }
 }
