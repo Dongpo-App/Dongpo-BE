@@ -1,12 +1,14 @@
 package com.dongyang.dongpo.domain.store;
 
 import com.dongyang.dongpo.domain.member.Member;
+import com.dongyang.dongpo.dto.store.ReviewDto;
 import com.dongyang.dongpo.dto.store.StoreDto;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -32,7 +34,7 @@ public class Store {
 
     private boolean isToiletValid;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Member member;
 
     @Column(columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP")
@@ -61,6 +63,9 @@ public class Store {
     @Column(name = "operatingDay")
     private List<OperatingDay> operatingDays;
 
+    @OneToMany(mappedBy = "store", cascade = CascadeType.ALL)
+    private List<StoreReview> reviews = new ArrayList<>();
+
     public enum StoreStatus {
         ACTIVE, INACTIVE, HIDDEN, CLOSED
     }
@@ -80,13 +85,30 @@ public class Store {
                 .build();
     }
 
+    public StoreDto toResponse(List<ReviewDto> reviewDtos){
+        return StoreDto.builder()
+                .id(id)
+                .name(name)
+                .location(location)
+                .memberId(member.getId())
+                .openTime(openTime)
+                .closeTime(closeTime)
+                .isToiletValid(isToiletValid)
+                .operatingDays(operatingDays)
+                .payMethods(payMethods)
+                .status(status)
+                .reviews(reviewDtos)
+                .build();
+    }
+
+
     public void update(StoreDto storeDto){
-        this.name = name;
-        this.location = location;
-        this.openTime = openTime;
-        this.closeTime = closeTime;
-        this.isToiletValid = isToiletValid;
-        this.payMethods = payMethods;
-        this.operatingDays = operatingDays;
+        this.name = storeDto.getName();
+        this.location = storeDto.getLocation();
+        this.openTime = storeDto.getOpenTime();
+        this.closeTime = storeDto.getCloseTime();
+        this.isToiletValid = storeDto.isToiletValid();
+        this.payMethods = storeDto.getPayMethods();
+        this.operatingDays = storeDto.getOperatingDays();
     }
 }

@@ -3,6 +3,7 @@ package com.dongyang.dongpo.controller.auth;
 import com.dongyang.dongpo.service.auth.KakaoLoginService;
 import com.dongyang.dongpo.service.auth.NaverLoginService;
 import com.dongyang.dongpo.service.token.TokenService;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -34,12 +35,8 @@ public class AuthController {
     }
 
     @PostMapping("/reissue")
+    @Operation(summary = "JWT토큰 재발급")
     public ResponseEntity reissue(@RequestHeader("Authorization") String refreshToken) throws Exception {
         return tokenService.reissueAccessToken(refreshToken);
-    }
-
-    @GetMapping("/test")
-    public String test(){
-        return "tㅓㅇ공";
     }
 }

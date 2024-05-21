@@ -2,6 +2,8 @@ package com.dongyang.dongpo.service.store;
 
 import com.dongyang.dongpo.domain.member.Member;
 import com.dongyang.dongpo.domain.store.Store;
+import com.dongyang.dongpo.domain.store.StoreReview;
+import com.dongyang.dongpo.dto.store.ReviewDto;
 import com.dongyang.dongpo.dto.store.StoreDto;
 import com.dongyang.dongpo.exception.member.MemberNotFoundException;
 import com.dongyang.dongpo.exception.store.StoreNotFoundException;
@@ -49,8 +51,15 @@ public class StoreService {
 
     public ResponseEntity detailStore(Long id) throws Exception {
         Store store = storeRepository.findById(id).orElseThrow(StoreNotFoundException::new);
+        List<ReviewDto> reviewDtos = new ArrayList<>();
 
-        return ResponseEntity.ok().body(store.toResponse());
+        if (store.getReviews() != null) {
+            for (StoreReview review : store.getReviews())
+                reviewDtos.add(review.toResponse());
+        }
+
+
+        return ResponseEntity.ok().body(store.toResponse(reviewDtos));
     }
 
     @Transactional
@@ -67,5 +76,18 @@ public class StoreService {
         storeRepository.save(store);
 
         return ResponseEntity.ok().build();
+    }
+
+    public ResponseEntity myRegStore(String accessToken) throws Exception{
+        String email = jwtTokenProvider.parseClaims(accessToken).getSubject();
+        Member member = memberRepository.findByEmail(email).orElseThrow(MemberNotFoundException::new);
+
+        List<Store> stores = storeRepository.findByMemberId(member.getId());
+        List<StoreDto> storeResponse = new ArrayList<>();
+
+        for (Store store : stores)
+            storeResponse.add(store.toResponse());
+
+        return ResponseEntity.ok().body(storeResponse);
     }
 }

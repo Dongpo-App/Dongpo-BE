@@ -1,6 +1,5 @@
 package com.dongyang.dongpo.dto.store;
 
-import com.dongyang.dongpo.domain.member.Member;
 import com.dongyang.dongpo.domain.store.OperatingDay;
 import com.dongyang.dongpo.domain.store.PayMethod;
 import com.dongyang.dongpo.domain.store.Store;
@@ -18,7 +17,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class StoreDto {
+public class StoreDetailDto {
 
     private Long id;
     private String name;
@@ -31,18 +30,5 @@ public class StoreDto {
     private List<OperatingDay> operatingDays;
     private List<PayMethod> payMethods;
     private List<ReviewDto> reviews;
-
-    public Store toStore(Member member){
-        return Store.builder()
-                .name(name)
-                .location(location)
-                .openTime(openTime)
-                .closeTime(closeTime)
-                .member(member)
-                .isToiletValid(isToiletValid)
-                .operatingDays(operatingDays)
-                .payMethods(payMethods)
-                .build();
-    }
 
 }
