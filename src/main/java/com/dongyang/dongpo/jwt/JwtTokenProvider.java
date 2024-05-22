@@ -104,10 +104,12 @@ public class JwtTokenProvider {
     }
 
     public Claims parseClaims(String accessToken){
+        String token = accessToken.substring(7);
+
         return Jwts.parserBuilder()
                     .setSigningKey(key)
                     .build()
-                    .parseClaimsJws(accessToken)
+                    .parseClaimsJws(token)
                     .getBody();
     }
 }

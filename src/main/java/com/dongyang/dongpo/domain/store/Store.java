@@ -1,15 +1,18 @@
 package com.dongyang.dongpo.domain.store;
 
 import com.dongyang.dongpo.domain.member.Member;
+import com.dongyang.dongpo.dto.store.ReviewDto;
+import com.dongyang.dongpo.dto.store.StoreDto;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
-@Setter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -30,24 +33,83 @@ public class Store {
 
     private LocalTime closeTime;
 
-    private boolean isToiletValid = false;
+    private boolean isToiletValid;
 
-    @ManyToOne
-    @JoinColumn(name = "registered_by")
-    private Member registeredMemberId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Member member;
 
     @Column(columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP")
-    private LocalDateTime registerDate;
+    @Builder.Default
+    private LocalDateTime registerDate = LocalDateTime.now();
 
     @Column(length = 24)
     private String registerIp;
 
     @Enumerated(EnumType.STRING)
+    @Builder.Default
     private StoreStatus status = StoreStatus.ACTIVE;
 
+    @Builder.Default
     private Integer reportCount = 0;
+
+    @ElementCollection(targetClass = PayMethod.class)
+    @Enumerated(EnumType.STRING)
+    @CollectionTable(name = "store_pay_method", joinColumns = @JoinColumn(name = "store_id"))
+    @Column(name = "payMethod")
+    private List<PayMethod> payMethods;
+
+    @ElementCollection(targetClass = OperatingDay.class)
+    @Enumerated(EnumType.STRING)
+    @CollectionTable(name = "store_operating_day", joinColumns = @JoinColumn(name = "store_id"))
+    @Column(name = "operatingDay")
+    private List<OperatingDay> operatingDays;
+
+    @OneToMany(mappedBy = "store", cascade = CascadeType.ALL)
+    private List<StoreReview> reviews = new ArrayList<>();
 
     public enum StoreStatus {
         ACTIVE, INACTIVE, HIDDEN, CLOSED
+    }
+
+    public StoreDto toResponse(){
+        return StoreDto.builder()
+                .id(id)
+                .name(name)
+                .location(location)
+                .memberId(member.getId())
+                .openTime(openTime)
+                .closeTime(closeTime)
+                .isToiletValid(isToiletValid)
+                .operatingDays(operatingDays)
+                .payMethods(payMethods)
+                .status(status)
+                .build();
+    }
+
+    public StoreDto toResponse(List<ReviewDto> reviewDtos){
+        return StoreDto.builder()
+                .id(id)
+                .name(name)
+                .location(location)
+                .memberId(member.getId())
+                .openTime(openTime)
+                .closeTime(closeTime)
+                .isToiletValid(isToiletValid)
+                .operatingDays(operatingDays)
+                .payMethods(payMethods)
+                .status(status)
+                .reviews(reviewDtos)
+                .build();
+    }
+
+
+    public void update(StoreDto storeDto){
+        this.name = storeDto.getName();
+        this.location = storeDto.getLocation();
+        this.openTime = storeDto.getOpenTime();
+        this.closeTime = storeDto.getCloseTime();
+        this.isToiletValid = storeDto.isToiletValid();
+        this.payMethods = storeDto.getPayMethods();
+        this.operatingDays = storeDto.getOperatingDays();
     }
 }

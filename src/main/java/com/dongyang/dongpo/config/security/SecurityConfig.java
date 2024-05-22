@@ -1,6 +1,5 @@
 package com.dongyang.dongpo.config.security;
 
-import com.dongyang.dongpo.jwt.CustomAuthenticationEntryPoint;
 import com.dongyang.dongpo.jwt.JwtAuthenticationFilter;
 import com.dongyang.dongpo.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;

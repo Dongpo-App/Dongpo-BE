@@ -1,6 +1,7 @@
 package com.dongyang.dongpo.domain.store;
 
 import com.dongyang.dongpo.domain.member.Member;
+import com.dongyang.dongpo.dto.store.ReviewDto;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -18,13 +19,11 @@ public class StoreReview {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "store_id")
-    private Store storeId;
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    private Store store;
 
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "writer_id")
-    private Member writerId;
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    private Member member;
 
     private Integer reviewStar;
 
@@ -41,11 +40,25 @@ public class StoreReview {
     private String registerIp;
 
     @Enumerated(EnumType.STRING)
+    @Builder.Default
     private ReviewStatus status = ReviewStatus.VISIBLE;
 
+    @Builder.Default
     private Integer reportCount = 0;
 
     public enum ReviewStatus {
         VISIBLE, HIDDEN, DELETED
+    }
+
+    public ReviewDto toResponse(){
+        return ReviewDto.builder()
+                .id(id)
+                .registerDate(registerDate)
+                .reviewStar(reviewStar)
+                .text(text)
+                .memberId(member.getId())
+                .storeId(store.getId())
+                .reviewPic(reviewPic)
+                .build();
     }
 }

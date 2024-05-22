@@ -1,6 +1,5 @@
 package com.dongyang.dongpo.domain.PK;
 
-import com.dongyang.dongpo.domain.store.StorePayMethod;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,5 +13,5 @@ import java.io.Serializable;
 @NoArgsConstructor
 public class StorePayMethodId implements Serializable {
     private Long id;
-    private StorePayMethod.PayMethod payMethod;
+   // private StorePayMethod.PayMethod payMethod;
 }
