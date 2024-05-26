@@ -7,9 +7,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@RequestMapping("/api/location")
 public class LocationController {
 
     private final LocationService locationService;
@@ -19,12 +21,12 @@ public class LocationController {
         this.locationService = locationService;
     }
 
-    @PostMapping("/api/location/distance")
+    @PostMapping("/distance")
     public ResponseEntity<ApiResponse<Long>> getDistance(@RequestBody LatLongComparisonDto latLongComparison) {
         return ResponseEntity.ok(new ApiResponse<>(locationService.getDistance(latLongComparison)));
     }
 
-    @PostMapping("/api/location/verify")
+    @PostMapping("/verify")
     public ResponseEntity<ApiResponse<Boolean>> verifyCoordinate(@RequestBody LatLongComparisonDto latLongComparison) {
         return (locationService.verifyCoordinate(latLongComparison)
                 ? ResponseEntity.ok(new ApiResponse<>(true))

@@ -3,7 +3,7 @@ package com.dongyang.dongpo.service.location;
 import com.dongyang.dongpo.domain.store.Store;
 import com.dongyang.dongpo.dto.location.LatLong;
 import com.dongyang.dongpo.dto.location.LatLongComparisonDto;
-import com.dongyang.dongpo.exception.DataNotFoundException;
+import com.dongyang.dongpo.exception.data.DataNotFoundException;
 import com.dongyang.dongpo.repository.store.StoreRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;

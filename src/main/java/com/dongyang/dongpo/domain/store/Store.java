@@ -66,6 +66,7 @@ public class Store {
     private List<OperatingDay> operatingDays;
 
     @OneToMany(mappedBy = "store", cascade = CascadeType.ALL)
+    @Builder.Default
     private List<StoreReview> reviews = new ArrayList<>();
 
     public enum StoreStatus {
