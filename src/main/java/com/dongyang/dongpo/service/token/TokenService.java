@@ -21,7 +21,7 @@ public class TokenService {
     private final MemberRepository memberRepository;
 
 
-    public ResponseEntity reissueAccessToken(String token) throws Exception {
+    public ResponseEntity<JwtToken> reissueAccessToken(String token) throws Exception {
         String email = jwtTokenProvider.parseClaims(token).getSubject();
         Member member = memberRepository.findByEmail(email)
                 .orElseThrow(MemberNotFoundException::new);
@@ -34,5 +34,22 @@ public class TokenService {
         refreshTokenRepository.save(refreshToken);
 
         return ResponseEntity.ok(jwtToken);
+    }
+
+    public ResponseEntity<JwtToken> alreadyExistMember(Member member){
+        JwtToken jwtToken = jwtTokenProvider.createToken(member.getEmail(), member.getRole());
+        RefreshToken refreshToken = refreshTokenRepository.findByEmail(member.getEmail()).orElse(null);
+        if (refreshToken != null)
+            refreshToken.updateRefreshToken(jwtToken.getRefreshToken());
+        else
+            refreshToken = RefreshToken.builder()
+                    .refreshToken(jwtToken.getRefreshToken())
+                    .email(member.getEmail())
+                    .build();
+
+        refreshTokenRepository.save(refreshToken);
+
+        return ResponseEntity.ok(jwtToken);
+
     }
 }

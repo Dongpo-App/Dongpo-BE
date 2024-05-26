@@ -7,6 +7,7 @@ import com.dongyang.dongpo.dto.auth.UserInfo;
 import com.dongyang.dongpo.jwt.JwtTokenProvider;
 import com.dongyang.dongpo.repository.MemberRepository;
 import com.dongyang.dongpo.repository.RefreshTokenRepository;
+import com.dongyang.dongpo.service.token.TokenService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -20,11 +21,16 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final RefreshTokenRepository refreshTokenRepository;
     private final JwtTokenProvider jwtTokenProvider;
+    private final TokenService tokenService;
 
 
     @Transactional
-    public ResponseEntity<?> socialSave(UserInfo userInfo){
+    public ResponseEntity<JwtToken> socialSave(UserInfo userInfo){
         Member member = Member.toEntity(userInfo);
+
+        if (memberRepository.existsByEmail(member.getEmail()))
+            return tokenService.alreadyExistMember(member);
+
         memberRepository.save(member);
 
         JwtToken jwtToken = jwtTokenProvider.createToken(member.getEmail(), member.getRole());

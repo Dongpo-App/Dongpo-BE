@@ -3,9 +3,11 @@ package com.dongyang.dongpo.service.auth;
 
 import com.dongyang.dongpo.domain.member.Member;
 import com.dongyang.dongpo.domain.member.Member.SocialType;
+import com.dongyang.dongpo.dto.JwtToken;
 import com.dongyang.dongpo.dto.auth.UserInfo;
 import com.dongyang.dongpo.repository.MemberRepository;
 import com.dongyang.dongpo.service.member.MemberService;
+import com.dongyang.dongpo.service.token.TokenService;
 import lombok.RequiredArgsConstructor;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,7 +24,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 public class KakaoLoginService{
 
     private final MemberService memberService;
-    private final MemberRepository memberRepository;
+
 
     @Value("${kakao.client_id}")
     private String clientId;
@@ -85,7 +87,6 @@ public class KakaoLoginService{
             gender = Member.Gender.NONE;
 
 
-        memberRegValidate(email);
         return memberService.socialSave(UserInfo.builder()
                 .id(id)
                 .email(email)
@@ -93,13 +94,5 @@ public class KakaoLoginService{
                 .gender(gender)
                 .provider(SocialType.KAKAO)
                 .build());
-    }
-
-    private void memberRegValidate(String email){
-        if (memberRepository.existsByEmail(email)){
-            // token 발급
-        }else {
-
-        }
     }
 }

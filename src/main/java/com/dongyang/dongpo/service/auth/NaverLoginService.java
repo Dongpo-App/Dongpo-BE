@@ -2,8 +2,11 @@ package com.dongyang.dongpo.service.auth;
 
 import com.dongyang.dongpo.domain.member.Member;
 import com.dongyang.dongpo.domain.member.Member.SocialType;
+import com.dongyang.dongpo.dto.JwtToken;
 import com.dongyang.dongpo.dto.auth.UserInfo;
+import com.dongyang.dongpo.repository.MemberRepository;
 import com.dongyang.dongpo.service.member.MemberService;
+import com.dongyang.dongpo.service.token.TokenService;
 import lombok.RequiredArgsConstructor;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
@@ -19,6 +22,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 public class NaverLoginService {
 
     private final MemberService memberService;
+
 
     @Value("${naver.client_id}")
     private String clientId;
