@@ -1,11 +1,14 @@
 package com.dongyang.dongpo.controller.store;
 
+import com.dongyang.dongpo.apiresponse.ApiResponse;
 import com.dongyang.dongpo.dto.store.StoreDto;
 import com.dongyang.dongpo.service.store.StoreService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -16,8 +19,8 @@ public class StoreController {
 
     @GetMapping("")
     @Operation(summary = "전체 점포 조회")
-    public ResponseEntity allStore(){
-        return storeService.allStore();
+    public ResponseEntity<ApiResponse<List<StoreDto>>> allStore(){
+        return ResponseEntity.ok(new ApiResponse<>(storeService.allStore()));
     }
 
     @GetMapping("/{id}")
@@ -28,8 +31,8 @@ public class StoreController {
 
     @GetMapping("/member")
     @Operation(summary = "내가 등록한 점포조회")
-    public ResponseEntity myRegStore(@RequestHeader("Authorization") String accessToken) throws Exception {
-        return storeService.myRegStore(accessToken);
+    public ResponseEntity<ApiResponse<List<StoreDto>>> myRegStore(@RequestHeader("Authorization") String accessToken) throws Exception {
+        return ResponseEntity.ok(new ApiResponse<>(storeService.myRegStore(accessToken)));
     }
 
     @PostMapping("")

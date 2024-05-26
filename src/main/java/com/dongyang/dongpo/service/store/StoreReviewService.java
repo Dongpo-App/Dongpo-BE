@@ -40,13 +40,13 @@ public class StoreReviewService {
         return ResponseEntity.ok().build();
     }
 
-    public ResponseEntity myRegReview(Long memberId) throws Exception{
+    public List<ReviewDto> myRegReview(Long memberId) throws Exception{
        List<StoreReview> storeReviews =  reviewRepository.findByMemberId(memberId);
        List<ReviewDto> reviewDtos = new ArrayList<>();
 
        for (StoreReview review : storeReviews)
            reviewDtos.add(review.toResponse());
 
-       return ResponseEntity.ok().body(reviewDtos);
+       return reviewDtos;
     }
 }

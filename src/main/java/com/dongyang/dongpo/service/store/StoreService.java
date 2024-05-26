@@ -39,14 +39,14 @@ public class StoreService {
         return ResponseEntity.ok().build();
     }
 
-    public ResponseEntity allStore() {
+    public List<StoreDto> allStore() {
         List<Store> stores = storeRepository.findAll();
-        List<StoreDto> storeRespons = new ArrayList<>();
+        List<StoreDto> storeResponse = new ArrayList<>();
 
         for (Store store : stores)
-            storeRespons.add(store.toResponse());
+            storeResponse.add(store.toResponse());
 
-        return ResponseEntity.ok().body(storeRespons);
+        return storeResponse;
     }
 
     public ResponseEntity detailStore(Long id) throws Exception {
@@ -73,12 +73,11 @@ public class StoreService {
     public ResponseEntity updateStore(Long id, StoreDto request) throws Exception{
         Store store = storeRepository.findById(id).orElseThrow(StoreNotFoundException::new);
         store.update(request);
-        storeRepository.save(store);
 
         return ResponseEntity.ok().build();
     }
 
-    public ResponseEntity myRegStore(String accessToken) throws Exception{
+    public List<StoreDto> myRegStore(String accessToken) throws Exception{
         String email = jwtTokenProvider.parseClaims(accessToken).getSubject();
         Member member = memberRepository.findByEmail(email).orElseThrow(MemberNotFoundException::new);
 
@@ -88,6 +87,6 @@ public class StoreService {
         for (Store store : stores)
             storeResponse.add(store.toResponse());
 
-        return ResponseEntity.ok().body(storeResponse);
+        return storeResponse;
     }
 }
