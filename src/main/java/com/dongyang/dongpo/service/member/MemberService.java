@@ -5,7 +5,7 @@ import com.dongyang.dongpo.domain.member.Member;
 import com.dongyang.dongpo.dto.JwtToken;
 import com.dongyang.dongpo.dto.auth.UserInfo;
 import com.dongyang.dongpo.jwt.JwtTokenProvider;
-import com.dongyang.dongpo.repository.MemberRepository;
+import com.dongyang.dongpo.repository.member.MemberRepository;
 import com.dongyang.dongpo.repository.RefreshTokenRepository;
 import com.dongyang.dongpo.service.token.TokenService;
 import lombok.RequiredArgsConstructor;

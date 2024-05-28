@@ -1,4 +1,4 @@
-package com.dongyang.dongpo.repository;
+package com.dongyang.dongpo.repository.member;
 
 import com.dongyang.dongpo.domain.member.Member;
 import org.springframework.data.jpa.repository.JpaRepository;

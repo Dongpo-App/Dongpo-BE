@@ -21,16 +21,17 @@ public class StoreReport {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "writer_id")
-    private Member writerId;
+    private Member member;
 
     @Column(columnDefinition = "TEXT")
     private String text;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "store_id")
-    private Store storeId;
+    private Store store;
 
-    private LocalDateTime issueDate;
+    @Builder.Default
+    private LocalDateTime issueDate = LocalDateTime.now();
 
     @Column(length = 24)
     private String issueIp;

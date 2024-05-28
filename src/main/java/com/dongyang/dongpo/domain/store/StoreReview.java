@@ -9,7 +9,6 @@ import java.time.LocalDateTime;
 
 @Entity
 @Getter
-@Setter
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
@@ -34,7 +33,8 @@ public class StoreReview {
     private String reviewPic;
 
     @Column(columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP")
-    private LocalDateTime registerDate;
+    @Builder.Default
+    private LocalDateTime registerDate = LocalDateTime.now();
 
     @Column(length = 24)
     private String registerIp;
@@ -60,5 +60,9 @@ public class StoreReview {
                 .storeId(store.getId())
                 .reviewPic(reviewPic)
                 .build();
+    }
+
+    public void addReport(){
+        this.reportCount++;
     }
 }

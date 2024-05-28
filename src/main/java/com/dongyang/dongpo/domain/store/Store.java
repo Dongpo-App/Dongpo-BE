@@ -114,4 +114,8 @@ public class Store {
         this.payMethods = storeDto.getPayMethods();
         this.operatingDays = storeDto.getOperatingDays();
     }
+
+    public void addReport(){
+        this.reportCount++;
+    }
 }

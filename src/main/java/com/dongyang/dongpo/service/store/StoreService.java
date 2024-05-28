@@ -8,7 +8,7 @@ import com.dongyang.dongpo.dto.store.StoreDto;
 import com.dongyang.dongpo.exception.member.MemberNotFoundException;
 import com.dongyang.dongpo.exception.store.StoreNotFoundException;
 import com.dongyang.dongpo.jwt.JwtTokenProvider;
-import com.dongyang.dongpo.repository.MemberRepository;
+import com.dongyang.dongpo.repository.member.MemberRepository;
 import com.dongyang.dongpo.repository.store.StoreRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

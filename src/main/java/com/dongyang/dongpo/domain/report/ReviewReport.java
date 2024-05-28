@@ -21,17 +21,18 @@ public class ReviewReport {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "report_writer")
-    private Member memberId;
+    private Member member;
 
     @Column(columnDefinition = "TEXT")
     private String text;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "reporting_review_id")
-    private StoreReview reviewId;
+    private StoreReview review;
 
     @Column(columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP")
-    private LocalDateTime issueDate;
+    @Builder.Default
+    private LocalDateTime issueDate = LocalDateTime.now();
 
     @Column(length = 24)
     private String issueIp;

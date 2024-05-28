@@ -6,7 +6,7 @@ import com.dongyang.dongpo.dto.JwtToken;
 import com.dongyang.dongpo.exception.member.MemberNotFoundException;
 import com.dongyang.dongpo.jwt.JwtTokenProvider;
 import com.dongyang.dongpo.jwt.exception.CustomExpiredException;
-import com.dongyang.dongpo.repository.MemberRepository;
+import com.dongyang.dongpo.repository.member.MemberRepository;
 import com.dongyang.dongpo.repository.RefreshTokenRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
