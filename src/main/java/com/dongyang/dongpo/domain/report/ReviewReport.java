@@ -2,6 +2,7 @@ package com.dongyang.dongpo.domain.report;
 
 import com.dongyang.dongpo.domain.member.Member;
 import com.dongyang.dongpo.domain.store.StoreReview;
+import com.dongyang.dongpo.dto.report.ReportDto;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -41,7 +42,18 @@ public class ReviewReport {
     @Builder.Default
     private ReportStatus status = ReportStatus.OPEN;
 
+
+
     public enum ReportStatus {
         OPEN, PROCEEDING, CLOSED
+    }
+
+    public ReportDto toDto() {
+        return ReportDto.builder()
+                .reviewId(review.getId())
+                .memberId(member.getId())
+                .text(text)
+                .issueDate(issueDate)
+                .build();
     }
 }

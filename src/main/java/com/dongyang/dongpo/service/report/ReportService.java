@@ -1,5 +1,6 @@
 package com.dongyang.dongpo.service.report;
 
+import com.dongyang.dongpo.apiresponse.ApiResponse;
 import com.dongyang.dongpo.domain.member.Member;
 import com.dongyang.dongpo.domain.report.ReviewReport;
 import com.dongyang.dongpo.domain.report.StoreReport;
@@ -18,6 +19,9 @@ import com.dongyang.dongpo.repository.store.StoreReviewRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @Transactional(readOnly = true)
@@ -57,5 +61,38 @@ public class ReportService {
 
         ReviewReport reviewReport = request.toReviewEntity(member, review);
         reviewReportRepository.save(reviewReport);
+    }
+
+    public ApiResponse myRegStoreReport(String accessToken) throws Exception{
+        String email = jwtTokenProvider.parseClaims(accessToken).getSubject();
+        Member member = memberRepository.findByEmail(email).orElseThrow(MemberNotFoundException::new);
+
+        List<StoreReport> storeReportList = storeReportRepository.findByMemberId(member.getId());
+        List<ReportDto> reportList = new ArrayList<>();
+
+        if (storeReportList.isEmpty())
+            return new ApiResponse("내가 등록한 신고내역이 없습니다.");
+
+        for (StoreReport storeReport : storeReportList)
+            reportList.add(storeReport.toDto());
+
+        return new ApiResponse(reportList);
+
+    }
+
+    public ApiResponse myRegReviewReport(String accessToken) throws Exception{
+        String email = jwtTokenProvider.parseClaims(accessToken).getSubject();
+        Member member = memberRepository.findByEmail(email).orElseThrow(MemberNotFoundException::new);
+
+        List<ReviewReport> storeReportList = reviewReportRepository.findByMemberId(member.getId());
+        List<ReportDto> reportList = new ArrayList<>();
+
+        if (storeReportList.isEmpty())
+            return new ApiResponse("내가 등록한 신고내역이 없습니다.");
+
+        for (ReviewReport reviewReport : storeReportList)
+            reportList.add(reviewReport.toDto());
+
+        return new ApiResponse(reportList);
     }
 }
