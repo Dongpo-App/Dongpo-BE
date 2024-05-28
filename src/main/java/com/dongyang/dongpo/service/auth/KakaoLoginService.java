@@ -3,7 +3,6 @@ package com.dongyang.dongpo.service.auth;
 
 import com.dongyang.dongpo.domain.member.Member;
 import com.dongyang.dongpo.domain.member.Member.SocialType;
-import com.dongyang.dongpo.dto.auth.CodeRequest;
 import com.dongyang.dongpo.dto.auth.UserInfo;
 import com.dongyang.dongpo.service.member.MemberService;
 import lombok.RequiredArgsConstructor;
@@ -31,7 +30,7 @@ public class KakaoLoginService{
     private String redirectUrl;
 
 
-    public ResponseEntity kakaoCallBack(CodeRequest request) {
+    public ResponseEntity kakaoCallBack(String code) {
         WebClient webClient = WebClient.builder()
                 .baseUrl("https://kauth.kakao.com/oauth/token")
                 .defaultHeader("Content-Type", "application/x-www-form-urlencoded;charset=utf-8")
@@ -41,7 +40,7 @@ public class KakaoLoginService{
         params.add("grant_type", "authorization_code");
         params.add("client_id", clientId);
         params.add("redirect_uri", redirectUrl);
-        params.add("code", request.getCode());
+        params.add("code", code);
 
         String responseBody = webClient.post()
                 .uri(uriBuilder -> uriBuilder.build())

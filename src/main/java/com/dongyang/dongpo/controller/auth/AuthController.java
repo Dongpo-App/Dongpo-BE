@@ -1,6 +1,5 @@
 package com.dongyang.dongpo.controller.auth;
 
-import com.dongyang.dongpo.dto.auth.CodeRequest;
 import com.dongyang.dongpo.service.auth.KakaoLoginService;
 import com.dongyang.dongpo.service.auth.NaverLoginService;
 import com.dongyang.dongpo.service.token.TokenService;
@@ -18,17 +17,24 @@ public class AuthController {
     private final NaverLoginService naverLoginService;
     private final TokenService tokenService;
 
-    @GetMapping("/kakao")
-    public ResponseEntity kakao(@RequestBody CodeRequest request) {
-        return kakaoLoginService.kakaoCallBack(request);
+    @GetMapping("/kakao/callback")
+    public ResponseEntity callback(@RequestParam("code") String code) {
+        return kakaoLoginService.kakaoCallBack(code);
     }
 
-    @GetMapping("/naver")
-    public ResponseEntity naver(@RequestBody CodeRequest request) {
-        return naverLoginService.naverCallback(request);
+    @GetMapping("/token")
+    public ResponseEntity getToken() {
+
     }
 
-    @GetMapping("/apple")
+    @GetMapping("/naver/callback")
+    public ResponseEntity callback(@RequestParam("code") String code,
+                                   @RequestParam("state") String state) {
+
+        return naverLoginService.naverCallback(code, state);
+    }
+
+    @GetMapping("/apple/callback")
     public ResponseEntity callback(){
         return null;
     }

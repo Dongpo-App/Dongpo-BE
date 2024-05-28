@@ -2,7 +2,6 @@ package com.dongyang.dongpo.service.auth;
 
 import com.dongyang.dongpo.domain.member.Member;
 import com.dongyang.dongpo.domain.member.Member.SocialType;
-import com.dongyang.dongpo.dto.auth.CodeRequest;
 import com.dongyang.dongpo.dto.auth.UserInfo;
 import com.dongyang.dongpo.service.member.MemberService;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +27,7 @@ public class NaverLoginService {
     private String clientSecret;
 
 
-    public ResponseEntity naverCallback(CodeRequest request) {
+    public ResponseEntity naverCallback(String code, String state) {
         WebClient webClient = WebClient.builder()
                 .baseUrl("https://nid.naver.com/oauth2.0/token")
                 .defaultHeader("Content-Type", "application/x-www-form-urlencoded;charset=utf-8")
@@ -38,8 +37,8 @@ public class NaverLoginService {
         params.add("grant_type", "authorization_code");
         params.add("client_id", clientId);
         params.add("client_secret", clientSecret);
-        params.add("code", request.getCode());
-        params.add("state", request.getState());
+        params.add("code", code);
+        params.add("state", state);
 
         String responseBody = webClient.post()
                 .uri(uriBuilder -> uriBuilder.build())
