@@ -11,6 +11,7 @@ import com.dongyang.dongpo.repository.RefreshTokenRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -21,6 +22,7 @@ public class TokenService {
     private final MemberRepository memberRepository;
 
 
+    @Transactional
     public ResponseEntity<JwtToken> reissueAccessToken(String token) throws Exception {
         String email = jwtTokenProvider.parseClaims(token).getSubject();
         Member member = memberRepository.findByEmail(email)
@@ -36,6 +38,7 @@ public class TokenService {
         return ResponseEntity.ok(jwtToken);
     }
 
+    @Transactional
     public ResponseEntity<JwtToken> alreadyExistMember(Member member){
         JwtToken jwtToken = jwtTokenProvider.createToken(member.getEmail(), member.getRole());
         RefreshToken refreshToken = refreshTokenRepository.findByEmail(member.getEmail()).orElse(null);

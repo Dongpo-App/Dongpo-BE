@@ -47,6 +47,7 @@ public class StoreReport {
 
     public ReportDto toDto(){
         return ReportDto.builder()
+                .id(id)
                 .storeId(store.getId())
                 .text(text)
                 .memberId(member.getId())

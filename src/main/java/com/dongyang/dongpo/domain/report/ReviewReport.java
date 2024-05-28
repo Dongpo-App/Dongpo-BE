@@ -50,6 +50,7 @@ public class ReviewReport {
 
     public ReportDto toDto() {
         return ReportDto.builder()
+                .id(id)
                 .reviewId(review.getId())
                 .memberId(member.getId())
                 .text(text)
