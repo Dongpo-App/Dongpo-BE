@@ -53,6 +53,5 @@ public class TokenService {
         refreshTokenRepository.save(refreshToken);
 
         return ResponseEntity.ok(jwtToken);
-
     }
 }
