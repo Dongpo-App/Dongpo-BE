@@ -28,7 +28,8 @@ public class AdminSecurityConfig {
                 .authenticationProvider(adminUserService())
                 .securityMatcher("/admin/**")
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/admin/login", "/admin/login.do").permitAll()
+                        .requestMatchers("/admin/login", "/admin/login.do",
+                                "/admin/signup", "/admin/signup.do").permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                 )
                 .formLogin(login -> login
