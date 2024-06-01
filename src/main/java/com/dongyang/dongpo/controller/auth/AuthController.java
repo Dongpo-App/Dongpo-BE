@@ -22,10 +22,6 @@ public class AuthController {
         return kakaoLoginService.kakaoCallBack(code);
     }
 
-    @GetMapping("/token")
-    public ResponseEntity getToken() {
-
-    }
 
     @GetMapping("/naver/callback")
     public ResponseEntity callback(@RequestParam("code") String code,

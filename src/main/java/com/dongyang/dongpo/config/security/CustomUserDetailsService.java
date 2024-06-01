@@ -1,5 +1,6 @@
 package com.dongyang.dongpo.config.security;
 
+import com.dongyang.dongpo.exception.member.MemberNotFoundException;
 import com.dongyang.dongpo.repository.member.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -7,16 +8,19 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.util.NoSuchElementException;
-
 @Service
 @RequiredArgsConstructor
 public class CustomUserDetailsService implements UserDetailsService {
 
     private final MemberRepository memberRepository;
 
+
     @Override
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        return memberRepository.findByEmail(email).orElseThrow(NoSuchElementException::new);
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        try {
+            return memberRepository.findByEmail(username).orElseThrow(MemberNotFoundException::new);
+        } catch (MemberNotFoundException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
