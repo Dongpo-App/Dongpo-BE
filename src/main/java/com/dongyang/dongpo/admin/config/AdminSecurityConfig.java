@@ -30,7 +30,7 @@ public class AdminSecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/admin/login", "/admin/login.do",
                                 "/admin/signup", "/admin/signup.do").permitAll()
-                        .requestMatchers("/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/admin/**").hasAnyRole("ADMIN", "SUPER_ADMIN")
                 )
                 .formLogin(login -> login
                         .loginPage("/admin/login")

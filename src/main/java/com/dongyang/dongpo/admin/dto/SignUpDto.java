@@ -1,6 +1,7 @@
 package com.dongyang.dongpo.admin.dto;
 
 import com.dongyang.dongpo.admin.domain.Admin;
+import com.dongyang.dongpo.admin.domain.AdminRole;
 import lombok.Data;
 
 @Data
@@ -14,7 +15,7 @@ public class SignUpDto {
         return Admin.builder()
                 .loginId(loginId)
                 .password(password)
-                .role("ROLE_ADMIN")
+                .role(AdminRole.ROLE_GRANT)
                 .build();
     }
 }

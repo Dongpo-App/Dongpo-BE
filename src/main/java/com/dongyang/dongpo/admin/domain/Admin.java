@@ -1,9 +1,6 @@
 package com.dongyang.dongpo.admin.domain;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
@@ -13,7 +10,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 @Entity
 @NoArgsConstructor
@@ -28,13 +24,13 @@ public class Admin implements UserDetails {
     private String loginId;
     private String password;
 
-    @Builder.Default
-    private String role = "ROLE_ADMIN";
+    @Enumerated(EnumType.STRING)
+    private AdminRole role;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         Collection<GrantedAuthority> authorities = new ArrayList<>();
-        authorities.add(new SimpleGrantedAuthority(role));
+        authorities.add(new SimpleGrantedAuthority(role.name()));
         return authorities;
     }
 

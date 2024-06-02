@@ -73,6 +73,7 @@ public class StoreService {
     public ResponseEntity updateStore(Long id, StoreDto request) throws Exception{
         Store store = storeRepository.findById(id).orElseThrow(StoreNotFoundException::new);
         store.update(request);
+        storeRepository.save(store);
 
         return ResponseEntity.ok().build();
     }
