@@ -15,6 +15,13 @@ public class DataInitializer implements CommandLineRunner {
     private final AdminRepository adminRepository;
     private final PasswordEncoder passwordEncoder;
 
+    /**
+     * 테스트용 ADMIN 계정 생성
+     * SUPER_ADMIN - ID : super, PW : super,
+     * ADMIN - ID : admin, PW : admin
+     * @param args
+     * @throws Exception
+     */
     @Override
     public void run(String... args) throws Exception {
         Admin superAdmin = Admin.builder()

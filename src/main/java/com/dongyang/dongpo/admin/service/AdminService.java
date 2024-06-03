@@ -21,5 +21,4 @@ public class AdminService {
         Admin admin = request.toEntity();
         adminRepository.save(admin);
     }
-
 }

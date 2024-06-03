@@ -22,40 +22,6 @@ public class KakaoLoginService{
 
     private final MemberService memberService;
 
-
-    @Value("${kakao.client_id}")
-    private String clientId;
-
-    @Value("${kakao.redirect_url}")
-    private String redirectUrl;
-
-
-    public ResponseEntity kakaoCallBack(String code) {
-        WebClient webClient = WebClient.builder()
-                .baseUrl("https://kauth.kakao.com/oauth/token")
-                .defaultHeader("Content-Type", "application/x-www-form-urlencoded;charset=utf-8")
-                .build();
-
-        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-        params.add("grant_type", "authorization_code");
-        params.add("client_id", clientId);
-        params.add("redirect_uri", redirectUrl);
-        params.add("code", code);
-
-        String responseBody = webClient.post()
-                .uri(uriBuilder -> uriBuilder.build())
-                .body(BodyInserters.fromFormData(params))
-                .retrieve()
-                .bodyToMono(String.class)
-                .block();
-
-        JSONObject jsonObject = new JSONObject(responseBody);
-        String accessToken = jsonObject.getString("access_token");
-        return getKakaoUserInfo(accessToken);
-    }
-
-
-
     public ResponseEntity getKakaoUserInfo(String accessToken) {
         WebClient webClient = WebClient.builder()
                 .baseUrl("https://kapi.kakao.com/v2/user/me")
