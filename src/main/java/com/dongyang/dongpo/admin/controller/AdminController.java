@@ -20,9 +20,6 @@ import org.springframework.web.bind.annotation.*;
 public class AdminController {
 
     private final AdminService adminService;
-    private final AdminMemberService adminMemberService;
-    private final AdminReviewService adminReviewService;
-    private final AdminStoreService adminStoreService;
 
     @GetMapping("/login")
     public String login(){
@@ -43,38 +40,5 @@ public class AdminController {
     public String signup(@ModelAttribute("signupForm") SignUpDto request){
         adminService.signup(request);
         return "redirect:/admin/login";
-    }
-
-    @GetMapping("/dashboard/member")
-    public String memberBoard(Model model){
-        model.addAttribute("members", adminMemberService.findAll());
-        model.addAttribute("admin", getPrincipal());
-        return "admin/dashboard/member/member_board";
-    }
-
-    @GetMapping("/dashboard/store")
-    public String storeBoard(Model model){
-        model.addAttribute("admin", getPrincipal());
-        model.addAttribute("stores", adminStoreService.findAll());
-        return "admin/dashboard/store/store_board";
-    }
-
-    @GetMapping("/dashboard/review")
-    public String reviewBoard(Model model){
-        model.addAttribute("admin", getPrincipal());
-        model.addAttribute("reviews", adminReviewService.findAll());
-        return "admin/dashboard/review/review_board";
-    }
-
-    @GetMapping("/dashboard/confirm")
-    public String adminBoard(Model model){
-        model.addAttribute("admin", getPrincipal());
-        model.addAttribute("grants", adminMemberService.findProcessAdmin());
-        return "admin/dashboard/admin_board";
-    }
-
-    private Admin getPrincipal(){
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        return (Admin) authentication.getPrincipal();
     }
 }
