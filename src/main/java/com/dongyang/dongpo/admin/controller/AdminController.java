@@ -41,25 +41,31 @@ public class AdminController {
 
     @GetMapping("/dashboard/member")
     public String memberBoard(Model model){
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        Admin admin = (Admin) authentication.getPrincipal();
-        model.addAttribute("admin", admin);
+        model.addAttribute("admin", getPrincipal());
         return "admin/dashboard/member_board";
     }
 
     @GetMapping("/dashboard/store")
     public String storeBoard(Model model){
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        Admin admin = (Admin) authentication.getPrincipal();
-        model.addAttribute("admin", admin);
+        model.addAttribute("admin", getPrincipal());
         return "admin/dashboard/store_board";
     }
 
     @GetMapping("/dashboard/review")
     public String reviewBoard(Model model){
+        model.addAttribute("admin", getPrincipal());
+        return "admin/dashboard/review_board";
+    }
+
+    @GetMapping("/dashboard/confirm")
+    public String adminBoard(Model model){
+        model.addAttribute("admin", getPrincipal());
+        return "admin/dashboard/admin_board";
+    }
+
+    private Admin getPrincipal(){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Admin admin = (Admin) authentication.getPrincipal();
-        model.addAttribute("admin", admin);
-        return "admin/dashboard/review_board";
+        return admin;
     }
 }

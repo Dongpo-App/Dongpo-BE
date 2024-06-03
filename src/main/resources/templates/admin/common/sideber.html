@@ -1,3 +1,6 @@
+<html lang="en"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      xmlns:th="http://www.thymeleaf.org">
 <aside class="app-sidebar bg-body-secondary shadow" data-bs-theme="dark" th:fragment="sidebar">
     <div class="sidebar-brand">
         <a href="#" class="brand-link">
@@ -50,7 +53,18 @@
                         </li>
                     </ul>
                 </li>
+                <li class="nav-item" th:if="${admin.role.toString().equals('ROLE_SUPER_ADMIN')}">
+                    <a href="/admin/dashboard/confirm" class="nav-link">
+                        <p>관리자 승인</p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="/admin/logout" class="nav-link">
+                        <p>로그아웃</p>
+                    </a>
+                </li>
             </ul>
         </nav>
     </div>
 </aside>
+</html>
