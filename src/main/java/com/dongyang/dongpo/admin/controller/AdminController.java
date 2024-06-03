@@ -2,6 +2,7 @@ package com.dongyang.dongpo.admin.controller;
 
 import com.dongyang.dongpo.admin.domain.Admin;
 import com.dongyang.dongpo.admin.dto.SignUpDto;
+import com.dongyang.dongpo.admin.service.AdminMemberService;
 import com.dongyang.dongpo.admin.service.AdminService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 public class AdminController {
 
     private final AdminService adminService;
+    private final AdminMemberService adminMemberService;
 
     @GetMapping("/login")
     public String login(){
@@ -41,6 +43,7 @@ public class AdminController {
 
     @GetMapping("/dashboard/member")
     public String memberBoard(Model model){
+        model.addAttribute("members", adminMemberService.findAll());
         model.addAttribute("admin", getPrincipal());
         return "admin/dashboard/member_board";
     }
