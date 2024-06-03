@@ -1,0 +1,65 @@
+name: Build and Push Docker Image - dev
+
+on:
+  push:
+    branches:
+      - develop
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'adopt'
+          java-version: '17'
+
+      - name: Set up properties file
+        run: echo "${{ secrets.DEV_PROPERTIES }}" > src/main/resources/application-dev.yml
+
+      - name: Build with Gradle
+        run: ./gradlew bootJar
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Get current time
+        run: echo "CURRENT_TIME=$(date +'%Y%m%d%H%M')" >> $GITHUB_ENV
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build and Push Docker image
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          file: ./Dockerfile.dev
+          push: true
+          tags: ${{ secrets.DOCKER_USERNAME }}/dongpo_spring:${{ env.CURRENT_TIME }},
+            ${{ secrets.DOCKER_USERNAME }}/dongpo_spring:latest
+          platforms: linux/amd64,linux/arm64
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+      - name: SSH to Server and Deploy
+        uses: appleboy/ssh-action@v0.1.6
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.EC2_KEY }}
+          script: |
+            cd Dongpo
+            docker-compose down
+            docker pull ${{ secrets.DOCKER_USERNAME }}/dongpo_spring:latest
+            docker-compose up -d
+            exit
