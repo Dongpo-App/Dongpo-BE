@@ -7,6 +7,7 @@ import com.dongyang.dongpo.domain.member.Member;
 import com.dongyang.dongpo.repository.member.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -23,5 +24,19 @@ public class AdminMemberService {
 
     public List<Admin> findProcessAdmin(){
         return adminRepository.findByRole(AdminRole.ROLE_GRANT);
+    }
+
+    @Transactional
+    public void approveAdmin(Long id) {
+        Admin admin = adminRepository.findById(id).get();
+        admin.confirm(AdminRole.ROLE_ADMIN);
+        adminRepository.save(admin);
+    }
+
+    @Transactional
+    public void rejectAdmin(Long id) {
+        Admin admin = adminRepository.findById(id).get();
+        admin.confirm(AdminRole.ROLE_REJECT);
+        adminRepository.save(admin);
     }
 }

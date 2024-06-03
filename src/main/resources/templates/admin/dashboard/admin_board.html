@@ -30,13 +30,13 @@
                                 <td th:text="${grant.id}"></td>
                                 <td th:text="${grant.name}"></td>
                                 <td>
-                                    <form action="/admin/grant/approve">
+                                    <form action="/admin/grant/approve" method="post">
                                         <input type="hidden" name="id" th:value="${grant.id}">
                                         <button type="submit" class="btn btn-primary">승인</button>
                                     </form>
                                 </td>
                                 <td>
-                                    <form action="/admin/grant/reject">
+                                    <form action="/admin/grant/reject" method="post">
                                         <input type="hidden" name="id" th:value="${grant.id}">
                                         <button type="submit" class="btn btn-danger">거절</button>
                                     </form>

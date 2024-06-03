@@ -30,6 +30,10 @@ public class Admin implements UserDetails {
     @Enumerated(EnumType.STRING)
     private AdminRole role;
 
+    public void confirm(AdminRole role){
+        this.role = role;
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         Collection<GrantedAuthority> authorities = new ArrayList<>();
