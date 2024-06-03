@@ -20,6 +20,7 @@ import org.springframework.security.web.SecurityFilterChain;
 public class AdminSecurityConfig {
 
     private final AdminUserDetailsService userDetailsService;
+    private final CustomAccessDeniedHandler accessDeniedHandler;
 
     @Bean
     public SecurityFilterChain adminFilterChain(HttpSecurity http) throws Exception {
@@ -29,20 +30,24 @@ public class AdminSecurityConfig {
                 .securityMatcher("/admin/**")
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/admin/login", "/admin/login.do",
-                                "/admin/signup", "/admin/signup.do").permitAll()
+                                "/admin/register", "/admin/register.do").permitAll()
                         .requestMatchers("/admin/**").hasAnyRole("ADMIN", "SUPER_ADMIN")
                 )
                 .formLogin(login -> login
                         .loginPage("/admin/login")
                         .loginProcessingUrl("/admin/login.do")
-                        .defaultSuccessUrl("/admin/dashboard")
+                        .defaultSuccessUrl("/admin/dashboard/member")
                         .permitAll()
                 )
                 .logout(logout -> logout
                         .logoutUrl("/admin/logout")
                         .logoutSuccessUrl("/admin/login")
                         .permitAll()
-                ).build();
+                )
+                .exceptionHandling(handle -> handle
+                        .accessDeniedHandler(accessDeniedHandler)
+                )
+                .build();
     }
 
     @Bean

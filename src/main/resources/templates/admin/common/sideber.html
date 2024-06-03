@@ -1,0 +1,56 @@
+<aside class="app-sidebar bg-body-secondary shadow" data-bs-theme="dark" th:fragment="sidebar">
+    <div class="sidebar-brand">
+        <a href="#" class="brand-link">
+            <span class="brand-text fw-light">동포 관리자 페이지</span>
+        </a>
+    </div>
+    <div class="sidebar-wrapper">
+        <nav class="mt-2">
+            <ul class="nav sidebar-menu flex-column" data-lte-toggle="treeview" role="menu" data-accordion="false">
+                <li class="nav-item">
+                    <a href="/admin/dashboard/member" class="nav-link">
+                        <p>회원관리</p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <p>점포<i class="nav-arrow bi bi-chevron-right"></i></p>
+                    </a>
+                    <ul class="nav nav-treeview" style="box-sizing: border-box; display: none;">
+                        <li class="nav-item">
+                            <a href="/admin/dashboard/store" class="nav-link">
+                                <i class="nav-icon bi bi-circle"></i>
+                                <p>점포 관리</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="./index2.html" class="nav-link">
+                                <i class="nav-icon bi bi-circle"></i>
+                                <p>점포 신고 내역</p>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <p>리뷰 <i class="nav-arrow bi bi-chevron-right"></i></p>
+                    </a>
+                    <ul class="nav nav-treeview" style="box-sizing: border-box; display: none;">
+                        <li class="nav-item">
+                            <a href="/admin/dashboard/review" class="nav-link">
+                                <i class="nav-icon bi bi-circle"></i>
+                                <p>리뷰 관리</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="./index2.html" class="nav-link">
+                                <i class="nav-icon bi bi-circle"></i>
+                                <p>리뷰 신고 내역</p>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</aside>

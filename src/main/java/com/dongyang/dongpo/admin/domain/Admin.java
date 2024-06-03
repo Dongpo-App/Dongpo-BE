@@ -3,6 +3,7 @@ package com.dongyang.dongpo.admin.domain;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -15,6 +16,7 @@ import java.util.Collection;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Getter
 public class Admin implements UserDetails {
 
     @Id
@@ -23,6 +25,7 @@ public class Admin implements UserDetails {
 
     private String loginId;
     private String password;
+    private String name;
 
     @Enumerated(EnumType.STRING)
     private AdminRole role;
