@@ -1,4 +1,54 @@
 <!DOCTYPE html>
+<html lang="en" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{admin/common/header :: header}"></head>
+<body class="layout-fixed sidebar-expand-lg bg-body-tertiary">
+<!--begin::App Wrapper-->
+<div class="app-wrapper">
+    <!--include header.html-->
+    <div th:replace="~{admin/common/nav :: nav}"></div>
+
+    <!--include nav.html-->
+    <div th:replace="~{admin/common/sideber :: sidebar}"></div>
+
+    <!--begin::App Main-->
+    <main class="app-main">
+        <div class="app-content">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="card-header">
+                        <h3 class="card-title">리뷰 목록</h3>
+                    </div>
+                    <div class="card-body">
+                        <table class="table table-bordered">
+                            <thead>
+                            <tr>
+                                <th style="width: 10px">ID</th>
+                                <th>점포명</th>
+                                <th>내용</th>
+                                <th>신고 수</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr class="align-middle" th:each="review : ${reviews}">
+                                <td th:text="${review.id}"></td>
+                                <td th:text="${review.store.name}"></td>
+                                <td th:text="${review.text}"></td>
+                                <td th:text="${review.reportCount}"></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    <!--end::App Main-->
+    <div th:replace="~{admin/common/footer :: footer}"></div>
+
+</div>
+<!--end::App Wrapper-->
+</body>
+</html><!DOCTYPE html>
 <html lang="en"
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
       xmlns:th="http://www.thymeleaf.org">
@@ -9,34 +59,7 @@
     <div th:replace="~{admin/common/sideber :: sidebar}"></div>
 
     <main class="app-main">
-        <div class="app-content">
-            <div class="container-fluid">
-                <div class="row">
-                    <div class="card-header">
-                        <h3 class="card-title">회원 목록</h3>
-                    </div>
-                    <div class="card-body">
-                        <table class="table table-bordered">
-                            <thead>
-                            <tr>
-                                <th style="width: 10px">ID</th>
-                                <th>Name</th>
-                                <th>Email</th>
-                                <th>SocialType</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <tr class="align-middle">
-                                <td>1.</td>
-                                <td>Update software</td>
-                                <td><span class="badge text-bg-danger">55%</span></td>
-                            </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <h1>회원 목록</h1>
     </main>
 
     <div th:replace="~{admin/common/footer :: footer}"></div>
@@ -47,4 +70,6 @@
 <script th:src="@{/js/adminlte.js}"></script>
 </body>
 </html>
+
+
 

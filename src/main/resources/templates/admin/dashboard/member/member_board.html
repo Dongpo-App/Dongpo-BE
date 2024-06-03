@@ -1,26 +1,4 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{admin/common/header :: header}"></head>
-<body class="layout-fixed sidebar-expand-lg bg-body-tertiary">
-<!--begin::App Wrapper-->
-<div class="app-wrapper">
-    <!--include header.html-->
-    <div th:replace="~{admin/common/nav :: nav}"></div>
-
-    <!--include nav.html-->
-    <div th:replace="~{admin/common/sideber :: sidebar}"></div>
-
-    <!--begin::App Main-->
-    <main class="app-main">
-        <h1>리뷰 목록</h1>
-    </main>
-    <!--end::App Main-->
-    <div th:replace="~{admin/common/footer :: footer}"></div>
-
-</div>
-<!--end::App Wrapper-->
-</body>
-</html><!DOCTYPE html>
 <html lang="en"
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
       xmlns:th="http://www.thymeleaf.org">
@@ -31,7 +9,35 @@
     <div th:replace="~{admin/common/sideber :: sidebar}"></div>
 
     <main class="app-main">
-        <h1>회원 목록</h1>
+        <div class="app-content">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="card-header">
+                        <h3 class="card-title">회원 목록</h3>
+                    </div>
+                    <div class="card-body">
+                        <table class="table table-bordered">
+                            <thead>
+                            <tr>
+                                <th style="width: 10px">ID</th>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Nickname</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr class="align-middle" th:each="member : ${members}">
+                                <td th:text="${member.id}"></td>
+                                <td th:text="${member.name}"></td>
+                                <td th:text="${member.email}"></td>
+                                <td th:text="${member.nickname}"></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
     </main>
 
     <div th:replace="~{admin/common/footer :: footer}"></div>
@@ -42,6 +48,4 @@
 <script th:src="@{/js/adminlte.js}"></script>
 </body>
 </html>
-
-
 

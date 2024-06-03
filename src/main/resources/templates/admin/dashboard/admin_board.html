@@ -9,7 +9,45 @@
     <div th:replace="~{admin/common/sideber :: sidebar}"></div>
 
     <main class="app-main">
-        <h1>관리자 신청 목록</h1>
+        <div class="app-content">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="card-header">
+                        <h3 class="card-title">관리자 신청 목록</h3>
+                    </div>
+                    <div class="card-body">
+                        <table class="table table-bordered">
+                            <thead>
+                            <tr>
+                                <th style="width: 10px">ID</th>
+                                <th>이름</th>
+                                <th style="width: 50px">승인</th>
+                                <th style="width: 50px">거절</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr class="align-middle" th:each="grant : ${grants}">
+                                <td th:text="${grant.id}"></td>
+                                <td th:text="${grant.name}"></td>
+                                <td>
+                                    <form action="/admin/grant/approve">
+                                        <input type="hidden" name="id" th:value="${grant.id}">
+                                        <button type="submit" class="btn btn-primary">승인</button>
+                                    </form>
+                                </td>
+                                <td>
+                                    <form action="/admin/grant/reject">
+                                        <input type="hidden" name="id" th:value="${grant.id}">
+                                        <button type="submit" class="btn btn-danger">거절</button>
+                                    </form>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
     </main>
 
     <div th:replace="~{admin/common/footer :: footer}"></div>

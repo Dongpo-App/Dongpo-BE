@@ -3,7 +3,9 @@ package com.dongyang.dongpo.admin.controller;
 import com.dongyang.dongpo.admin.domain.Admin;
 import com.dongyang.dongpo.admin.dto.SignUpDto;
 import com.dongyang.dongpo.admin.service.AdminMemberService;
+import com.dongyang.dongpo.admin.service.AdminReviewService;
 import com.dongyang.dongpo.admin.service.AdminService;
+import com.dongyang.dongpo.admin.service.AdminStoreService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -19,6 +21,8 @@ public class AdminController {
 
     private final AdminService adminService;
     private final AdminMemberService adminMemberService;
+    private final AdminReviewService adminReviewService;
+    private final AdminStoreService adminStoreService;
 
     @GetMapping("/login")
     public String login(){
@@ -45,30 +49,32 @@ public class AdminController {
     public String memberBoard(Model model){
         model.addAttribute("members", adminMemberService.findAll());
         model.addAttribute("admin", getPrincipal());
-        return "admin/dashboard/member_board";
+        return "admin/dashboard/member/member_board";
     }
 
     @GetMapping("/dashboard/store")
     public String storeBoard(Model model){
         model.addAttribute("admin", getPrincipal());
-        return "admin/dashboard/store_board";
+        model.addAttribute("stores", adminStoreService.findAll());
+        return "admin/dashboard/store/store_board";
     }
 
     @GetMapping("/dashboard/review")
     public String reviewBoard(Model model){
         model.addAttribute("admin", getPrincipal());
-        return "admin/dashboard/review_board";
+        model.addAttribute("reviews", adminReviewService.findAll());
+        return "admin/dashboard/review/review_board";
     }
 
     @GetMapping("/dashboard/confirm")
     public String adminBoard(Model model){
         model.addAttribute("admin", getPrincipal());
+        model.addAttribute("grants", adminMemberService.findProcessAdmin());
         return "admin/dashboard/admin_board";
     }
 
     private Admin getPrincipal(){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        Admin admin = (Admin) authentication.getPrincipal();
-        return admin;
+        return (Admin) authentication.getPrincipal();
     }
 }
