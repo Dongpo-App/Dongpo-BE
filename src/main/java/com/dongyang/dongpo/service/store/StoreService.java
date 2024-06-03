@@ -11,6 +11,7 @@ import com.dongyang.dongpo.jwt.JwtTokenProvider;
 import com.dongyang.dongpo.repository.member.MemberRepository;
 import com.dongyang.dongpo.repository.store.StoreRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,6 +22,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
+@Log4j2
 public class StoreService {
 
     private final StoreRepository storeRepository;
@@ -36,6 +38,7 @@ public class StoreService {
         Store store = request.toStore(member);
         storeRepository.save(store);
 
+        log.info("회원 {}가 점포 {}을 등록했습니다.", member.getId(), store.getId());
         return ResponseEntity.ok().build();
     }
 
