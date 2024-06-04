@@ -1,9 +1,7 @@
 package com.dongyang.dongpo.admin.controller.dashboard;
 
 import com.dongyang.dongpo.admin.domain.Admin;
-import com.dongyang.dongpo.admin.service.AdminMemberService;
-import com.dongyang.dongpo.admin.service.AdminReviewService;
-import com.dongyang.dongpo.admin.service.AdminStoreService;
+import com.dongyang.dongpo.admin.service.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -20,6 +18,8 @@ public class DashBoardController {
     private final AdminMemberService adminMemberService;
     private final AdminReviewService adminReviewService;
     private final AdminStoreService adminStoreService;
+    private final AdminStoreReportService adminStoreReportService;
+    private final AdminReviewReportService adminReviewReportService;
 
 
     @GetMapping("/member")
@@ -48,6 +48,22 @@ public class DashBoardController {
         model.addAttribute("admin", getPrincipal());
         model.addAttribute("grants", adminMemberService.findProcessAdmin());
         return "admin/dashboard/admin_board";
+    }
+
+    @GetMapping("/store/report")
+    public String storeReport(Model model){
+        model.addAttribute("admin", getPrincipal());
+        model.addAttribute("stores", adminStoreReportService.findAll());
+
+        return "admin/dashboard/store/store_report_board";
+    }
+
+    @GetMapping("/review/report")
+    public String reviewReport(Model model){
+        model.addAttribute("admin", getPrincipal());
+        model.addAttribute("reviews", adminReviewReportService.findAll());
+
+        return "admin/dashboard/review/review_report_board";
     }
 
     private Admin getPrincipal(){

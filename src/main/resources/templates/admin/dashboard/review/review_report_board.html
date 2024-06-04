@@ -18,18 +18,20 @@
                             <thead>
                             <tr>
                                 <th style="width: 10px">ID</th>
-                                <th>점포명</th>
+                                <th>리뷰 ID</th>
                                 <th>내용</th>
-                                <th>신고 수</th>
+                                <th>신고자</th>
+                                <th>신고 일시</th>
                                 <th style="width: 50px"><input type="checkbox" name=""></th>
                             </tr>
                             </thead>
                             <tbody>
                             <tr class="align-middle" th:each="review : ${reviews}">
                                 <td th:text="${review.id}"></td>
-                                <td th:text="${review.store.name}"></td>
+                                <td th:text="${review.review.id}"></td>
                                 <td th:text="${review.text}"></td>
-                                <td th:text="${review.reportCount}"></td>
+                                <td th:text="${review.member.nickname}"></td>
+                                <td th:text="${review.issueDate}"></td>
                                 <td><input type="checkbox" name="" ></td>
                             </tr>
                             </tbody>

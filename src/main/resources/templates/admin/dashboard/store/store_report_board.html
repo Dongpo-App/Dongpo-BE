@@ -1,5 +1,7 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" xmlns:th="http://www.thymeleaf.org">
+<html lang="en"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{admin/common/header :: header}"></head>
 <body class="layout-fixed sidebar-expand-lg bg-body-tertiary">
 <div class="app-wrapper">
@@ -11,7 +13,7 @@
             <div class="container-fluid">
                 <div class="row">
                     <div class="card-header">
-                        <h3 class="card-title">리뷰 목록</h3>
+                        <h3 class="card-title">점포 목록</h3>
                     </div>
                     <div class="card-body">
                         <table class="table table-bordered">
@@ -19,18 +21,21 @@
                             <tr>
                                 <th style="width: 10px">ID</th>
                                 <th>점포명</th>
+                                <th>점포주</th>
                                 <th>내용</th>
-                                <th>신고 수</th>
+                                <th>신고자</th>
+                                <th>신고 일시</th>
                                 <th style="width: 50px"><input type="checkbox" name=""></th>
                             </tr>
                             </thead>
                             <tbody>
-                            <tr class="align-middle" th:each="review : ${reviews}">
-                                <td th:text="${review.id}"></td>
-                                <td th:text="${review.store.name}"></td>
-                                <td th:text="${review.text}"></td>
-                                <td th:text="${review.reportCount}"></td>
-                                <td><input type="checkbox" name="" ></td>
+                            <tr class="align-middle" th:each="store : ${stores}">
+                                <td th:text="${store.id}"></td>
+                                <td th:text="${store.store.name}"></td>
+                                <td th:text="${store.store.member.nickname}"></td>
+                                <td th:text="${store.text}"></td>
+                                <td th:text="${store.issueDate}"></td>
+                                <td><input type="checkbox" name=""></td>
                             </tr>
                             </tbody>
                         </table>
@@ -39,8 +44,8 @@
             </div>
         </div>
     </main>
-    <div th:replace="~{admin/common/footer :: footer}"></div>
 
+    <div th:replace="~{admin/common/footer :: footer}"></div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/overlayscrollbars@2.3.0/browser/overlayscrollbars.browser.es6.min.js" integrity="sha256-H2VM7BKda+v2Z4+DRy69uknwxjyDRhszjXFhsL4gD3w=" crossorigin="anonymous"></script> <!--end::Third Party Plugin(OverlayScrollbars)--><!--begin::Required Plugin(popperjs for Bootstrap 5)-->
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha256-whL0tQWoY1Ku1iskqPFvmZ+CHsvmRWx/PIoEvIeWh4I=" crossorigin="anonymous"></script> <!--end::Required Plugin(popperjs for Bootstrap 5)--><!--begin::Required Plugin(Bootstrap 5)-->
@@ -48,7 +53,4 @@
 <script th:src="@{/js/adminlte.js}"></script>
 </body>
 </html>
-
-
-
 
