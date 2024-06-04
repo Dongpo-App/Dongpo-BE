@@ -9,6 +9,7 @@ import com.dongyang.dongpo.repository.member.MemberRepository;
 import com.dongyang.dongpo.repository.RefreshTokenRepository;
 import com.dongyang.dongpo.service.token.TokenService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
+@Slf4j
 public class MemberService {
 
     private final MemberRepository memberRepository;
@@ -25,7 +27,7 @@ public class MemberService {
 
 
     @Transactional
-    public ResponseEntity<JwtToken> socialSave(UserInfo userInfo){
+    public JwtToken socialSave(UserInfo userInfo){
         Member member = Member.toEntity(userInfo);
 
         if (memberRepository.existsByEmail(member.getEmail()))
@@ -41,6 +43,7 @@ public class MemberService {
 
         refreshTokenRepository.save(refreshToken);
 
-        return ResponseEntity.ok(jwtToken);
+        log.info("Registered Member {} success", member.getId());
+        return jwtToken;
     }
 }

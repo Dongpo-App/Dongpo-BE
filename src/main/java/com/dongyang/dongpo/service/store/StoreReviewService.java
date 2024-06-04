@@ -11,6 +11,7 @@ import com.dongyang.dongpo.repository.member.MemberRepository;
 import com.dongyang.dongpo.repository.store.StoreRepository;
 import com.dongyang.dongpo.repository.store.StoreReviewRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,6 +22,7 @@ import java.util.List;
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
+@Slf4j
 public class StoreReviewService {
 
     private final StoreReviewRepository reviewRepository;
@@ -29,7 +31,7 @@ public class StoreReviewService {
     private final JwtTokenProvider jwtTokenProvider;
 
     @Transactional
-    public ResponseEntity addReview(String accessToken, Long storeId, ReviewDto reviewDto) throws Exception{
+    public boolean addReview(String accessToken, Long storeId, ReviewDto reviewDto) throws Exception{
         String email = jwtTokenProvider.parseClaims(accessToken).getSubject();
         Member member = memberRepository.findByEmail(email).orElseThrow(MemberNotFoundException::new);
         Store store = storeRepository.findById(storeId).orElseThrow(StoreNotFoundException::new);
@@ -37,7 +39,8 @@ public class StoreReviewService {
         StoreReview storeReview = reviewDto.toEntity(store, member);
         reviewRepository.save(storeReview);
 
-        return ResponseEntity.ok().build();
+        log.info("member {} add review store ID : {}", member.getId(), store.getId());
+        return true;
     }
 
     public List<ReviewDto> myRegReview(Long memberId) throws Exception{

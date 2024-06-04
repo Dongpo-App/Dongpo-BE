@@ -1,5 +1,7 @@
 package com.dongyang.dongpo.controller.auth;
 
+import com.dongyang.dongpo.apiresponse.ApiResponse;
+import com.dongyang.dongpo.dto.JwtToken;
 import com.dongyang.dongpo.dto.auth.SocialTokenDto;
 import com.dongyang.dongpo.service.auth.KakaoLoginService;
 import com.dongyang.dongpo.service.auth.NaverLoginService;
@@ -19,16 +21,15 @@ public class AuthController {
     private final TokenService tokenService;
 
     @PostMapping("/kakao")
-    public ResponseEntity callback(@RequestBody SocialTokenDto token) {
-        return kakaoLoginService.getKakaoUserInfo(token.getToken());
+    public ResponseEntity<ApiResponse<JwtToken>> callback(@RequestBody SocialTokenDto token) {
+        return ResponseEntity.ok(new ApiResponse<>(kakaoLoginService.getKakaoUserInfo(token.getToken())));
     }
 
-
     @GetMapping("/naver")
-    public ResponseEntity callback(@RequestParam("code") String code,
+    public ResponseEntity<ApiResponse<JwtToken>> callback(@RequestParam("code") String code,
                                    @RequestParam("state") String state) {
 
-        return naverLoginService.naverCallback(code, state);
+        return ResponseEntity.ok(new ApiResponse<>(naverLoginService.naverCallback(code, state)));
     }
 
     @GetMapping("/apple/callback")
@@ -38,7 +39,7 @@ public class AuthController {
 
     @PostMapping("/reissue")
     @Operation(summary = "JWT토큰 재발급")
-    public ResponseEntity reissue(@RequestHeader("Authorization") String refreshToken) throws Exception {
-        return tokenService.reissueAccessToken(refreshToken);
+    public ResponseEntity<ApiResponse<JwtToken>> reissue(@RequestHeader("Authorization") String refreshToken) throws Exception {
+        return ResponseEntity.ok(new ApiResponse<>(tokenService.reissueAccessToken(refreshToken)));
     }
 }

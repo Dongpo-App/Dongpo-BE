@@ -11,8 +11,7 @@ import com.dongyang.dongpo.jwt.JwtTokenProvider;
 import com.dongyang.dongpo.repository.member.MemberRepository;
 import com.dongyang.dongpo.repository.store.StoreRepository;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
-import org.springframework.http.ResponseEntity;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,7 +21,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-@Log4j2
+@Slf4j
 public class StoreService {
 
     private final StoreRepository storeRepository;
@@ -31,15 +30,14 @@ public class StoreService {
 
 
     @Transactional
-    public ResponseEntity addStore(StoreDto request, String accessToken) throws Exception{
+    public void addStore(StoreDto request, String accessToken) throws Exception{
         String email = jwtTokenProvider.parseClaims(accessToken).getSubject();
         Member member = memberRepository.findByEmail(email).orElseThrow(MemberNotFoundException::new);
 
         Store store = request.toStore(member);
         storeRepository.save(store);
 
-        log.info("회원 {}가 점포 {}을 등록했습니다.", member.getId(), store.getId());
-        return ResponseEntity.ok().build();
+        log.info("member {} add store: {}", store.getId());
     }
 
     public List<StoreDto> allStore() {
@@ -52,7 +50,7 @@ public class StoreService {
         return storeResponse;
     }
 
-    public ResponseEntity detailStore(Long id) throws Exception {
+    public StoreDto detailStore(Long id) throws Exception {
         Store store = storeRepository.findById(id).orElseThrow(StoreNotFoundException::new);
         List<ReviewDto> reviewDtos = new ArrayList<>();
 
@@ -61,24 +59,31 @@ public class StoreService {
                 reviewDtos.add(review.toResponse());
         }
 
+        StoreDto storeDto = store.toResponse(reviewDtos);
 
-        return ResponseEntity.ok().body(store.toResponse(reviewDtos));
+        return storeDto;
     }
 
     @Transactional
-    public ResponseEntity deleteStore(Long id) {
+    public void deleteStore(Long id) {
         storeRepository.deleteById(id);
 
-        return ResponseEntity.ok().build();
+        log.info("delete store: {}", id); // 임시
     }
 
     @Transactional
-    public ResponseEntity updateStore(Long id, StoreDto request) throws Exception{
+    public void updateStore(Long id, StoreDto request, String token) throws Exception{
+        String email = jwtTokenProvider.parseClaims(token).getSubject();
+        Member member = memberRepository.findByEmail(email).orElseThrow(MemberNotFoundException::new);
         Store store = storeRepository.findById(id).orElseThrow(StoreNotFoundException::new);
-        store.update(request);
-        storeRepository.save(store);
 
-        return ResponseEntity.ok().build();
+        if (member == store.getMember()) {
+            store.update(request);
+            storeRepository.save(store);
+        }else
+            throw new MemberNotFoundException(); // 임시
+
+        log.info("member {} update store: {}",member.getId(), store.getId());
     }
 
     public List<StoreDto> myRegStore(String accessToken) throws Exception{

@@ -2,6 +2,7 @@ package com.dongyang.dongpo.service.auth;
 
 import com.dongyang.dongpo.domain.member.Member;
 import com.dongyang.dongpo.domain.member.Member.SocialType;
+import com.dongyang.dongpo.dto.JwtToken;
 import com.dongyang.dongpo.dto.auth.UserInfo;
 import com.dongyang.dongpo.service.member.MemberService;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +28,7 @@ public class NaverLoginService {
     private String clientSecret;
 
 
-    public ResponseEntity naverCallback(String code, String state) {
+    public JwtToken naverCallback(String code, String state) {
         WebClient webClient = WebClient.builder()
                 .baseUrl("https://nid.naver.com/oauth2.0/token")
                 .defaultHeader("Content-Type", "application/x-www-form-urlencoded;charset=utf-8")
@@ -52,7 +53,7 @@ public class NaverLoginService {
         return getNaverUserInfo(accessToken);
     }
 
-    public ResponseEntity getNaverUserInfo(String accessToken) {
+    public JwtToken getNaverUserInfo(String accessToken) {
         WebClient webClient = WebClient.builder()
                 .baseUrl("https://openapi.naver.com/v1/nid/me")
                 .defaultHeader("Authorization", "Bearer " + accessToken)

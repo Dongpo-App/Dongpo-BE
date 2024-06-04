@@ -3,6 +3,7 @@ package com.dongyang.dongpo.service.auth;
 
 import com.dongyang.dongpo.domain.member.Member;
 import com.dongyang.dongpo.domain.member.Member.SocialType;
+import com.dongyang.dongpo.dto.JwtToken;
 import com.dongyang.dongpo.dto.auth.UserInfo;
 import com.dongyang.dongpo.service.member.MemberService;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +23,7 @@ public class KakaoLoginService{
 
     private final MemberService memberService;
 
-    public ResponseEntity getKakaoUserInfo(String accessToken) {
+    public JwtToken getKakaoUserInfo(String accessToken) {
         WebClient webClient = WebClient.builder()
                 .baseUrl("https://kapi.kakao.com/v2/user/me")
                 .defaultHeader("Content-Type", "application/x-www-form-urlencoded;charset=utf-8")

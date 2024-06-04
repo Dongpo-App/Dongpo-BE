@@ -19,11 +19,12 @@ public class StoreReviewController {
 
     @PostMapping("/{storeId}")
     @Operation(summary = "리뷰 등록")
-    public ResponseEntity addReview(@RequestHeader("Authorization") String accessToken,
+    public ResponseEntity<ApiResponse<String>> addReview(@RequestHeader("Authorization") String accessToken,
                                     @PathVariable Long storeId,
                                     @RequestBody ReviewDto reviewDto) throws Exception {
 
-        return reviewService.addReview(accessToken, storeId, reviewDto);
+        reviewService.addReview(accessToken, storeId, reviewDto);
+        return ResponseEntity.ok(new ApiResponse<>("success"));
     }
 
     @GetMapping("/{memberId}")
