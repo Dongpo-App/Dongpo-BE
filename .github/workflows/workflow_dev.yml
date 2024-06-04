@@ -42,8 +42,8 @@ jobs:
           context: .
           file: ./Dockerfile.dev
           push: true
-          tags: ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_IMAGE_NAME }}:${{ env.CURRENT_TIME }},
-                ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_IMAGE_NAME }}:latest
+          tags: ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DEV_DOCKER_IMAGE_NAME }}:${{ env.CURRENT_TIME }},
+                ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DEV_DOCKER_IMAGE_NAME }}:latest
           platforms: linux/amd64,linux/arm64
 
   deploy:
@@ -54,13 +54,13 @@ jobs:
       - name: SSH to Server and Deploy
         uses: appleboy/ssh-action@master
         with:
-          host: ${{ secrets.SERVER_HOST }}
-          port: ${{ secrets.SERVER_PORT }}
-          username: ${{ secrets.SERVER_USERNAME }}
-          key: ${{ secrets.SERVER_KEY }}
+          host: ${{ secrets.DEV_SERVER_HOST }}
+          port: ${{ secrets.DEV_SERVER_PORT }}
+          username: ${{ secrets.DEV_SERVER_USERNAME }}
+          password: ${{ secrets.DEV_SERVER_PASSWORD }}
           script: |
-            cd Dongpo
-            docker pull ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_IMAGE_NAME }}:latest
+            cd Dongpo_dev
+            docker pull ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DEV_DOCKER_IMAGE_NAME }}:latest
             docker-compose down
             docker-compose up -d
             exit
