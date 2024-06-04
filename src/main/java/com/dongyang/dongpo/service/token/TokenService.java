@@ -9,12 +9,14 @@ import com.dongyang.dongpo.jwt.exception.CustomExpiredException;
 import com.dongyang.dongpo.repository.member.MemberRepository;
 import com.dongyang.dongpo.repository.RefreshTokenRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class TokenService {
 
     private final JwtTokenProvider jwtTokenProvider;
@@ -23,7 +25,7 @@ public class TokenService {
 
 
     @Transactional
-    public ResponseEntity<JwtToken> reissueAccessToken(String token) throws Exception {
+    public JwtToken reissueAccessToken(String token) throws Exception {
         String email = jwtTokenProvider.parseClaims(token).getSubject();
         Member member = memberRepository.findByEmail(email)
                 .orElseThrow(MemberNotFoundException::new);
@@ -35,11 +37,12 @@ public class TokenService {
         refreshToken.updateRefreshToken(jwtToken.getRefreshToken());
         refreshTokenRepository.save(refreshToken);
 
-        return ResponseEntity.ok(jwtToken);
+        log.info("Refresh Token Reissued : {}", member.getId());
+        return jwtToken;
     }
 
     @Transactional
-    public ResponseEntity<JwtToken> alreadyExistMember(Member member){
+    public JwtToken alreadyExistMember(Member member){
         JwtToken jwtToken = jwtTokenProvider.createToken(member.getEmail(), member.getRole());
         RefreshToken refreshToken = refreshTokenRepository.findByEmail(member.getEmail()).orElse(null);
         if (refreshToken != null)
@@ -51,7 +54,7 @@ public class TokenService {
                     .build();
 
         refreshTokenRepository.save(refreshToken);
-
-        return ResponseEntity.ok(jwtToken);
+        log.info("(Login) Refresh Token Reissued : {}", member.getId());
+        return jwtToken;
     }
 }
