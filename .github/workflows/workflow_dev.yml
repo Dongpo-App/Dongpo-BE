@@ -60,7 +60,7 @@ jobs:
           password: ${{ secrets.DEV_SERVER_PASSWORD }}
           script: |
             cd Dongpo_dev
-            docker pull ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DEV_DOCKER_IMAGE_NAME }}:latest
-            docker-compose down
+            docker-compose pull
             docker-compose up -d
+            docker images --format '{{.Repository}}:{{.Tag}} {{.ID}}' | grep -v ':latest' | awk '{print $2}' | xargs -r docker rmi
             exit
