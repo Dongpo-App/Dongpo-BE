@@ -25,7 +25,6 @@ public class AuthController {
         return ResponseEntity.ok(new ApiResponse<>(kakaoLoginService.getKakaoUserInfo(token.getToken())));
     }
 
-
     @GetMapping("/naver")
     public ResponseEntity<ApiResponse<JwtToken>> callback(@RequestParam("code") String code,
                                    @RequestParam("state") String state) {
