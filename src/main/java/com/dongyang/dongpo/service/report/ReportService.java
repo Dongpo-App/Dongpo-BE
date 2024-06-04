@@ -18,6 +18,7 @@ import com.dongyang.dongpo.repository.store.StoreRepository;
 import com.dongyang.dongpo.repository.store.StoreReviewRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,6 +28,7 @@ import java.util.List;
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
+@Slf4j
 public class ReportService {
 
     private final StoreReportRepository storeReportRepository;
@@ -48,6 +50,8 @@ public class ReportService {
 
         StoreReport storeReport = request.toStoreEntity(member, store);
         storeReportRepository.save(storeReport);
+
+        log.info("member {} add Store report Store ID : {}", member.getId(), store.getId());
     }
 
     @Transactional
@@ -62,9 +66,11 @@ public class ReportService {
 
         ReviewReport reviewReport = request.toReviewEntity(member, review);
         reviewReportRepository.save(reviewReport);
+
+        log.info("member {} add Review report Review ID : {}", member.getId(), review.getId());
     }
 
-    public ApiResponse myRegStoreReport(String accessToken) throws Exception{
+    public List<ReportDto> myRegStoreReport(String accessToken) throws Exception{
         String email = jwtTokenProvider.parseClaims(accessToken).getSubject();
         Member member = memberRepository.findByEmail(email).orElseThrow(MemberNotFoundException::new);
 
@@ -72,16 +78,16 @@ public class ReportService {
         List<ReportDto> reportList = new ArrayList<>();
 
         if (storeReportList.isEmpty())
-            return new ApiResponse("내가 등록한 신고내역이 없습니다.");
+            return reportList;
 
         for (StoreReport storeReport : storeReportList)
             reportList.add(storeReport.toDto());
 
-        return new ApiResponse(reportList);
+        return reportList;
 
     }
 
-    public ApiResponse myRegReviewReport(String accessToken) throws Exception{
+    public List<ReportDto> myRegReviewReport(String accessToken) throws Exception{
         String email = jwtTokenProvider.parseClaims(accessToken).getSubject();
         Member member = memberRepository.findByEmail(email).orElseThrow(MemberNotFoundException::new);
 
@@ -89,11 +95,11 @@ public class ReportService {
         List<ReportDto> reportList = new ArrayList<>();
 
         if (storeReportList.isEmpty())
-            return new ApiResponse("내가 등록한 신고내역이 없습니다.");
+            return reportList;
 
         for (ReviewReport reviewReport : storeReportList)
             reportList.add(reviewReport.toDto());
 
-        return new ApiResponse(reportList);
+        return reportList;
     }
 }

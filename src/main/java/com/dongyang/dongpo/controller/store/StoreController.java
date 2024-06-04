@@ -25,8 +25,8 @@ public class StoreController {
 
     @GetMapping("/{id}")
     @Operation(summary = "점포 상세 조회")
-    public ResponseEntity detailStore(@PathVariable Long id) throws Exception {
-        return storeService.detailStore(id);
+    public ResponseEntity<ApiResponse<StoreDto>> detailStore(@PathVariable Long id) throws Exception {
+        return ResponseEntity.ok(new ApiResponse<>(storeService.detailStore(id)));
     }
 
     @GetMapping("/member")
@@ -37,21 +37,26 @@ public class StoreController {
 
     @PostMapping("")
     @Operation(summary = "점포 등록")
-    public ResponseEntity addStore(@RequestBody StoreDto request,
+    public ResponseEntity<ApiResponse<String>> addStore(@RequestBody StoreDto request,
                                    @RequestHeader("Authorization") String accessToken) throws Exception {
-        return storeService.addStore(request, accessToken);
+        storeService.addStore(request, accessToken);
+        return ResponseEntity.ok(new ApiResponse<>("success"));
     }
 
     @DeleteMapping("/{id}")
     @Operation(summary = "점포 삭제")
-    public ResponseEntity deleteStore(@PathVariable Long id){
-        return storeService.deleteStore(id);
+    public ResponseEntity<ApiResponse<String>> deleteStore(@PathVariable Long id){
+        storeService.deleteStore(id);
+        return ResponseEntity.ok(new ApiResponse<>("success"));
     }
 
     @PutMapping("/{id}")
     @Operation(summary = "점포 정보 수정")
-    public ResponseEntity updateStore(@PathVariable Long id,
-                                      @RequestBody StoreDto request) throws Exception {
-        return storeService.updateStore(id, request);
+    public ResponseEntity<ApiResponse<String>> updateStore(@PathVariable Long id,
+                                      @RequestBody StoreDto request,
+                                      @RequestHeader("Authorization") String token) throws Exception {
+
+        storeService.updateStore(id, request, token);
+        return ResponseEntity.ok(new ApiResponse<>("success"));
     }
 }
