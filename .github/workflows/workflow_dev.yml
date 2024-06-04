@@ -22,7 +22,7 @@ jobs:
         run: echo "${{ secrets.DEV_PROPERTIES }}" > src/main/resources/application-dev.yml
 
       - name: Build with Gradle
-        run: ./gradlew bootJar
+        run: ./gradlew build
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
@@ -42,8 +42,8 @@ jobs:
           context: .
           file: ./Dockerfile.dev
           push: true
-          tags: ${{ secrets.DOCKER_USERNAME }}/dongpo_spring:${{ env.CURRENT_TIME }},
-            ${{ secrets.DOCKER_USERNAME }}/dongpo_spring:latest
+          tags: ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_IMAGE_NAME }}:${{ env.CURRENT_TIME }},
+                ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_IMAGE_NAME }}:latest
           platforms: linux/amd64,linux/arm64
 
   deploy:
@@ -52,14 +52,15 @@ jobs:
 
     steps:
       - name: SSH to Server and Deploy
-        uses: appleboy/ssh-action@v0.1.6
+        uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.SERVER_HOST }}
-          username: ${{ secrets.SERVER_USER }}
-          key: ${{ secrets.EC2_KEY }}
+          port: ${{ secrets.SERVER_PORT }}
+          username: ${{ secrets.SERVER_USERNAME }}
+          key: ${{ secrets.SERVER_KEY }}
           script: |
             cd Dongpo
+            docker pull ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_IMAGE_NAME }}:latest
             docker-compose down
-            docker pull ${{ secrets.DOCKER_USERNAME }}/dongpo_spring:latest
             docker-compose up -d
             exit
