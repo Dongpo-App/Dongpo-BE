@@ -31,7 +31,7 @@ public class StoreReviewService {
     private final JwtTokenProvider jwtTokenProvider;
 
     @Transactional
-    public boolean addReview(String accessToken, Long storeId, ReviewDto reviewDto) throws Exception{
+    public void addReview(String accessToken, Long storeId, ReviewDto reviewDto) throws Exception{
         String email = jwtTokenProvider.parseClaims(accessToken).getSubject();
         Member member = memberRepository.findByEmail(email).orElseThrow(MemberNotFoundException::new);
         Store store = storeRepository.findById(storeId).orElseThrow(StoreNotFoundException::new);
@@ -40,7 +40,6 @@ public class StoreReviewService {
         reviewRepository.save(storeReview);
 
         log.info("member {} add review store ID : {}", member.getId(), store.getId());
-        return true;
     }
 
     public List<ReviewDto> myRegReview(Long memberId) throws Exception{

@@ -28,21 +28,22 @@ public class AdminMemberService {
         return adminRepository.findByRole(AdminRole.ROLE_GRANT);
     }
 
-    @Transactional
-    public void approveAdmin(Long id) {
-        Admin admin = adminRepository.findById(id).get();
-        admin.confirm(AdminRole.ROLE_ADMIN);
-        adminRepository.save(admin);
 
-        log.info("GRANT ADMIN approved ID : {}", admin.getId());
+    @Transactional
+    public void approveAdmin(List<Long> ids) {
+        for (Long id : ids) {
+            Admin admin = adminRepository.findById(id).get();
+            admin.confirm(AdminRole.ROLE_ADMIN);
+            adminRepository.save(admin);
+        }
     }
 
     @Transactional
-    public void rejectAdmin(Long id) {
-        Admin admin = adminRepository.findById(id).get();
-        admin.confirm(AdminRole.ROLE_REJECT);
-        adminRepository.save(admin);
-
-        log.info("GRANT ADMIN rejected ID : {}", admin.getId());
+    public void rejectAdmin(List<Long> ids) {
+        for (Long id : ids) {
+            Admin admin = adminRepository.findById(id).get();
+            admin.confirm(AdminRole.ROLE_REJECT);
+            adminRepository.save(admin);
+        }
     }
 }
