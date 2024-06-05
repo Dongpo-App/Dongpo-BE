@@ -35,12 +35,12 @@ public class AdminController {
 
     @GetMapping("/register")
     public String signup(Model model){
-        model.addAttribute("signupForm", new SignUpDto());
+        model.addAttribute("signup", new SignUpDto());
         return "admin/register";
     }
 
     @PostMapping("/register.do")
-    public String signup(@ModelAttribute("signupForm") SignUpDto request){
+    public String signup(@ModelAttribute SignUpDto request){
         adminService.signup(request);
         return "redirect:/admin/login";
     }
