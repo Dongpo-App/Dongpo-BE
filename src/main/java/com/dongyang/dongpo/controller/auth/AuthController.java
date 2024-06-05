@@ -3,8 +3,7 @@ package com.dongyang.dongpo.controller.auth;
 import com.dongyang.dongpo.apiresponse.ApiResponse;
 import com.dongyang.dongpo.dto.JwtToken;
 import com.dongyang.dongpo.dto.auth.SocialTokenDto;
-import com.dongyang.dongpo.service.auth.KakaoLoginService;
-import com.dongyang.dongpo.service.auth.NaverLoginService;
+import com.dongyang.dongpo.service.auth.SocialService;
 import com.dongyang.dongpo.service.token.TokenService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
@@ -16,20 +15,17 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class AuthController {
 
-    private final KakaoLoginService kakaoLoginService;
-    private final NaverLoginService naverLoginService;
+    private final SocialService socialService;
     private final TokenService tokenService;
 
     @PostMapping("/kakao")
-    public ResponseEntity<ApiResponse<JwtToken>> callback(@RequestBody SocialTokenDto token) {
-        return ResponseEntity.ok(new ApiResponse<>(kakaoLoginService.getKakaoUserInfo(token.getToken())));
+    public ResponseEntity<ApiResponse<JwtToken>> kakao(@RequestBody SocialTokenDto token) {
+        return ResponseEntity.ok(new ApiResponse<>(socialService.getKakaoUserInfo(token.getToken())));
     }
 
-    @GetMapping("/naver")
-    public ResponseEntity<ApiResponse<JwtToken>> callback(@RequestParam("code") String code,
-                                   @RequestParam("state") String state) {
-
-        return ResponseEntity.ok(new ApiResponse<>(naverLoginService.naverCallback(code, state)));
+    @PostMapping("/naver")
+    public ResponseEntity<ApiResponse<JwtToken>> naver(@RequestBody SocialTokenDto token) {
+        return ResponseEntity.ok(new ApiResponse<>(socialService.getNaverUserInfo(token.getToken())));
     }
 
     @GetMapping("/apple/callback")

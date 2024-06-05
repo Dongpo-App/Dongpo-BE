@@ -1,57 +1,61 @@
 package com.dongyang.dongpo.service.auth;
 
+
 import com.dongyang.dongpo.domain.member.Member;
 import com.dongyang.dongpo.domain.member.Member.SocialType;
 import com.dongyang.dongpo.dto.JwtToken;
+import com.dongyang.dongpo.dto.auth.SocialTokenDto;
 import com.dongyang.dongpo.dto.auth.UserInfo;
 import com.dongyang.dongpo.service.member.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.json.JSONObject;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
-import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
+
 
 @Service
 @RequiredArgsConstructor
-public class NaverLoginService {
+public class SocialService {
 
     private final MemberService memberService;
 
-
-    @Value("${naver.client_id}")
-    private String clientId;
-    @Value("${naver.client_secret}")
-    private String clientSecret;
-
-
-    public JwtToken naverCallback(String code, String state) {
+    public JwtToken getKakaoUserInfo(String accessToken) {
         WebClient webClient = WebClient.builder()
-                .baseUrl("https://nid.naver.com/oauth2.0/token")
+                .baseUrl("https://kapi.kakao.com/v2/user/me")
                 .defaultHeader("Content-Type", "application/x-www-form-urlencoded;charset=utf-8")
+                .defaultHeader("Authorization", "Bearer " + accessToken)
                 .build();
 
-        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-        params.add("grant_type", "authorization_code");
-        params.add("client_id", clientId);
-        params.add("client_secret", clientSecret);
-        params.add("code", code);
-        params.add("state", state);
-
         String responseBody = webClient.post()
-                .uri(uriBuilder -> uriBuilder.build())
-                .body(BodyInserters.fromFormData(params))
                 .retrieve()
                 .bodyToMono(String.class)
                 .block();
 
         JSONObject jsonObject = new JSONObject(responseBody);
-        String accessToken = jsonObject.getString("access_token");
-        return getNaverUserInfo(accessToken);
+        JSONObject kakaoAccount = jsonObject.getJSONObject("kakao_account");
+
+        String email = kakaoAccount.getString("email");
+        String id = String.valueOf(jsonObject.getLong("id"));
+        String age = kakaoAccount.getString("age_range");
+        Member.Gender gender;
+
+        if (kakaoAccount.getString("gender").equals("female"))
+            gender = Member.Gender.GEN_FEMALE;
+        else if (kakaoAccount.getString("gender").equals("male"))
+            gender = Member.Gender.GEN_MALE;
+        else
+            gender = Member.Gender.NONE;
+
+
+        return memberService.socialSave(UserInfo.builder()
+                .id(id)
+                .email(email)
+                .age(age)
+                .gender(gender)
+                .provider(SocialType.KAKAO)
+                .build());
     }
+
 
     public JwtToken getNaverUserInfo(String accessToken) {
         WebClient webClient = WebClient.builder()
