@@ -20,6 +20,7 @@ public class DashBoardController {
     private final AdminStoreService adminStoreService;
     private final AdminStoreReportService adminStoreReportService;
     private final AdminReviewReportService adminReviewReportService;
+    private final AdminNoticeService adminNoticeService;
 
 
     @GetMapping("/member")
@@ -64,6 +65,14 @@ public class DashBoardController {
         model.addAttribute("reviews", adminReviewReportService.findAll());
 
         return "admin/dashboard/review/review_report_board";
+    }
+
+    @GetMapping("/notice")
+    public String notice(Model model){
+        model.addAttribute("admin", getPrincipal());
+        model.addAttribute("notices", adminNoticeService.findAll());
+
+        return "admin/dashboard/notice/notice_board";
     }
 
     private Admin getPrincipal(){

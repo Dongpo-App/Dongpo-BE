@@ -53,6 +53,11 @@
                         </li>
                     </ul>
                 </li>
+                <li class="nav-item">
+                    <a href="/admin/dashboard/notice" class="nav-link">
+                        <p>공지사항 관리</p>
+                    </a>
+                </li>
                 <li class="nav-item" th:if="${admin.role.toString().equals('ROLE_SUPER_ADMIN')}">
                     <a href="/admin/dashboard/confirm" class="nav-link">
                         <p>관리자 승인</p>

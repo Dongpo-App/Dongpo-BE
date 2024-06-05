@@ -1,5 +1,6 @@
 package com.dongyang.dongpo.domain.board;
 
+import com.dongyang.dongpo.admin.domain.Admin;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -17,6 +18,9 @@ public class Notice {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Admin admin;
+
     @Column(length = 64)
     private String title;
 
@@ -24,5 +28,6 @@ public class Notice {
     private String text;
 
     @Column(columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP")
-    private LocalDateTime registerDate;
+    @Builder.Default
+    private LocalDateTime registerDate = LocalDateTime.now();
 }
