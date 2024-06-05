@@ -1,6 +1,7 @@
 package com.dongyang.dongpo.domain.board;
 
 import com.dongyang.dongpo.admin.domain.Admin;
+import com.dongyang.dongpo.admin.dto.NoticeDto;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -30,4 +31,13 @@ public class Notice {
     @Column(columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP")
     @Builder.Default
     private LocalDateTime registerDate = LocalDateTime.now();
+
+    public NoticeDto toResponse() {
+        return NoticeDto.builder()
+                .id(id)
+                .title(title)
+                .text(text)
+                .name(admin.getName())
+                .build();
+    }
 }

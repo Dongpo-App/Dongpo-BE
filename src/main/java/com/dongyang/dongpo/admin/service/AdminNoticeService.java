@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -19,8 +20,13 @@ public class AdminNoticeService {
 
     private final NoticeRepository noticeRepository;
 
-    public List<Notice> findAll(){
-        return noticeRepository.findAll();
+    public List<NoticeDto> findAll(){
+        List<Notice> notices =  noticeRepository.findAll();
+        List<NoticeDto> noticeDtos = new ArrayList<>();
+        for (Notice notice : notices)
+            noticeDtos.add(notice.toResponse());
+
+        return noticeDtos;
     }
 
     @Transactional
@@ -28,5 +34,10 @@ public class AdminNoticeService {
         Notice notice = noticeRepository.save(noticeDto.toEntity(principal));
 
         log.info("Add Notice ID : {} by Admin ID : {}", notice.getId(), principal.getId());
+    }
+
+    public NoticeDto detail(Long id) {
+        Notice notice = noticeRepository.findById(id).orElse(null);
+        return notice.toResponse();
     }
 }

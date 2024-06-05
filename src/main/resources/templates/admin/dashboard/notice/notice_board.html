@@ -28,8 +28,8 @@
                             <tbody>
                             <tr class="align-middle" th:each="notice : ${notices}">
                                 <td th:text="${notice.id}"></td>
-                                <td th:text="${notice.title}"></td>
-                                <td th:text="${notice.admin.name}"></td>
+                                <td><a href="#" class="notice-title" th:data-id="${notice.id}" th:text="${notice.title}"></a></td>
+                                <td th:text="${notice.name}"></td>
                                 <td><input type="checkbox" name=""></td>
                             </tr>
                             </tbody>
@@ -43,10 +43,53 @@
 
     <div th:replace="~{admin/common/footer :: footer}"></div>
 </div>
+
+<!-- Modal Structure -->
+<div class="modal fade" id="noticeModal" tabindex="-1" role="dialog" aria-labelledby="noticeModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="noticeModalLabel"></h5>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p id="noticeContent"</p>
+                <p><strong>작성자:</strong> <span id="noticeAdmin"></span></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/overlayscrollbars@2.3.0/browser/overlayscrollbars.browser.es6.min.js" integrity="sha256-H2VM7BKda+v2Z4+DRy69uknwxjyDRhszjXFhsL4gD3w=" crossorigin="anonymous"></script> <!--end::Third Party Plugin(OverlayScrollbars)--><!--begin::Required Plugin(popperjs for Bootstrap 5)-->
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha256-whL0tQWoY1Ku1iskqPFvmZ+CHsvmRWx/PIoEvIeWh4I=" crossorigin="anonymous"></script> <!--end::Required Plugin(popperjs for Bootstrap 5)--><!--begin::Required Plugin(Bootstrap 5)-->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js" integrity="sha256-YMa+wAM6QkVyz999odX7lPRxkoYAan8suedu4k2Zur8=" crossorigin="anonymous"></script> <!--end::Required Plugin(Bootstrap 5)--><!--begin::Required Plugin(AdminLTE)-->
 <script th:src="@{/js/adminlte.js}"></script>
+<script th:inline="javascript">
+    document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('.notice-title').forEach(function (element) {
+            element.addEventListener('click', function (event) {
+                event.preventDefault();
+                var noticeId = this.getAttribute('data-id');
+
+                // Ajax call to fetch notice details
+                fetch('/admin/notice/detail/' + noticeId)
+                    .then(response => response.json())
+                    .then(data => {
+                        document.getElementById('noticeModalLabel').textContent = data.title;
+                        document.getElementById('noticeContent').textContent = data.text;
+                        document.getElementById('noticeAdmin').textContent = data.name;
+                        var noticeModal = new bootstrap.Modal(document.getElementById('noticeModal'));
+                        noticeModal.show();
+                    })
+                    .catch(error => console.error('Error:', error));
+            });
+        });
+    });
+</script>
 </body>
 </html>
-
