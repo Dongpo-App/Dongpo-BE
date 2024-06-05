@@ -51,7 +51,7 @@ public class ReportService {
         StoreReport storeReport = request.toStoreEntity(member, store);
         storeReportRepository.save(storeReport);
 
-        log.info("member {} add Store report Store ID : {}", member.getId(), store.getId());
+        log.info("Member {} Report Store ID : {}", member.getId(), store.getId());
     }
 
     @Transactional
@@ -67,7 +67,7 @@ public class ReportService {
         ReviewReport reviewReport = request.toReviewEntity(member, review);
         reviewReportRepository.save(reviewReport);
 
-        log.info("member {} add Review report Review ID : {}", member.getId(), review.getId());
+        log.info("Member {} Report Review ID : {}", member.getId(), review.getId());
     }
 
     public List<ReportDto> myRegStoreReport(String accessToken) throws Exception{

@@ -24,9 +24,12 @@ public class AdminController {
     @GetMapping("/login")
     public String login(){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null && authentication.isAuthenticated() && !(authentication instanceof AnonymousAuthenticationToken)){
+        if (authentication != null &&
+                authentication.isAuthenticated() &&
+                !(authentication instanceof AnonymousAuthenticationToken))
+
             return "redirect:/admin/dashboard";
-        }else
+        else
             return "admin/login";
     }
 

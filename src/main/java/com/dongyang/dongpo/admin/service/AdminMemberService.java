@@ -35,6 +35,8 @@ public class AdminMemberService {
             Admin admin = adminRepository.findById(id).get();
             admin.confirm(AdminRole.ROLE_ADMIN);
             adminRepository.save(admin);
+
+            log.info("Approve Admin ID:{}", id);
         }
     }
 
@@ -44,6 +46,8 @@ public class AdminMemberService {
             Admin admin = adminRepository.findById(id).get();
             admin.confirm(AdminRole.ROLE_REJECT);
             adminRepository.save(admin);
+
+            log.info("Reject Admin ID:{}", id);
         }
     }
 }

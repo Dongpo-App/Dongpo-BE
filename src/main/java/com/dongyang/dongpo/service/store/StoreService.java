@@ -37,7 +37,7 @@ public class StoreService {
         Store store = request.toStore(member);
         storeRepository.save(store);
 
-        log.info("member {} add store: {}", store.getId());
+        log.info("member {} add store: {}", member.getId(), store.getId());
     }
 
     public List<StoreDto> allStore() {
@@ -59,9 +59,7 @@ public class StoreService {
                 reviewDtos.add(review.toResponse());
         }
 
-        StoreDto storeDto = store.toResponse(reviewDtos);
-
-        return storeDto;
+        return store.toResponse(reviewDtos);
     }
 
     @Transactional
