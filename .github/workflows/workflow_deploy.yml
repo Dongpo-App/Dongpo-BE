@@ -22,7 +22,7 @@ jobs:
         run: echo "${{ secrets.DEPLOY_PROPERTIES }}" > src/main/resources/application-deploy.yml
 
       - name: Build with Gradle
-        run: ./gradlew bootJar
+        run: ./gradlew clean build
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
@@ -59,7 +59,7 @@ jobs:
           key: ${{ secrets.SERVER_KEY }}
           script: |
             cd Dongpo
-            docker pull ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_IMAGE_NAME }}:latest
-            docker-compose down
+            docker-compose pull
             docker-compose up -d
+            docker images --format '{{.Repository}}:{{.Tag}} {{.ID}}' | grep -E "^${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_IMAGE_NAME }}:" | grep -v ':latest' | awk '{print $2}' | xargs -r docker rmi
             exit
