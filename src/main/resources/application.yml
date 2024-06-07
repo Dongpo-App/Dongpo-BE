@@ -1,3 +1,10 @@
+spring:
+  profiles:
+    active: develop, dev
+  thymeleaf:
+    prefix: classpath:/templates/
+    suffix: .html
+
 springdoc:
   swagger-ui:
     enabled: true
