@@ -14,6 +14,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
@@ -45,5 +47,9 @@ public class MemberService {
 
         log.info("Registered Member {} success", member.getId());
         return jwtToken;
+    }
+
+    public List<Member> findAll(){
+        return memberRepository.findAll();
     }
 }

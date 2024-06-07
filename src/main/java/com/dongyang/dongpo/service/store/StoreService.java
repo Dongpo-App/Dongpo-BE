@@ -40,7 +40,7 @@ public class StoreService {
         log.info("member {} add store: {}", member.getId(), store.getId());
     }
 
-    public List<StoreDto> allStore() {
+    public List<StoreDto> findAll() {
         List<Store> stores = storeRepository.findAll();
         List<StoreDto> storeResponse = new ArrayList<>();
 

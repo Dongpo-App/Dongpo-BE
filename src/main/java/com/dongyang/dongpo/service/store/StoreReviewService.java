@@ -51,4 +51,8 @@ public class StoreReviewService {
 
        return reviewDtos;
     }
+
+    public List<StoreReview> findAll(){
+        return reviewRepository.findAll();
+    }
 }

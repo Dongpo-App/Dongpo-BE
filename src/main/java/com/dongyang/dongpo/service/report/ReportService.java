@@ -102,4 +102,12 @@ public class ReportService {
 
         return reportList;
     }
+
+    public List<ReviewReport> findAllReviewReport() {
+        return reviewReportRepository.findAll();
+    }
+
+    public List<StoreReport> findAllStoreReport(){
+        return storeReportRepository.findAll();
+    }
 }

@@ -16,7 +16,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 @Slf4j
-public class AdminNoticeService {
+public class NoticeService {
 
     private final NoticeRepository noticeRepository;
 

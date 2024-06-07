@@ -3,6 +3,10 @@ package com.dongyang.dongpo.admin.controller.dashboard;
 import com.dongyang.dongpo.admin.domain.Admin;
 import com.dongyang.dongpo.admin.dto.ConfrimDto;
 import com.dongyang.dongpo.admin.service.*;
+import com.dongyang.dongpo.service.member.MemberService;
+import com.dongyang.dongpo.service.report.ReportService;
+import com.dongyang.dongpo.service.store.StoreReviewService;
+import com.dongyang.dongpo.service.store.StoreService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -16,17 +20,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequiredArgsConstructor
 public class DashBoardController {
 
-    private final AdminMemberService adminMemberService;
-    private final AdminReviewService adminReviewService;
-    private final AdminStoreService adminStoreService;
-    private final AdminStoreReportService adminStoreReportService;
-    private final AdminReviewReportService adminReviewReportService;
-    private final AdminNoticeService adminNoticeService;
+    private final MemberService memberService;
+    private final AdminService adminService;
+    private final NoticeService noticeService;
+    private final StoreService storeService;
+    private final StoreReviewService reviewService;
+    private final ReportService reportService;
 
 
     @GetMapping("/member")
     public String memberBoard(Model model){
-        model.addAttribute("members", adminMemberService.findAll());
+        model.addAttribute("members", memberService.findAll());
         model.addAttribute("admin", getPrincipal());
         return "admin/dashboard/member/member_board";
     }
@@ -34,21 +38,21 @@ public class DashBoardController {
     @GetMapping("/store")
     public String storeBoard(Model model){
         model.addAttribute("admin", getPrincipal());
-        model.addAttribute("stores", adminStoreService.findAll());
+        model.addAttribute("stores", storeService.findAll());
         return "admin/dashboard/store/store_board";
     }
 
     @GetMapping("/review")
     public String reviewBoard(Model model){
         model.addAttribute("admin", getPrincipal());
-        model.addAttribute("reviews", adminReviewService.findAll());
+        model.addAttribute("reviews", reviewService.findAll());
         return "admin/dashboard/review/review_board";
     }
 
     @GetMapping("/confirm")
     public String adminBoard(Model model){
         model.addAttribute("admin", getPrincipal());
-        model.addAttribute("grants", adminMemberService.findProcessAdmin());
+        model.addAttribute("grants", adminService.findProcessAdmin());
         model.addAttribute("confirm", new ConfrimDto());
         return "admin/dashboard/admin_board";
     }
@@ -56,7 +60,7 @@ public class DashBoardController {
     @GetMapping("/store/report")
     public String storeReport(Model model){
         model.addAttribute("admin", getPrincipal());
-        model.addAttribute("reports", adminStoreReportService.findAll());
+        model.addAttribute("reports", reportService.findAllStoreReport());
 
         return "admin/dashboard/store/store_report_board";
     }
@@ -64,7 +68,7 @@ public class DashBoardController {
     @GetMapping("/review/report")
     public String reviewReport(Model model){
         model.addAttribute("admin", getPrincipal());
-        model.addAttribute("reports", adminReviewReportService.findAll());
+        model.addAttribute("reports", reportService.findAllReviewReport());
 
         return "admin/dashboard/review/review_report_board";
     }
@@ -72,7 +76,7 @@ public class DashBoardController {
     @GetMapping("/notice")
     public String notice(Model model){
         model.addAttribute("admin", getPrincipal());
-        model.addAttribute("notices", adminNoticeService.findAll());
+        model.addAttribute("notices", noticeService.findAll());
 
         return "admin/dashboard/notice/notice_board";
     }
