@@ -1,4 +1,4 @@
-package com.dongyang.dongpo.admin.dto;
+package com.dongyang.dongpo.dto.admin;
 
 
 import lombok.AllArgsConstructor;

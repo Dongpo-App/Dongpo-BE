@@ -1,4 +1,4 @@
-package com.dongyang.dongpo.admin.domain;
+package com.dongyang.dongpo.domain.admin;
 
 public enum AdminRole {
 

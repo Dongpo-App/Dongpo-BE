@@ -1,7 +1,7 @@
-package com.dongyang.dongpo.admin.service;
+package com.dongyang.dongpo.service.notice;
 
-import com.dongyang.dongpo.admin.domain.Admin;
-import com.dongyang.dongpo.admin.dto.NoticeDto;
+import com.dongyang.dongpo.domain.admin.Admin;
+import com.dongyang.dongpo.dto.notice.NoticeDto;
 import com.dongyang.dongpo.domain.board.Notice;
 import com.dongyang.dongpo.repository.notice.NoticeRepository;
 import lombok.RequiredArgsConstructor;

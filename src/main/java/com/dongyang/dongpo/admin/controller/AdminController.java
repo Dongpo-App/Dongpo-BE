@@ -1,8 +1,8 @@
 package com.dongyang.dongpo.admin.controller;
 
 
-import com.dongyang.dongpo.admin.dto.SignUpDto;
-import com.dongyang.dongpo.admin.service.AdminService;
+import com.dongyang.dongpo.dto.admin.SignUpDto;
+import com.dongyang.dongpo.service.admin.AdminService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;

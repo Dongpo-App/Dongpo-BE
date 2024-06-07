@@ -1,8 +1,8 @@
 package com.dongyang.dongpo.admin.controller.dashboard;
 
-import com.dongyang.dongpo.admin.domain.Admin;
-import com.dongyang.dongpo.admin.dto.NoticeDto;
-import com.dongyang.dongpo.admin.service.NoticeService;
+import com.dongyang.dongpo.domain.admin.Admin;
+import com.dongyang.dongpo.dto.notice.NoticeDto;
+import com.dongyang.dongpo.service.notice.NoticeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;

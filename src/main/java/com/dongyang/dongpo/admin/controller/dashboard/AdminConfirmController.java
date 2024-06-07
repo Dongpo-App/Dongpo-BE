@@ -1,13 +1,11 @@
 package com.dongyang.dongpo.admin.controller.dashboard;
 
-import com.dongyang.dongpo.admin.dto.ConfrimDto;
-import com.dongyang.dongpo.admin.service.AdminService;
+import com.dongyang.dongpo.dto.admin.ConfrimDto;
+import com.dongyang.dongpo.service.admin.AdminService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
-import java.util.List;
 
 @Controller
 @RequestMapping("/admin/grant")

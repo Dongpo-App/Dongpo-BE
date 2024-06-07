@@ -1,10 +1,10 @@
-package com.dongyang.dongpo.admin.service;
+package com.dongyang.dongpo.service.admin;
 
-import com.dongyang.dongpo.admin.domain.Admin;
-import com.dongyang.dongpo.admin.domain.AdminRole;
-import com.dongyang.dongpo.admin.dto.ConfrimDto;
-import com.dongyang.dongpo.admin.dto.SignUpDto;
-import com.dongyang.dongpo.admin.repository.AdminRepository;
+import com.dongyang.dongpo.domain.admin.Admin;
+import com.dongyang.dongpo.domain.admin.AdminRole;
+import com.dongyang.dongpo.dto.admin.ConfrimDto;
+import com.dongyang.dongpo.dto.admin.SignUpDto;
+import com.dongyang.dongpo.repository.AdminRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;

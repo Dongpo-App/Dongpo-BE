@@ -1,8 +1,8 @@
 package com.dongyang.dongpo.admin;
 
-import com.dongyang.dongpo.admin.domain.Admin;
-import com.dongyang.dongpo.admin.domain.AdminRole;
-import com.dongyang.dongpo.admin.repository.AdminRepository;
+import com.dongyang.dongpo.domain.admin.Admin;
+import com.dongyang.dongpo.domain.admin.AdminRole;
+import com.dongyang.dongpo.repository.AdminRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;

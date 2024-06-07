@@ -1,7 +1,7 @@
-package com.dongyang.dongpo.admin.repository;
+package com.dongyang.dongpo.repository;
 
-import com.dongyang.dongpo.admin.domain.Admin;
-import com.dongyang.dongpo.admin.domain.AdminRole;
+import com.dongyang.dongpo.domain.admin.Admin;
+import com.dongyang.dongpo.domain.admin.AdminRole;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

@@ -1,6 +1,6 @@
-package com.dongyang.dongpo.admin.dto;
+package com.dongyang.dongpo.dto.notice;
 
-import com.dongyang.dongpo.admin.domain.Admin;
+import com.dongyang.dongpo.domain.admin.Admin;
 import com.dongyang.dongpo.domain.board.Notice;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;

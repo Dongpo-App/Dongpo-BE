@@ -1,4 +1,4 @@
-package com.dongyang.dongpo.admin.domain;
+package com.dongyang.dongpo.domain.admin;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
