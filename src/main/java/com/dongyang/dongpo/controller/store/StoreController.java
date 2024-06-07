@@ -20,7 +20,7 @@ public class StoreController {
     @GetMapping("")
     @Operation(summary = "전체 점포 조회")
     public ResponseEntity<ApiResponse<List<StoreDto>>> allStore(){
-        return ResponseEntity.ok(new ApiResponse<>(storeService.allStore()));
+        return ResponseEntity.ok(new ApiResponse<>(storeService.findAll()));
     }
 
     @GetMapping("/{id}")
