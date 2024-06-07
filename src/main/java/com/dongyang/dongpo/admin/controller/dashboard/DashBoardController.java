@@ -1,6 +1,7 @@
 package com.dongyang.dongpo.admin.controller.dashboard;
 
 import com.dongyang.dongpo.admin.domain.Admin;
+import com.dongyang.dongpo.admin.dto.ConfrimDto;
 import com.dongyang.dongpo.admin.service.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
@@ -48,13 +49,14 @@ public class DashBoardController {
     public String adminBoard(Model model){
         model.addAttribute("admin", getPrincipal());
         model.addAttribute("grants", adminMemberService.findProcessAdmin());
+        model.addAttribute("confirm", new ConfrimDto());
         return "admin/dashboard/admin_board";
     }
 
     @GetMapping("/store/report")
     public String storeReport(Model model){
         model.addAttribute("admin", getPrincipal());
-        model.addAttribute("stores", adminStoreReportService.findAll());
+        model.addAttribute("reports", adminStoreReportService.findAll());
 
         return "admin/dashboard/store/store_report_board";
     }
@@ -62,7 +64,7 @@ public class DashBoardController {
     @GetMapping("/review/report")
     public String reviewReport(Model model){
         model.addAttribute("admin", getPrincipal());
-        model.addAttribute("reviews", adminReviewReportService.findAll());
+        model.addAttribute("reports", adminReviewReportService.findAll());
 
         return "admin/dashboard/review/review_report_board";
     }

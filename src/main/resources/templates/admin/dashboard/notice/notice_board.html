@@ -22,7 +22,7 @@
                                 <th style="width: 10px">ID</th>
                                 <th>제목</th>
                                 <th>작성자</th>
-                                <th style="width: 50px"><input type="checkbox" name=""></th>
+                                <th style="width: 100px"><input type="checkbox" id="selectAll" onclick="toggleCheckboxes(this)"></th>
                             </tr>
                             </thead>
                             <tbody>
@@ -30,11 +30,11 @@
                                 <td th:text="${notice.id}"></td>
                                 <td><a href="#" class="notice-title" th:data-id="${notice.id}" th:text="${notice.title}"></a></td>
                                 <td th:text="${notice.name}"></td>
-                                <td><input type="checkbox" name=""></td>
+                                <td><input type="checkbox" name="selectedNotices" th:value="${notice.id}"></td>
                             </tr>
                             </tbody>
                         </table>
-                        <a href="/admin/notice/write" class="btn btn-primary">공지 작성</a>
+                        <a href="/admin/notice/write" class="btn btn-primary mt-2">공지 작성</a>
                     </div>
                 </div>
             </div>
@@ -69,6 +69,14 @@
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha256-whL0tQWoY1Ku1iskqPFvmZ+CHsvmRWx/PIoEvIeWh4I=" crossorigin="anonymous"></script> <!--end::Required Plugin(popperjs for Bootstrap 5)--><!--begin::Required Plugin(Bootstrap 5)-->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js" integrity="sha256-YMa+wAM6QkVyz999odX7lPRxkoYAan8suedu4k2Zur8=" crossorigin="anonymous"></script> <!--end::Required Plugin(Bootstrap 5)--><!--begin::Required Plugin(AdminLTE)-->
 <script th:src="@{/js/adminlte.js}"></script>
+<script>
+    function toggleCheckboxes(source) {
+        checkboxes = document.getElementsByName('selectedNotices');
+        for(var i=0, n=checkboxes.length; i<n; i++) {
+            checkboxes[i].checked = source.checked;
+        }
+    }
+</script>
 <script th:inline="javascript">
     document.addEventListener('DOMContentLoaded', function () {
         document.querySelectorAll('.notice-title').forEach(function (element) {
@@ -76,7 +84,6 @@
                 event.preventDefault();
                 var noticeId = this.getAttribute('data-id');
 
-                // Ajax call to fetch notice details
                 fetch('/admin/notice/detail/' + noticeId)
                     .then(response => response.json())
                     .then(data => {
