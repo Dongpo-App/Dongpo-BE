@@ -18,12 +18,12 @@ public class AuthController {
     private final SocialService socialService;
     private final TokenService tokenService;
 
-    @PostMapping("/kakao")
+    @PostMapping("/kakao/callback")
     public ResponseEntity<ApiResponse<JwtToken>> kakao(@RequestBody SocialTokenDto token) {
         return ResponseEntity.ok(new ApiResponse<>(socialService.getKakaoUserInfo(token.getToken())));
     }
 
-    @PostMapping("/naver")
+    @PostMapping("/naver/callback")
     public ResponseEntity<ApiResponse<JwtToken>> naver(@RequestBody SocialTokenDto token) {
         return ResponseEntity.ok(new ApiResponse<>(socialService.getNaverUserInfo(token.getToken())));
     }
