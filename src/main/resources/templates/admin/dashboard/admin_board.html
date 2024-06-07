@@ -17,7 +17,7 @@
                         <h3 class="card-title">관리자 신청 목록</h3>
                     </div>
                     <div class="card-body">
-                        <form action="/admin/grant/process" method="post">
+                        <form action="/admin/grant/process" th:object="${confirm}" method="post">
                             <table class="table table-bordered">
                                 <thead>
                                 <tr>
@@ -30,7 +30,7 @@
                                 <tr class="align-middle" th:each="grant : ${grants}">
                                     <td th:text="${grant.id}"></td>
                                     <td th:text="${grant.name}"></td>
-                                    <td><input type="checkbox" name="selectedGrants" th:value="${grant.id}"></td>
+                                    <td><input type="checkbox" name="selectedGrants" th:value="${grant.id}" th:field="*{selectedGrants}"></td>
                                 </tr>
                                 </tbody>
                             </table>

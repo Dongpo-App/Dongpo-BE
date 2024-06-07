@@ -1,6 +1,7 @@
 package com.dongyang.dongpo.admin.controller;
 
 import com.dongyang.dongpo.admin.domain.Admin;
+import com.dongyang.dongpo.admin.dto.ConfrimDto;
 import com.dongyang.dongpo.admin.dto.SignUpDto;
 import com.dongyang.dongpo.admin.service.AdminMemberService;
 import com.dongyang.dongpo.admin.service.AdminReviewService;

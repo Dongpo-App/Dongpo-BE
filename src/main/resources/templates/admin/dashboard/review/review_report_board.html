@@ -22,17 +22,17 @@
                                 <th>내용</th>
                                 <th>신고자</th>
                                 <th>신고 일시</th>
-                                <th style="width: 50px"><input type="checkbox" name=""></th>
+                                <th style="width: 100px"><input type="checkbox" id="selectAll" onclick="toggleCheckboxes(this)"></th>
                             </tr>
                             </thead>
                             <tbody>
-                            <tr class="align-middle" th:each="review : ${reviews}">
-                                <td th:text="${review.id}"></td>
-                                <td th:text="${review.review.id}"></td>
-                                <td th:text="${review.text}"></td>
-                                <td th:text="${review.member.nickname}"></td>
-                                <td th:text="${review.issueDate}"></td>
-                                <td><input type="checkbox" name="" ></td>
+                            <tr class="align-middle" th:each="report : ${reports}">
+                                <td th:text="${report.id}"></td>
+                                <td th:text="${report.review.id}"></td>
+                                <td th:text="${report.text}"></td>
+                                <td th:text="${report.member.nickname}"></td>
+                                <td th:text="${report.issueDate}"></td>
+                                <td><input type="checkbox" name="selectedReports" th:value="${report.id}"></td>
                             </tr>
                             </tbody>
                         </table>
@@ -48,6 +48,14 @@
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha256-whL0tQWoY1Ku1iskqPFvmZ+CHsvmRWx/PIoEvIeWh4I=" crossorigin="anonymous"></script> <!--end::Required Plugin(popperjs for Bootstrap 5)--><!--begin::Required Plugin(Bootstrap 5)-->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js" integrity="sha256-YMa+wAM6QkVyz999odX7lPRxkoYAan8suedu4k2Zur8=" crossorigin="anonymous"></script> <!--end::Required Plugin(Bootstrap 5)--><!--begin::Required Plugin(AdminLTE)-->
 <script th:src="@{/js/adminlte.js}"></script>
+<script>
+    function toggleCheckboxes(source) {
+        checkboxes = document.getElementsByName('selectedReports');
+        for(var i=0, n=checkboxes.length; i<n; i++) {
+            checkboxes[i].checked = source.checked;
+        }
+    }
+</script>
 </body>
 </html>
 

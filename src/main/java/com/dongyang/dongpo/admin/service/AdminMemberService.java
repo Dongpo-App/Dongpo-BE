@@ -2,6 +2,7 @@ package com.dongyang.dongpo.admin.service;
 
 import com.dongyang.dongpo.admin.domain.Admin;
 import com.dongyang.dongpo.admin.domain.AdminRole;
+import com.dongyang.dongpo.admin.dto.ConfrimDto;
 import com.dongyang.dongpo.admin.repository.AdminRepository;
 import com.dongyang.dongpo.domain.member.Member;
 import com.dongyang.dongpo.repository.member.MemberRepository;
@@ -30,24 +31,24 @@ public class AdminMemberService {
 
 
     @Transactional
-    public void approveAdmin(List<Long> ids) {
-        for (Long id : ids) {
+    public void approveAdmin(ConfrimDto confrimDto) {
+        for (Long id : confrimDto.getSelectedGrants()) {
             Admin admin = adminRepository.findById(id).get();
             admin.confirm(AdminRole.ROLE_ADMIN);
             adminRepository.save(admin);
 
-            log.info("Approve Admin ID:{}", id);
+            log.info("Approve Admin ID : {}", id);
         }
     }
 
     @Transactional
-    public void rejectAdmin(List<Long> ids) {
-        for (Long id : ids) {
+    public void rejectAdmin(ConfrimDto confrimDto) {
+        for (Long id : confrimDto.getSelectedGrants()) {
             Admin admin = adminRepository.findById(id).get();
             admin.confirm(AdminRole.ROLE_REJECT);
             adminRepository.save(admin);
 
-            log.info("Reject Admin ID:{}", id);
+            log.info("Reject Admin ID : {}", id);
         }
     }
 }
