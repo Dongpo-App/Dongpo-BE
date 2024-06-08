@@ -60,6 +60,8 @@ public class Member implements UserDetails {
     public static Member toEntity(UserInfo userInfo){
         return Member.builder()
                 .email(userInfo.getEmail())
+                .name(userInfo.getName())
+                .nickname(userInfo.getNickname())
                 .ageGroup(userInfo.getAge())
                 .gender(userInfo.getGender())
                 .socialId(userInfo.getId())

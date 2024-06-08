@@ -4,7 +4,6 @@ package com.dongyang.dongpo.service.auth;
 import com.dongyang.dongpo.domain.member.Member;
 import com.dongyang.dongpo.domain.member.Member.SocialType;
 import com.dongyang.dongpo.dto.JwtToken;
-import com.dongyang.dongpo.dto.auth.SocialTokenDto;
 import com.dongyang.dongpo.dto.auth.UserInfo;
 import com.dongyang.dongpo.service.member.MemberService;
 import lombok.RequiredArgsConstructor;
@@ -37,6 +36,8 @@ public class SocialService {
         String email = kakaoAccount.getString("email");
         String id = String.valueOf(jsonObject.getLong("id"));
         String age = kakaoAccount.getString("age_range");
+        String name = kakaoAccount.getString("name");
+        String nickname = kakaoAccount.getJSONObject("profile").getString("nickname");
         Member.Gender gender;
 
         if (kakaoAccount.getString("gender").equals("female"))
@@ -50,6 +51,8 @@ public class SocialService {
         return memberService.socialSave(UserInfo.builder()
                 .id(id)
                 .email(email)
+                .name(name)
+                .nickname(nickname)
                 .age(age)
                 .gender(gender)
                 .provider(SocialType.KAKAO)
@@ -74,6 +77,8 @@ public class SocialService {
         String email = response.getString("email");
         String age = response.getString("age");
         String id = response.getString("id");
+        String name = response.getString("name");
+        String nickname = response.getString("nickname");
         Member.Gender gender;
 
         if (response.getString("gender").equals("F"))
@@ -85,9 +90,11 @@ public class SocialService {
 
         return memberService.socialSave(UserInfo.builder()
                 .id(id)
+                .email(email)
+                .name(name)
+                .nickname(nickname)
                 .gender(gender)
                 .age(age)
-                .email(email)
                 .provider(SocialType.NAVER)
                 .build());
     }
