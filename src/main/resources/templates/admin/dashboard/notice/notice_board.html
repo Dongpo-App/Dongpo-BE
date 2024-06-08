@@ -55,7 +55,8 @@
                 </button>
             </div>
             <div class="modal-body">
-                <p id="noticeContent"</p>
+                <div id="noticeImages"></div>
+                <p id="noticeContent"></p>
                 <p><strong>작성자:</strong> <span id="noticeAdmin"></span></p>
             </div>
             <div class="modal-footer">
@@ -90,6 +91,20 @@
                         document.getElementById('noticeModalLabel').textContent = data.title;
                         document.getElementById('noticeContent').textContent = data.text;
                         document.getElementById('noticeAdmin').textContent = data.name;
+
+                        var noticeImages = document.getElementById('noticeImages');
+                        noticeImages.innerHTML = '';
+
+                        data.imgs.forEach(function (image) {
+                            var img = document.createElement('img');
+                            img.src = image.url;
+                            img.alt = 'Notice Image';
+                            img.className = 'img-thumbnail';
+                            img.style.maxWidth = '100%';
+                            img.style.marginBottom = '10px';
+                            noticeImages.appendChild(img);
+                        });
+
                         var noticeModal = new bootstrap.Modal(document.getElementById('noticeModal'));
                         noticeModal.show();
                     })

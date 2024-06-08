@@ -1,5 +1,6 @@
 package com.dongyang.dongpo.domain.board;
 
+import com.dongyang.dongpo.dto.PicDto;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -27,4 +28,11 @@ public class NoticePic {
     @Column(columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP")
     @Builder.Default
     private LocalDateTime registerDate= LocalDateTime.now();
+
+    public PicDto toResponse(){
+        return PicDto.builder()
+                .id(id)
+                .url(picUrl)
+                .build();
+    }
 }

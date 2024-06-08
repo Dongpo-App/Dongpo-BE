@@ -1,7 +1,9 @@
 package com.dongyang.dongpo.service.notice;
 
+import com.dongyang.dongpo.apiresponse.ApiResponse;
 import com.dongyang.dongpo.domain.admin.Admin;
 import com.dongyang.dongpo.domain.board.NoticePic;
+import com.dongyang.dongpo.dto.PicDto;
 import com.dongyang.dongpo.dto.notice.NoticeDto;
 import com.dongyang.dongpo.domain.board.Notice;
 import com.dongyang.dongpo.repository.notice.NoticePicRepository;
@@ -57,6 +59,16 @@ public class NoticeService {
 
     public NoticeDto detail(Long id) {
         Notice notice = noticeRepository.findById(id).orElse(null);
-        return notice.toResponse();
+        NoticeDto noticeDto  = notice.toResponse();
+
+        List<NoticePic> noticePics = noticePicRepository.findByNoticeId(id);
+        List<PicDto> picDtos = new ArrayList<>();
+
+        for (NoticePic noticePic : noticePics)
+            picDtos.add(noticePic.toResponse());
+
+        noticeDto.setImgs(picDtos);
+
+        return noticeDto;
     }
 }
