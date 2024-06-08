@@ -1,4 +1,4 @@
-package com.dongyang.dongpo.admin.controller.dashboard;
+package com.dongyang.dongpo.admin.controller.notice;
 
 import com.dongyang.dongpo.domain.admin.Admin;
 import com.dongyang.dongpo.dto.notice.NoticeDto;
@@ -10,6 +10,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.util.List;
 
 @Controller
 @RequiredArgsConstructor
@@ -26,8 +30,9 @@ public class AdminNoticeController {
     }
 
     @PostMapping("/write.do")
-    public String write(@ModelAttribute NoticeDto noticeDto){
-        noticeService.addNotice(noticeDto, getPrincipal());
+    public String write(@ModelAttribute NoticeDto noticeDto,
+                        @RequestParam("images") List<MultipartFile> images) throws IOException {
+        noticeService.addNotice(noticeDto, getPrincipal(), images);
         return "redirect:/admin/dashboard/notice";
     }
 

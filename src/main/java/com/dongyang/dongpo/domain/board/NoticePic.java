@@ -19,11 +19,12 @@ public class NoticePic {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "notice_id")
-    private Notice noticeId;
+    private Notice notice;
 
     @Column(length = 128)
     private String picUrl;
 
     @Column(columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP")
-    private LocalDateTime registerDate;
+    @Builder.Default
+    private LocalDateTime registerDate= LocalDateTime.now();
 }
