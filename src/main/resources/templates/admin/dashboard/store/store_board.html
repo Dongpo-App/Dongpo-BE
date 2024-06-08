@@ -30,7 +30,7 @@
                             <tr class="align-middle" th:each="store : ${stores}">
                                 <td th:text="${store.id}"></td>
                                 <td th:text="${store.name}"></td>
-                                <td th:text="${store.member.name}"></td>
+                                <td th:text="${store.memberId}"></td>
                                 <td th:text="${store.reportCount}"></td>
                                 <td><input type="checkbox" name="selectedStores" th:value="${store.id}"></td>
                             </tr>

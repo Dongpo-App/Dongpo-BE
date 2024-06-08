@@ -78,6 +78,7 @@ public class Store {
                 .id(id)
                 .name(name)
                 .address(address)
+                .reportCount(reportCount)
                 .memberId(member.getId())
                 .openTime(openTime)
                 .closeTime(closeTime)
