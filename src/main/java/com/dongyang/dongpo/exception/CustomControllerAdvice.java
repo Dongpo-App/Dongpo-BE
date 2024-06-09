@@ -3,6 +3,7 @@ package com.dongyang.dongpo.exception;
 import com.dongyang.dongpo.apiresponse.ApiResponse;
 import com.dongyang.dongpo.exception.data.DataNotFoundException;
 import com.dongyang.dongpo.exception.member.MemberNotFoundException;
+import com.dongyang.dongpo.exception.social.SocialTokenNotValidException;
 import com.dongyang.dongpo.exception.store.StoreNotFoundException;
 import com.dongyang.dongpo.jwt.exception.*;
 import org.springframework.http.HttpStatus;
@@ -44,6 +45,12 @@ public class CustomControllerAdvice {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
     }
 
+    @ExceptionHandler(SocialTokenNotValidException.class)
+    public ResponseEntity<ApiResponse<String>> handleSocialTokenNotValidException() {
+        response.setMessage("소셜 토큰이 유효하지 않습니다.");
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+    }
+
     /**
      * ------------- 401 -------------
      */
@@ -60,12 +67,13 @@ public class CustomControllerAdvice {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
     }
 
-    /**
-     * ------------- 404 -------------
-     */
     @ExceptionHandler(DataNotFoundException.class)
     public ResponseEntity<ApiResponse<String>> handleDataNotFoundException() {
         response.setMessage("데이터를 찾지 못하였습니다.");
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
     }
+
+    /**
+     * ------------- 404 -------------
+     */
 }
