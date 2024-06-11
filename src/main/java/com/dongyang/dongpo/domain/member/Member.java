@@ -66,7 +66,8 @@ public class Member implements UserDetails {
                 .gender(userInfo.getGender())
                 .socialId(userInfo.getId())
                 .socialType(userInfo.getProvider())
-                .role(Member.Role.ROLE_MEMBER)
+                .role(Role.ROLE_MEMBER)
+                .profilePic(userInfo.getProfilePic())
                 .status(Member.Status.ACTIVE)
                 .build();
     }

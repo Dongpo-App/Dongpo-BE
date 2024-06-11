@@ -18,5 +18,6 @@ public class UserInfo {
     private String nickname;
     private Member.Gender gender;
     private String age;
+    private String profilePic;
     private Member.SocialType provider;
 }
