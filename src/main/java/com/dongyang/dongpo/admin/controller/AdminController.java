@@ -25,7 +25,7 @@ public class AdminController {
                 authentication.isAuthenticated() &&
                 !(authentication instanceof AnonymousAuthenticationToken))
 
-            return "redirect:/admin/dashboard";
+            return "redirect:/admin/dashboard/member";
         else
             return "admin/login";
     }
