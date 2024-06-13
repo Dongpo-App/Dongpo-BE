@@ -78,6 +78,8 @@ public class Store {
                 .id(id)
                 .name(name)
                 .address(address)
+                .latitude(latitude)
+                .longitude(longitude)
                 .reportCount(reportCount)
                 .memberId(member.getId())
                 .openTime(openTime)
@@ -94,6 +96,8 @@ public class Store {
                 .id(id)
                 .name(name)
                 .address(address)
+                .latitude(latitude)
+                .longitude(longitude)
                 .memberId(member.getId())
                 .openTime(openTime)
                 .closeTime(closeTime)
@@ -109,6 +113,8 @@ public class Store {
     public void update(StoreDto storeDto){
         this.name = storeDto.getName();
         this.address = storeDto.getAddress();
+        this.latitude = storeDto.getLatitude();
+        this.longitude = storeDto.getLongitude();
         this.openTime = storeDto.getOpenTime();
         this.closeTime = storeDto.getCloseTime();
         this.isToiletValid = storeDto.isToiletValid();
