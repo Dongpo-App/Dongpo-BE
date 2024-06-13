@@ -19,27 +19,26 @@ public class S3Service {
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
 
-    public String uploadFile(MultipartFile noticeFile) throws IOException {
+    public String uploadFile(MultipartFile imageFile) throws IOException {
 
         // 첨부파일(이미지가 없을 경우)
-        if(noticeFile == null) return "";
+        if (imageFile == null || imageFile.isEmpty()) return "";
 
         // UUID로 파일 이름을 생성해 업로드
-        UUID uuid = UUID.randomUUID();
-        String fileName = uuid.toString();
+        String fileName = UUID.randomUUID().toString();
 
         ObjectMetadata metadata = new ObjectMetadata();
-        metadata.setContentLength(noticeFile.getSize());
-        metadata.setContentType(noticeFile.getContentType());
+        metadata.setContentLength(imageFile.getSize());
+        metadata.setContentType(imageFile.getContentType());
 
-        amazonS3.putObject(bucket, fileName, noticeFile.getInputStream(), metadata);
+        amazonS3.putObject(bucket, fileName, imageFile.getInputStream(), metadata);
         return amazonS3.getUrl(bucket, fileName).toString();
     }
 
     public void deleteFile(String fileName){
 
         // 첨부파일(이미지가 없을 경우)
-        if (fileName == null || fileName.equals("")) return;
+        if (fileName == null || fileName.isBlank()) return;
 
         int index = fileName.indexOf(".com/");
         String file = fileName;
