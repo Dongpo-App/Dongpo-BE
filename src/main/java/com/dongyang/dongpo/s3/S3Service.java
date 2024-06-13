@@ -29,7 +29,8 @@ public class S3Service {
 
         ObjectMetadata metadata = new ObjectMetadata();
         metadata.setContentLength(imageFile.getSize());
-        metadata.setContentType("image/jpeg");
+//        metadata.setContentType("image/jpeg");
+        metadata.setContentType(imageFile.getContentType());
 
         amazonS3.putObject(bucket, fileName, imageFile.getInputStream(), metadata);
         return amazonS3.getUrl(bucket, fileName).toString();
