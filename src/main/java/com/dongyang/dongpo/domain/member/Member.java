@@ -72,6 +72,14 @@ public class Member implements UserDetails {
                 .build();
     }
 
+    public void updateMemberNickname(String nickname){
+        this.nickname = nickname;
+    }
+
+    public void updateMemberProfilePic(String profilePic){
+        this.profilePic = profilePic;
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         Set<GrantedAuthority> authorities = new HashSet<>();
