@@ -1,6 +1,7 @@
 package com.dongyang.dongpo.exception;
 
 import com.dongyang.dongpo.apiresponse.ApiResponse;
+import com.dongyang.dongpo.exception.data.ArgumentNotSatisfiedException;
 import com.dongyang.dongpo.exception.data.DataNotFoundException;
 import com.dongyang.dongpo.exception.member.MemberNotFoundException;
 import com.dongyang.dongpo.exception.social.SocialTokenNotValidException;
@@ -76,4 +77,15 @@ public class CustomControllerAdvice {
     /**
      * ------------- 404 -------------
      */
+
+    @ExceptionHandler(ArgumentNotSatisfiedException.class)
+    public ResponseEntity<ApiResponse<String>> handleArgumentNotSatisfiedException() {
+        response.setMessage("요청이 잘못되었습니다.");
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+    }
+
+    /**
+     * ------------- 400 -------------
+     */
+
 }

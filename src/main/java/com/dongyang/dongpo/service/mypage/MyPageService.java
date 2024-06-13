@@ -2,6 +2,7 @@ package com.dongyang.dongpo.service.mypage;
 
 import com.dongyang.dongpo.dto.mypage.MyPageDto;
 import com.dongyang.dongpo.dto.mypage.MyPageUpdateDto;
+import com.dongyang.dongpo.exception.data.ArgumentNotSatisfiedException;
 import com.dongyang.dongpo.jwt.JwtTokenProvider;
 import com.dongyang.dongpo.repository.member.MemberRepository;
 import com.dongyang.dongpo.s3.S3Service;
@@ -31,6 +32,8 @@ public class MyPageService {
 
     @Transactional
     public void updateMyPageInfo(String accessToken, MyPageUpdateDto myPageUpdateDto) {
+        if (myPageUpdateDto.getNickname().length() > 7) // 문자 수 7자 초과시 예외 발생
+            throw new ArgumentNotSatisfiedException();
         memberRepository.findByEmail(jwtTokenProvider.parseClaims(accessToken).getSubject()).ifPresent(member -> {
             if (myPageUpdateDto.getProfilePic() != null && !myPageUpdateDto.getProfilePic().isBlank()) {
                 if (member.getProfilePic().startsWith(bucketFullUrl))
