@@ -23,6 +23,8 @@ public class StoreDto {
     private Long id;
     private String name;
     private String address;
+    private double latitude;
+    private double longitude;
     private LocalTime openTime;
     private LocalTime closeTime;
     private Long memberId;
@@ -37,6 +39,8 @@ public class StoreDto {
         return Store.builder()
                 .name(name)
                 .address(address)
+                .latitude(latitude)
+                .longitude(longitude)
                 .openTime(openTime)
                 .closeTime(closeTime)
                 .member(member)
