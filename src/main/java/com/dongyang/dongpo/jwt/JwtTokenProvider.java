@@ -27,8 +27,8 @@ public class JwtTokenProvider {
 
     private static final Logger log = LoggerFactory.getLogger(JwtTokenProvider.class);
     private final Key key;
-    private final long ACCESSTOKEN_VALIDTIME = 1800000; // 30분
-    private final long REFRESHTOKEN_VALIDTIME = 604800000; // 7일
+    private final long ACCESSTOKEN_VALIDTIME = 30L * 24 * 60 * 60 * 1000; // 30분 // 테스트 위해 1달로 설정
+    private final long REFRESHTOKEN_VALIDTIME = 7L * 24 * 60 * 60 * 1000; // 7일
 
     public JwtTokenProvider(@Value("${jwt.secret}") String secretKey) {
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
