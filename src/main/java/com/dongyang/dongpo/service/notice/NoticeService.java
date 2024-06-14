@@ -71,4 +71,13 @@ public class NoticeService {
 
         return noticeDto;
     }
+
+    @Transactional
+    public void delete(Long id) {
+        Notice notice = noticeRepository.findById(id).orElse(null);
+        NoticePic noticePic = noticePicRepository.findById(notice.getId()).orElse(null);
+
+        noticePicRepository.delete(noticePic);
+        noticeRepository.delete(notice);
+    }
 }

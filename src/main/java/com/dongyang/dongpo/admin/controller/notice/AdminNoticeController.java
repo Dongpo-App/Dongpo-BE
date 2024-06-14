@@ -42,6 +42,13 @@ public class AdminNoticeController {
         return ResponseEntity.ok(noticeService.detail(id));
     }
 
+    @PostMapping("/delete/{id}")
+    public String delete(@PathVariable Long id){
+        noticeService.delete(id);
+        return "redirect:/admin/dashboard/notice";
+    }
+
+
     private Admin getPrincipal(){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return (Admin) authentication.getPrincipal();
