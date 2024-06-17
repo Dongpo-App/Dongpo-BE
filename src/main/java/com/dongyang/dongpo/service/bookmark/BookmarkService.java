@@ -61,4 +61,14 @@ public class BookmarkService {
 
         return bookmarkDtos;
     }
+
+    @Transactional
+    public void deleteBookmark(Long id, String accessToken) throws Exception {
+        String email = jwtTokenProvider.parseClaims(accessToken).getSubject();
+        Member member = memberRepository.findByEmail(email).orElseThrow(MemberNotFoundException::new);
+        StoreBookmark bookmark = bookmarkRepository.findById(id).orElseThrow(StoreNotFoundException::new);
+
+        bookmarkRepository.delete(bookmark);
+        log.info("Member Id : {} is Delete Bookmark Id : {}", member.getId(), id);
+    }
 }

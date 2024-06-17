@@ -1,6 +1,7 @@
 package com.dongyang.dongpo.exception;
 
 import com.dongyang.dongpo.apiresponse.ApiResponse;
+import com.dongyang.dongpo.exception.bookmark.BookmarkNotFoundException;
 import com.dongyang.dongpo.exception.data.ArgumentNotSatisfiedException;
 import com.dongyang.dongpo.exception.data.DataNotFoundException;
 import com.dongyang.dongpo.exception.member.MemberNotFoundException;
@@ -71,6 +72,12 @@ public class CustomControllerAdvice {
     @ExceptionHandler(DataNotFoundException.class)
     public ResponseEntity<ApiResponse<String>> handleDataNotFoundException() {
         response.setMessage("데이터를 찾지 못하였습니다.");
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+    }
+
+    @ExceptionHandler(BookmarkNotFoundException.class)
+    public ResponseEntity<ApiResponse<String>> handleBookmarkNotFoundException() {
+        response.setMessage("북마크를 찾지 못하였습니다.");
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
     }
 
