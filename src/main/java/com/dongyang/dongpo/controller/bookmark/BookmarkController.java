@@ -31,7 +31,7 @@ public class BookmarkController {
         return ResponseEntity.ok(new ApiResponse<>(bookmarkService.bookmarkList(accessToken)));
     }
 
-    @PostMapping("/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<String>> deleteBookmark(@PathVariable Long id,
                                                                @RequestHeader("Authorization") String accessToken) throws Exception {
         bookmarkService.deleteBookmark(id, accessToken);
