@@ -39,6 +39,5 @@ out/
 .vscode/
 
 ### profile
-/src/main/resources/application-dev.yml
 /src/main/resources/application-deploy.yml
 /src/main/resources/application-local.yml
