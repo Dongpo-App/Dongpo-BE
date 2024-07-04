@@ -1,6 +1,5 @@
 package com.dongyang.dongpo.service.notice;
 
-import com.dongyang.dongpo.apiresponse.ApiResponse;
 import com.dongyang.dongpo.domain.admin.Admin;
 import com.dongyang.dongpo.domain.board.NoticePic;
 import com.dongyang.dongpo.dto.PicDto;
@@ -70,5 +69,14 @@ public class NoticeService {
         noticeDto.setImgs(picDtos);
 
         return noticeDto;
+    }
+
+    @Transactional
+    public void delete(Long id) {
+        Notice notice = noticeRepository.findById(id).orElse(null);
+        NoticePic noticePic = noticePicRepository.findById(notice.getId()).orElse(null);
+
+        noticePicRepository.delete(noticePic);
+        noticeRepository.delete(notice);
     }
 }
