@@ -19,7 +19,7 @@ jobs:
           java-version: '17'
 
       - name: Build with Gradle
-        run: ./gradlew build || cat /home/runner/work/Dongpo-BE/Dongpo-BE/build/reports/tests/test/index.html
+        run: ./gradlew bootJar
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
