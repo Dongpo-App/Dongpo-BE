@@ -57,7 +57,7 @@ jobs:
           password: ${{ secrets.DEV_SERVER_PASSWORD }}
           script: |
             cd ~/Dongpo_dev
-            aws secretsmanager get-secret-value --secret-id ${{ secrets.AWS_SECRET_NAME }} --query 'SecretString' --output text | jq -r 'to_entries|map("\(.key)=\(.value|tostring)")|.[]' > .env
+            aws secretsmanager get-secret-value --secret-id ${{ secrets.DEV_AWS_SECRET_NAME }} --query 'SecretString' --output text | jq -r 'to_entries|map("\(.key)=\(.value|tostring)")|.[]' > .env
             docker-compose pull
             docker-compose up -d
             docker images --format '{{.Repository}}:{{.Tag}} {{.ID}}' | grep -E "^${{ secrets.DOCKER_USERNAME }}/${{ secrets.DEV_DOCKER_IMAGE_NAME }}:" | grep -v ':latest' | awk '{print $2}' | xargs -r docker rmi
