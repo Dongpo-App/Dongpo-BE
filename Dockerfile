@@ -10,4 +10,4 @@ COPY ./build/libs/dongpo-0.1.jar /app
 EXPOSE 8080
 
 # 컨테이너가 시작될 때 실행될 명령어 설정
-CMD ["java", "-Dspring.profiles.active=deploy", "-jar", "/app/dongpo-0.1.jar"]
+CMD ["java", "-Dspring.profiles.active=default,deploy", "-jar", "/app/dongpo-0.1.jar"]

@@ -1,0 +1,31 @@
+spring:
+  datasource: # mysql
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://${DB_HOST}:${DB_PORT}/${DB_NAME}?&autoReconnect=true&allowMultiQueries=true&characterEncoding=UTF-8
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: update
+  data: # redis
+    redis:
+      host: ${REDIS_HOST}
+      port: ${REDIS_PORT}
+
+cloud:
+  aws:
+    s3:
+      bucket: ${S3_BUCKET}
+      bucket-full-url: ${S3_BUCKET_URL}
+    credentials:
+      access-key: ${AWS_ACCESS_KEY}
+      secret-key: ${AWS_SECRET_KEY}
+    region:
+      static: ap-northeast-2
+      auto: false
+    stack:
+      auto: false
+
+jwt:
+  secret:
+    ${JWT_SECRET}
