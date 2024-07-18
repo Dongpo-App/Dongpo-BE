@@ -70,10 +70,10 @@ public class MemberDataInit implements CommandLineRunner {
         memberRepository.save(member3);
 
         Store store1 = Store.builder()
-                .name("맛집1")
-                .address("서울시 강남구")
-                .latitude(37.495470)
-                .longitude(126.887639)
+                .name("역할맥")
+                .address("서울시 구로구 고척동")
+                .latitude(37.50054492371818)
+                .longitude(126.86630168247805)
                 .openTime(LocalTime.of(18, 0))
                 .closeTime(LocalTime.of(23, 0))
                 .member(member1)
@@ -81,7 +81,45 @@ public class MemberDataInit implements CommandLineRunner {
                 .status(Store.StoreStatus.ACTIVE)
                 .build();
 
-        storeRepository.save(store1);
+        Store store2 = Store.builder()
+                .name("시골집")
+                .address("서울시 구로구 고척동")
+                .latitude(37.50109695453075)
+                .longitude(126.86845508548086)
+                .openTime(LocalTime.of(16, 0))
+                .closeTime(LocalTime.of(21, 0))
+                .member(member2)
+                .isToiletValid(false)
+                .status(Store.StoreStatus.ACTIVE)
+                .build();
 
+        Store store3 = Store.builder()
+                .name("써브웨이")
+                .address("서울시 구로구 고척동")
+                .latitude(37.500986658450685)
+                .longitude(126.86651576780534)
+                .openTime(LocalTime.of(16, 0))
+                .closeTime(LocalTime.of(21, 0))
+                .member(member3)
+                .isToiletValid(true)
+                .status(Store.StoreStatus.ACTIVE)
+                .build();
+
+        Store store4 = Store.builder()
+                .name("구로역앞")
+                .address("서울시 구로구 구로동")
+                .latitude(37.502763)
+                .longitude(126.880547)
+                .openTime(LocalTime.of(16, 0))
+                .closeTime(LocalTime.of(21, 0))
+                .member(member1)
+                .isToiletValid(true)
+                .status(Store.StoreStatus.ACTIVE)
+                .build();
+
+        storeRepository.save(store1);
+        storeRepository.save(store2);
+        storeRepository.save(store3);
+        storeRepository.save(store4);
     }
 }
