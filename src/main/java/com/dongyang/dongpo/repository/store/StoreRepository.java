@@ -17,4 +17,7 @@ public interface StoreRepository extends JpaRepository<Store, Long> {
                                       @Param("maxLat") double maxLat,
                                       @Param("minLong") double minLong,
                                       @Param("maxLong") double maxLong);
+
+    @Query("SELECT s.member.nickname, COUNT(s) as storeCount FROM Store s GROUP BY s.member.nickname ORDER BY storeCount DESC")
+    List<Object[]> findTop10MembersByStoreCount();
 }
