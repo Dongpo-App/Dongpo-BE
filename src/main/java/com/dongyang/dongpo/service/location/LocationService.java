@@ -3,6 +3,7 @@ package com.dongyang.dongpo.service.location;
 import com.dongyang.dongpo.domain.store.Store;
 import com.dongyang.dongpo.dto.location.LatLong;
 import com.dongyang.dongpo.dto.location.LatLongComparisonDto;
+import com.dongyang.dongpo.dto.location.CoordinateRange;
 import com.dongyang.dongpo.exception.data.DataNotFoundException;
 import com.dongyang.dongpo.repository.store.StoreRepository;
 import jakarta.transaction.Transactional;
@@ -65,4 +66,18 @@ public class LocationService {
         return calcDistance(newCoordinate, getStoreCoordinates(latLongComparison.getTargetStoreId())) <= 50;
     }
 
+    public CoordinateRange calcCoordinateRangeByCurrentLocation(LatLong latLong) {
+        double distanceInKm = 1; // 1km 이내의 점포 검색
+
+        // 위도와 경도의 차이 계산
+        double deltaLat = distanceInKm / 111;
+        double deltaLong = distanceInKm / (111 * Math.cos(Math.toRadians(latLong.getLatitude())));
+
+        return CoordinateRange.builder()
+                .minLat(latLong.getLatitude() - deltaLat)
+                .maxLat(latLong.getLatitude() + deltaLat)
+                .minLong(latLong.getLongitude() - deltaLong)
+                .maxLong(latLong.getLongitude() + deltaLong)
+                .build();
+    }
 }

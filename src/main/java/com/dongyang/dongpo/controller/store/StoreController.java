@@ -1,6 +1,7 @@
 package com.dongyang.dongpo.controller.store;
 
 import com.dongyang.dongpo.apiresponse.ApiResponse;
+import com.dongyang.dongpo.dto.location.LatLong;
 import com.dongyang.dongpo.dto.store.StoreDto;
 import com.dongyang.dongpo.service.store.StoreService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -17,10 +18,16 @@ public class StoreController {
 
     private final StoreService storeService;
 
+//    @GetMapping("")
+//    @Operation(summary = "전체 점포 조회")
+//    public ResponseEntity<ApiResponse<List<StoreDto>>> allStore(){
+//        return ResponseEntity.ok(new ApiResponse<>(storeService.findAll()));
+//    }
+
     @GetMapping("")
-    @Operation(summary = "전체 점포 조회")
-    public ResponseEntity<ApiResponse<List<StoreDto>>> allStore(){
-        return ResponseEntity.ok(new ApiResponse<>(storeService.findAll()));
+    @Operation(summary = "현재 위치 기준 주변 점포 조회")
+    public ResponseEntity<ApiResponse<List<StoreDto>>> getStoresByCurrentLocation(@RequestBody LatLong latLong) {
+        return ResponseEntity.ok(new ApiResponse<>(storeService.findStoresByCurrentLocation(latLong)));
     }
 
     @GetMapping("/{id}")
