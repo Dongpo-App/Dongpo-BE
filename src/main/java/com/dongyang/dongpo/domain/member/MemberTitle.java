@@ -1,6 +1,5 @@
 package com.dongyang.dongpo.domain.member;
 
-import com.dongyang.dongpo.domain.PK.MemberTitleId;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -8,22 +7,22 @@ import java.time.LocalDateTime;
 
 @Entity
 @Getter
-@Setter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "member_title")
-@IdClass(MemberTitleId.class)
+@ToString
 public class MemberTitle {
     @Id
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id")
-    private Member memberId;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-    @Id
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "title_id")
-    private Title titleId;
+    @JoinColumn(name = "member")
+    private Member member;
+
+    @Enumerated(EnumType.STRING)
+    private Title title;
 
     @Column(columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP")
     private LocalDateTime achieveDate;

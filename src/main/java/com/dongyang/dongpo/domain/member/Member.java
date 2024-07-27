@@ -36,6 +36,10 @@ public class Member implements UserDetails {
     private String profilePic;
 
     @Enumerated(EnumType.STRING)
+    @Builder.Default
+    private Title mainTitle = Title.BASIC_TITLE;
+
+    @Enumerated(EnumType.STRING)
     private Role role;
 
     @Enumerated(EnumType.STRING)
@@ -78,6 +82,10 @@ public class Member implements UserDetails {
 
     public void updateMemberProfilePic(String profilePic){
         this.profilePic = profilePic;
+    }
+
+    public void updateMemberMainTitle(Title title){
+        this.mainTitle = title;
     }
 
     @Override

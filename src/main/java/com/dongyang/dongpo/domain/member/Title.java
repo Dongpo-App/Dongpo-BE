@@ -1,23 +1,17 @@
 package com.dongyang.dongpo.domain.member;
 
-import jakarta.persistence.*;
-import lombok.*;
+import lombok.Getter;
 
-@Entity
 @Getter
-@Setter
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "title")
-public class Title {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public enum Title {
+    BASIC_TITLE("막 개장한 포장마차"), // 첫 가입시
+    FAILED_TO_VISIT("실패는 성공의 어머니"), // n회 이상 방문 실패시
+    REGULAR_CUSTOMER("난 한 놈만 패"), // n회 이상 같은 점포 방문시
+    ;
 
-    @Column(unique = true, length = 64)
-    private String name;
+    private final String description;
 
-    @Column(length = 128)
-    private String titleDesc;
+    Title(String description) {
+        this.description = description;
+    }
 }
