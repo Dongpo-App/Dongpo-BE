@@ -16,8 +16,6 @@ build/
 bin/
 !**/src/main/**/bin/
 !**/src/test/**/bin/
-src/main/resources/application-dev.yml
-src/main/resources/application-oauth2.yml
 
 ### IntelliJ IDEA ###
 .idea
@@ -39,5 +37,9 @@ out/
 .vscode/
 
 ### profile
-/src/main/resources/application-deploy.yml
 /src/main/resources/application-local.yml
+
+### Dockerfile
+/Dockerfile.local
+
+.DS_Store
