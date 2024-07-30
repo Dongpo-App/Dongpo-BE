@@ -50,16 +50,16 @@ public class MyPageService {
             if (myPageUpdateDto.getProfilePic() != null && !myPageUpdateDto.getProfilePic().isBlank()) {
                 if (member.getProfilePic().startsWith(bucketFullUrl))
                     s3Service.deleteFile(member.getProfilePic()); // S3에 있는 기존 프로필 사진 삭제
-                member.updateMemberProfilePic(myPageUpdateDto.getProfilePic());
+                member.setProfilePic(myPageUpdateDto.getProfilePic());
                 log.info("Updated Member profilePic : {}", member.getEmail());
             }
             if (myPageUpdateDto.getNickname() != null && !myPageUpdateDto.getNickname().equals(member.getNickname())) {
-                member.updateMemberNickname(myPageUpdateDto.getNickname());
+                member.setNickname(myPageUpdateDto.getNickname());
                 log.info("Updated Member nickname : {}", member.getEmail());
             }
             if (myPageUpdateDto.getNewMainTitle() != null && !myPageUpdateDto.getNewMainTitle().equals(member.getMainTitle())) {
                 MemberTitle memberTitle = memberTitleRepository.findByMemberAndTitle(member, myPageUpdateDto.getNewMainTitle());
-                member.updateMemberMainTitle(memberTitle.getTitle());
+                member.setMainTitle(memberTitle.getTitle());
                 log.info("Updated Member mainTitle : {}", member.getEmail());
             }
         });

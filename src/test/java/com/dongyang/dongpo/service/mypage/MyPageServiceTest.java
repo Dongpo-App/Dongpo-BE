@@ -137,20 +137,22 @@ class MyPageServiceTest {
 
         // when
         if (myPageUpdateDto.getProfilePic() != null && !myPageUpdateDto.getProfilePic().isBlank()) {
-            member.updateMemberProfilePic(myPageUpdateDto.getProfilePic());
+            member.setProfilePic(myPageUpdateDto.getProfilePic());
         }
         if (myPageUpdateDto.getNickname() != null && !myPageUpdateDto.getNickname().equals(member.getNickname())) {
-            member.updateMemberNickname(myPageUpdateDto.getNickname());
+            member.setNickname(myPageUpdateDto.getNickname());
         }
         if (myPageUpdateDto.getNewMainTitle() != null && !myPageUpdateDto.getNewMainTitle().equals(member.getMainTitle())) {
             MemberTitle memberTitle = memberTitleRepository.findByMemberAndTitle(member, myPageUpdateDto.getNewMainTitle());
-            member.updateMemberMainTitle(memberTitle.getTitle());
+            member.setMainTitle(memberTitle.getTitle());
         }
 
+        Member foundMember = memberRepository.findByEmail("test@example.com").orElse(null);
+
         // then
-        System.out.println("updatedMember = " + myPageUpdateDto);
-        assertThat(member.getNickname()).isEqualTo("테스터2");
-        assertThat(member.getProfilePic()).isEqualTo("https://example.com/profile.jpg");
-        assertThat(member.getMainTitle()).isEqualTo(Title.REGULAR_CUSTOMER);
+        System.out.println("foundMember = " + foundMember.getNickname());
+        assertThat(foundMember.getNickname()).isEqualTo("테스터2");
+        assertThat(foundMember.getProfilePic()).isEqualTo("https://example.com/profile.jpg");
+        assertThat(foundMember.getMainTitle()).isEqualTo(Title.REGULAR_CUSTOMER);
     }
 }

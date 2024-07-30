@@ -14,6 +14,7 @@ import java.util.Set;
 
 @Entity
 @Getter
+@Setter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -72,20 +73,8 @@ public class Member implements UserDetails {
                 .socialType(userInfo.getProvider())
                 .role(Role.ROLE_MEMBER)
                 .profilePic(userInfo.getProfilePic())
-                .status(Member.Status.ACTIVE)
+                .status(Status.ACTIVE)
                 .build();
-    }
-
-    public void updateMemberNickname(String nickname){
-        this.nickname = nickname;
-    }
-
-    public void updateMemberProfilePic(String profilePic){
-        this.profilePic = profilePic;
-    }
-
-    public void updateMemberMainTitle(Title title){
-        this.mainTitle = title;
     }
 
     @Override
