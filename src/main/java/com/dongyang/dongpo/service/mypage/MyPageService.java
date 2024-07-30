@@ -2,12 +2,14 @@ package com.dongyang.dongpo.service.mypage;
 
 import com.dongyang.dongpo.domain.member.Member;
 import com.dongyang.dongpo.domain.member.MemberTitle;
+import com.dongyang.dongpo.domain.store.Store;
 import com.dongyang.dongpo.dto.mypage.MyPageDto;
 import com.dongyang.dongpo.dto.mypage.MyPageUpdateDto;
 import com.dongyang.dongpo.exception.data.ArgumentNotSatisfiedException;
 import com.dongyang.dongpo.jwt.JwtTokenProvider;
 import com.dongyang.dongpo.repository.member.MemberRepository;
 import com.dongyang.dongpo.repository.member.MemberTitleRepository;
+import com.dongyang.dongpo.repository.store.StoreRepository;
 import com.dongyang.dongpo.s3.S3Service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,10 +26,11 @@ import java.util.List;
 @Slf4j
 public class MyPageService {
 
-    private final MemberRepository memberRepository;
     private final JwtTokenProvider jwtTokenProvider;
-    private final S3Service s3Service;
+    private final MemberRepository memberRepository;
     private final MemberTitleRepository memberTitleRepository;
+    private final S3Service s3Service;
+    private final StoreRepository storeRepository;
 
     @Value("${cloud.aws.s3.bucket-full-url}")
     private String bucketFullUrl;
@@ -35,7 +38,8 @@ public class MyPageService {
     public MyPageDto getMyPageIndex(String accessToken) throws Exception {
         Member member = memberRepository.findByEmail(jwtTokenProvider.parseClaims(accessToken).getSubject()).orElseThrow(MemberNotFoundException::new);
         List<MemberTitle> memberTitles = memberTitleRepository.findByMember(member);
-        return MyPageDto.toEntity(member, memberTitles);
+        List<Store> memberStores = storeRepository.findByMember(member);
+        return MyPageDto.toEntity(member, memberTitles, memberStores);
     }
 
     @Transactional
