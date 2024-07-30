@@ -102,7 +102,7 @@ public class StoreService {
         String email = jwtTokenProvider.parseClaims(accessToken).getSubject();
         Member member = memberRepository.findByEmail(email).orElseThrow(MemberNotFoundException::new);
 
-        List<Store> stores = storeRepository.findByMemberId(member.getId());
+        List<Store> stores = storeRepository.findByMember(member);
         List<StoreDto> storeResponse = new ArrayList<>();
 
         for (Store store : stores)
