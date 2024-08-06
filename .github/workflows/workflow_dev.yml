@@ -41,6 +41,8 @@ jobs:
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DEV_DOCKER_IMAGE_NAME }}:${{ env.CURRENT_TIME }},
                 ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DEV_DOCKER_IMAGE_NAME }}:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
           platforms: linux/amd64,linux/arm64
 
   deploy:
