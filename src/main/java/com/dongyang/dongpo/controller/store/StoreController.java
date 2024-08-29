@@ -26,7 +26,7 @@ public class StoreController {
 
     @GetMapping("")
     @Operation(summary = "현재 위치 기준 주변 점포 조회")
-    public ResponseEntity<ApiResponse<List<StoreDto>>> getStoresByCurrentLocation(@RequestBody LatLong latLong) {
+    public ResponseEntity<ApiResponse<List<StoreDto>>> getStoresByCurrentLocation(@ModelAttribute LatLong latLong) {
         return ResponseEntity.ok(new ApiResponse<>(storeService.findStoresByCurrentLocation(latLong)));
     }
 
