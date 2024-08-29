@@ -1,9 +1,8 @@
-name: Build and Push Docker Image - dev
+name: Build and Deploy
 
 on:
   push:
-    branches:
-      - develop
+    branches: [ "main", "develop" ]
 
 jobs:
   build:
@@ -17,16 +16,6 @@ jobs:
         with:
           distribution: 'adopt'
           java-version: '17'
-
-      - name: Caching Gradle
-        uses: actions/cache@v3
-        with:
-          path: |
-            ~/.gradle/caches
-            ~/.gradle/wrapper
-          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
-          restore-keys: |
-            ${{ runner.os }}-gradle-
 
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
@@ -46,7 +35,19 @@ jobs:
       - name: Get current time
         run: echo "CURRENT_TIME=$(date +'%Y%m%d%H%M')" >> $GITHUB_ENV
 
-      - name: Build and Push Docker image
+      - name: Build and Push Docker image - prod
+        if: github.ref == 'refs/heads/main'
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          tags: ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_IMAGE_NAME }}:${{ env.CURRENT_TIME }},
+                ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_IMAGE_NAME }}:latest
+          platforms: linux/amd64
+
+      - name: Build and Push Docker image - dev
+        if: github.ref == 'refs/heads/develop'
         uses: docker/build-push-action@v2
         with:
           context: .
@@ -54,14 +55,30 @@ jobs:
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DEV_DOCKER_IMAGE_NAME }}:${{ env.CURRENT_TIME }},
                 ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DEV_DOCKER_IMAGE_NAME }}:latest
-          platforms: linux/amd64,linux/arm64
+          platforms: linux/arm64
 
   deploy:
     runs-on: ubuntu-latest
     needs: build
 
     steps:
-      - name: SSH to Server and Deploy
+      - name: SSH to Server and Deploy - prod
+        if: github.ref == 'refs/heads/main'
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          port: ${{ secrets.SERVER_PORT }}
+          username: ${{ secrets.SERVER_USERNAME }}
+          password: ${{ secrets.SERVER_PASSWORD }}
+          script: |
+            cd ~/Dongpo
+            aws secretsmanager get-secret-value --secret-id ${{ secrets.AWS_SECRET_NAME }} --query 'SecretString' --output text | jq -r 'to_entries|map("\(.key)=\(.value|tostring)")|.[]' > .env
+            docker-compose pull
+            docker-compose up -d
+            docker image prune -f
+
+      - name: SSH to Server and Deploy - dev
+        if: github.ref == 'refs/heads/develop'
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.DEV_SERVER_HOST }}
@@ -73,5 +90,4 @@ jobs:
             aws secretsmanager get-secret-value --secret-id ${{ secrets.DEV_AWS_SECRET_NAME }} --query 'SecretString' --output text | jq -r 'to_entries|map("\(.key)=\(.value|tostring)")|.[]' > .env
             docker-compose pull
             docker-compose up -d
-            docker images --format '{{.Repository}}:{{.Tag}} {{.ID}}' | grep -E "^${{ secrets.DOCKER_USERNAME }}/${{ secrets.DEV_DOCKER_IMAGE_NAME }}:" | grep -v ':latest' | awk '{print $2}' | xargs -r docker rmi
-            exit
+            docker image prune -f
