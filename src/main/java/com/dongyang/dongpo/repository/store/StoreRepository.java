@@ -2,6 +2,7 @@ package com.dongyang.dongpo.repository.store;
 
 import com.dongyang.dongpo.domain.member.Member;
 import com.dongyang.dongpo.domain.store.Store;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -19,6 +20,10 @@ public interface StoreRepository extends JpaRepository<Store, Long> {
                                       @Param("minLong") double minLong,
                                       @Param("maxLong") double maxLong);
 
-    @Query("SELECT s.member.nickname, COUNT(s) as storeCount FROM Store s GROUP BY s.member.nickname ORDER BY storeCount DESC")
-    List<Object[]> findTop10MembersByStoreCount();
+    @Query("SELECT s.member, COUNT(s) as storeCount " +
+            "FROM Store s " +
+            "GROUP BY s.member " +
+            "ORDER BY storeCount DESC")
+    List<Object[]> findTop10MembersByStoreCount(Pageable pageable);
+
 }

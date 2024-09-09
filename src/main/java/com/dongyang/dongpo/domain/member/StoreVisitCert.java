@@ -20,11 +20,11 @@ public class StoreVisitCert {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_Id")
-    private Member memberId;
+    private Member member;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "cert_store")
-    private Store storeId;
+    private Store store;
 
     private boolean isVisitSuccessful;
 

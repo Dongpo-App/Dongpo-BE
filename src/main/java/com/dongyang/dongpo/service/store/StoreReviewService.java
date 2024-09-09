@@ -55,4 +55,9 @@ public class StoreReviewService {
     public List<StoreReview> findAll(){
         return reviewRepository.findAll();
     }
+
+    public ReviewDto findOne(Long id) throws StoreNotFoundException {
+        StoreReview review = reviewRepository.findById(id).orElseThrow(StoreNotFoundException::new);
+        return review.toResponse();
+    }
 }

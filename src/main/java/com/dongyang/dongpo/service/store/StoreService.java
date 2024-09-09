@@ -110,4 +110,9 @@ public class StoreService {
 
         return storeResponse;
     }
+
+    public StoreDto findOne(Long id) throws StoreNotFoundException {
+        Store store = storeRepository.findById(id).orElseThrow(StoreNotFoundException::new);
+        return store.toResponse();
+    }
 }

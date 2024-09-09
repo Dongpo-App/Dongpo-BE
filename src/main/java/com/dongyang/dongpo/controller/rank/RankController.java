@@ -21,7 +21,7 @@ public class RankController {
 
     @GetMapping("/visit")
     @Operation(summary = "방문인증 랭킹")
-    public ResponseEntity<ApiResponse> getVisitRank() {
+    public ResponseEntity<ApiResponse<List<RankDto>>> getVisitRank() {
         return ResponseEntity.ok(new ApiResponse<>(rankService.getVisitRank()));
     }
 
@@ -33,7 +33,7 @@ public class RankController {
 
     @GetMapping("/store")
     @Operation(summary = "점포 등록 랭킹")
-    public ResponseEntity<ApiResponse> getStoreRank() {
+    public ResponseEntity<ApiResponse<List<RankDto>>> getStoreRank() {
         return ResponseEntity.ok(new ApiResponse<>(rankService.getStoreRank()));
     }
 }
