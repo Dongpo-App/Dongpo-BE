@@ -39,9 +39,9 @@ public class StoreService {
         Member member = memberRepository.findByEmail(email).orElseThrow(MemberNotFoundException::new);
 
         Store store = request.toStore(member);
-        storeRepository.save(store);
+        Store save = storeRepository.save(store);
 
-        log.info("member {} add store: {}", member.getId(), store.getId());
+        log.info("member {} add store: {}", member.getId(), save.getId());
     }
 
     public List<StoreDto> findAll() {
