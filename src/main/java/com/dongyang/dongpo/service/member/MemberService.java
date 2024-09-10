@@ -36,7 +36,7 @@ public class MemberService {
         Member member = Member.toEntity(userInfo);
 
         if (memberRepository.existsByEmail(member.getEmail()))
-            return tokenService.alreadyExistMember(member);
+            return tokenService.social_AlreadyExistMember(member);
 
         memberRepository.save(member);
         memberTitleRepository.save(MemberTitle.builder()
@@ -62,6 +62,6 @@ public class MemberService {
     }
 
     public Member findOne(Long id) throws MemberNotFoundException {
-        return memberRepository.findById(id).orElseThrow(() -> new MemberNotFoundException());
+        return memberRepository.findById(id).orElseThrow(MemberNotFoundException::new);
     }
 }

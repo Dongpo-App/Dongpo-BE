@@ -42,9 +42,10 @@ public class TokenService {
     }
 
     @Transactional
-    public JwtToken alreadyExistMember(Member member){
+    public JwtToken social_AlreadyExistMember(Member member){
         JwtToken jwtToken = jwtTokenProvider.createToken(member.getEmail(), member.getRole());
         RefreshToken refreshToken = refreshTokenRepository.findByEmail(member.getEmail()).orElse(null);
+
         if (refreshToken != null)
             refreshToken.updateRefreshToken(jwtToken.getRefreshToken());
         else
