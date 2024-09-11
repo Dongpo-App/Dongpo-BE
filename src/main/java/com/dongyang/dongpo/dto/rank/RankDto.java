@@ -1,6 +1,7 @@
 package com.dongyang.dongpo.dto.rank;
 
 import com.dongyang.dongpo.domain.member.Member;
+import com.dongyang.dongpo.domain.member.Title;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,6 +14,7 @@ import lombok.NoArgsConstructor;
 public class RankDto {
 
     private String nickname;
+    private Title title;
     private String pic;
     private Long count;
 
@@ -22,6 +24,7 @@ public class RankDto {
 
         return RankDto.builder()
                 .nickname(member.getNickname())
+                .title(member.getMainTitle())
                 .pic(member.getProfilePic())
                 .count(count)
                 .build();
