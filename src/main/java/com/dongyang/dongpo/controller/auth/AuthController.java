@@ -1,6 +1,7 @@
 package com.dongyang.dongpo.controller.auth;
 
 import com.dongyang.dongpo.apiresponse.ApiResponse;
+import com.dongyang.dongpo.domain.member.Member;
 import com.dongyang.dongpo.dto.JwtToken;
 import com.dongyang.dongpo.dto.auth.SocialTokenDto;
 import com.dongyang.dongpo.service.auth.SocialService;
@@ -8,6 +9,7 @@ import com.dongyang.dongpo.service.token.TokenService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -35,7 +37,7 @@ public class AuthController {
 
     @PostMapping("/reissue")
     @Operation(summary = "JWT토큰 재발급")
-    public ResponseEntity<ApiResponse<JwtToken>> reissue(@RequestHeader("Authorization") String refreshToken) throws Exception {
-        return ResponseEntity.ok(new ApiResponse<>(tokenService.reissueAccessToken(refreshToken)));
+    public ResponseEntity<ApiResponse<JwtToken>> reissue(@AuthenticationPrincipal Member member) throws Exception {
+        return ResponseEntity.ok(new ApiResponse<>(tokenService.reissueAccessToken(member)));
     }
 }

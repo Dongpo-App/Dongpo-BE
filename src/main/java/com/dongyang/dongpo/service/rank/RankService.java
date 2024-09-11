@@ -20,7 +20,6 @@ import java.util.stream.Collectors;
 @Slf4j
 public class RankService {
 
-
     private final StoreReviewRepository reviewRepository;
     private final StoreVisitCertRepository visitCertRepository;
     private final StoreRepository storeRepository;

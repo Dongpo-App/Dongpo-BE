@@ -1,11 +1,13 @@
 package com.dongyang.dongpo.controller.bookmark;
 
 import com.dongyang.dongpo.apiresponse.ApiResponse;
+import com.dongyang.dongpo.domain.member.Member;
 import com.dongyang.dongpo.dto.bookmark.BookmarkDto;
 import com.dongyang.dongpo.service.bookmark.BookmarkService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,21 +22,21 @@ public class BookmarkController {
     @PostMapping("")
     @Operation(summary = "북마크 추가")
     public ResponseEntity<ApiResponse<String>> addBookmark(@RequestBody Long storeId,
-                                                     @RequestHeader("Authorization") String accessToken) throws Exception {
-        bookmarkService.addBookmark(accessToken, storeId);
+                                                           @AuthenticationPrincipal Member member) throws Exception {
+        bookmarkService.addBookmark(member, storeId);
         return ResponseEntity.ok(new ApiResponse<>("success"));
     }
 
     @GetMapping("")
     @Operation(summary = "북마크 조회")
-    public ResponseEntity<ApiResponse<List<BookmarkDto>>> getBookmarks(@RequestHeader("Authorization") String accessToken) throws Exception {
-        return ResponseEntity.ok(new ApiResponse<>(bookmarkService.bookmarkList(accessToken)));
+    public ResponseEntity<ApiResponse<List<BookmarkDto>>> getBookmarks(@AuthenticationPrincipal Member member) {
+        return ResponseEntity.ok(new ApiResponse<>(bookmarkService.bookmarkList(member)));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<String>> deleteBookmark(@PathVariable Long id,
-                                                               @RequestHeader("Authorization") String accessToken) throws Exception {
-        bookmarkService.deleteBookmark(id, accessToken);
+                                                              @AuthenticationPrincipal Member member) throws Exception {
+        bookmarkService.deleteBookmark(id, member);
         return ResponseEntity.ok(new ApiResponse<>("success"));
     }
 }

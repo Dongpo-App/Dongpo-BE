@@ -1,12 +1,14 @@
 package com.dongyang.dongpo.controller.store;
 
 import com.dongyang.dongpo.apiresponse.ApiResponse;
+import com.dongyang.dongpo.domain.member.Member;
 import com.dongyang.dongpo.dto.location.LatLong;
 import com.dongyang.dongpo.dto.store.StoreDto;
 import com.dongyang.dongpo.service.store.StoreService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -38,15 +40,15 @@ public class StoreController {
 
     @GetMapping("/member")
     @Operation(summary = "내가 등록한 점포조회")
-    public ResponseEntity<ApiResponse<List<StoreDto>>> myRegStore(@RequestHeader("Authorization") String accessToken) throws Exception {
-        return ResponseEntity.ok(new ApiResponse<>(storeService.myRegStore(accessToken)));
+    public ResponseEntity<ApiResponse<List<StoreDto>>> myRegStore(@AuthenticationPrincipal Member member) {
+        return ResponseEntity.ok(new ApiResponse<>(storeService.myRegStore(member)));
     }
 
     @PostMapping("")
     @Operation(summary = "점포 등록")
     public ResponseEntity<ApiResponse<String>> addStore(@RequestBody StoreDto request,
-                                   @RequestHeader("Authorization") String accessToken) throws Exception {
-        storeService.addStore(request, accessToken);
+                                                        @AuthenticationPrincipal Member member) {
+        storeService.addStore(request, member);
         return ResponseEntity.ok(new ApiResponse<>("success"));
     }
 
@@ -61,9 +63,9 @@ public class StoreController {
     @Operation(summary = "점포 정보 수정")
     public ResponseEntity<ApiResponse<String>> updateStore(@PathVariable Long id,
                                       @RequestBody StoreDto request,
-                                      @RequestHeader("Authorization") String token) throws Exception {
+                                                           @AuthenticationPrincipal Member member) throws Exception {
 
-        storeService.updateStore(id, request, token);
+        storeService.updateStore(id, request, member);
         return ResponseEntity.ok(new ApiResponse<>("success"));
     }
 }

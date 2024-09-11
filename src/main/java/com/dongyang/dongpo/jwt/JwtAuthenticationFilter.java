@@ -32,7 +32,6 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
         }finally {
             filterChain.doFilter(servletRequest, servletResponse);
         }
-
     }
 
     private String resolveToken(HttpServletRequest servletRequest) throws Exception{

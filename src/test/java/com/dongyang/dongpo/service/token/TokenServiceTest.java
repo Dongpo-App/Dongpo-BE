@@ -58,7 +58,7 @@ class TokenServiceTest {
         when(memberRepository.findByEmail(member.getEmail())).thenReturn(Optional.of(member));
         when(refreshTokenRepository.findByEmail(member.getEmail())).thenReturn(Optional.of(refreshToken));
 
-        JwtToken jwtToken = tokenService.reissueAccessToken(token);
+        JwtToken jwtToken = tokenService.reissueAccessToken(member);
 
         assertNotNull(jwtToken);
         assertNotNull(jwtToken.getAccessToken());
@@ -74,7 +74,7 @@ class TokenServiceTest {
 
     @Test
     @DisplayName("토큰 재발급 실패 - 토큰 만료")
-    void reissueAccessTokenFail() throws Exception {
+    void reissueAccessTokenFail() {
         Claims claims = mock(Claims.class);
         when(jwtTokenProvider.parseClaims(token)).thenReturn(claims);
         when(claims.getSubject()).thenReturn("test@test.com");
@@ -88,7 +88,7 @@ class TokenServiceTest {
         when(refreshTokenRepository.findByEmail(member.getEmail())).thenReturn(Optional.empty());
 
         Exception exception = assertThrows(Exception.class, () -> {
-            tokenService.reissueAccessToken(token);
+            tokenService.reissueAccessToken(member);
         });
 
         assertTrue(exception instanceof CustomExpiredException);

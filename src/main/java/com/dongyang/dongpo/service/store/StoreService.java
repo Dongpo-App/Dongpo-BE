@@ -9,8 +9,6 @@ import com.dongyang.dongpo.dto.store.ReviewDto;
 import com.dongyang.dongpo.dto.store.StoreDto;
 import com.dongyang.dongpo.exception.member.MemberNotFoundException;
 import com.dongyang.dongpo.exception.store.StoreNotFoundException;
-import com.dongyang.dongpo.jwt.JwtTokenProvider;
-import com.dongyang.dongpo.repository.member.MemberRepository;
 import com.dongyang.dongpo.repository.store.StoreRepository;
 import com.dongyang.dongpo.service.location.LocationService;
 import lombok.RequiredArgsConstructor;
@@ -28,16 +26,11 @@ import java.util.List;
 public class StoreService {
 
     private final StoreRepository storeRepository;
-    private final MemberRepository memberRepository;
     private final LocationService locationService;
-    private final JwtTokenProvider jwtTokenProvider;
 
 
     @Transactional
-    public void addStore(StoreDto request, String accessToken) throws Exception{
-        String email = jwtTokenProvider.parseClaims(accessToken).getSubject();
-        Member member = memberRepository.findByEmail(email).orElseThrow(MemberNotFoundException::new);
-
+    public void addStore(StoreDto request, Member member){
         Store store = request.toStore(member);
         Store save = storeRepository.save(store);
 
@@ -84,9 +77,7 @@ public class StoreService {
     }
 
     @Transactional
-    public void updateStore(Long id, StoreDto request, String token) throws Exception{
-        String email = jwtTokenProvider.parseClaims(token).getSubject();
-        Member member = memberRepository.findByEmail(email).orElseThrow(MemberNotFoundException::new);
+    public void updateStore(Long id, StoreDto request, Member member) throws Exception{
         Store store = storeRepository.findById(id).orElseThrow(StoreNotFoundException::new);
 
         if (member == store.getMember()) {
@@ -98,10 +89,7 @@ public class StoreService {
         log.info("member {} update store: {}",member.getId(), store.getId());
     }
 
-    public List<StoreDto> myRegStore(String accessToken) throws Exception{
-        String email = jwtTokenProvider.parseClaims(accessToken).getSubject();
-        Member member = memberRepository.findByEmail(email).orElseThrow(MemberNotFoundException::new);
-
+    public List<StoreDto> myRegStore(Member member){
         List<Store> stores = storeRepository.findByMember(member);
         List<StoreDto> storeResponse = new ArrayList<>();
 

@@ -62,7 +62,8 @@ public class StoreReview {
                 .build();
     }
 
-    public void addReport(){
+    public StoreReview addReport(){
         this.reportCount++;
+        return this;
     }
 }

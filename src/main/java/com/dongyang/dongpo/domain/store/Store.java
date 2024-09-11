@@ -122,7 +122,8 @@ public class Store {
         this.operatingDays = storeDto.getOperatingDays();
     }
 
-    public void addReport(){
+    public Store addReport(){
         this.reportCount++;
+        return this;
     }
 }
