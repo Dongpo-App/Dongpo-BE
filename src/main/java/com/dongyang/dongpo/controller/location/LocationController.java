@@ -26,9 +26,9 @@ public class LocationController {
         return ResponseEntity.ok(new ApiResponse<>(locationService.getDistance(latLongComparison)));
     }
 
-    @PostMapping("/verify")
-    public ResponseEntity<ApiResponse<Boolean>> verifyCoordinate(@RequestBody LatLongComparisonDto latLongComparison) {
-        return (locationService.verifyCoordinate(latLongComparison)
+    @PostMapping("/verify") // 방문 인증 기능
+    public ResponseEntity<ApiResponse<Boolean>> verifyVisitCert(@RequestBody LatLongComparisonDto latLongComparison) {
+        return (locationService.verifyVisitCert(latLongComparison)
                 ? ResponseEntity.ok(new ApiResponse<>(true))
                 : ResponseEntity.ok(new ApiResponse<>(false)));
     }
