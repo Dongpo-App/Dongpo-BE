@@ -7,12 +7,14 @@ import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.GenericFilterBean;
 
 import java.io.IOException;
 
+@Slf4j
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends GenericFilterBean {
 
@@ -28,10 +30,10 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
         }catch (Exception e){
-            servletRequest.setAttribute("exception", e);
-        }finally {
-            filterChain.doFilter(servletRequest, servletResponse);
+            log.error("JWT Authentication Error: ", e);
+            throw new RuntimeException(e);
         }
+        filterChain.doFilter(servletRequest, servletResponse);
     }
 
     private String resolveToken(HttpServletRequest servletRequest) throws Exception{
