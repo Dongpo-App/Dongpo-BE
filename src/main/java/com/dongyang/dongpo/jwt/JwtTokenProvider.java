@@ -117,4 +117,8 @@ public class JwtTokenProvider {
             throw new RuntimeException(e);
         }
     }
+
+    public String parseAccessToken(String authorization) {
+        return authorization.substring(7);
+    }
 }
