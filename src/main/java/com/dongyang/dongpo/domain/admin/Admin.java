@@ -27,6 +27,7 @@ public class Admin implements UserDetails {
     private String password;
     private String name;
 
+    @Column(columnDefinition = "VARCHAR(255)")
     @Enumerated(EnumType.STRING)
     private AdminRole role;
 

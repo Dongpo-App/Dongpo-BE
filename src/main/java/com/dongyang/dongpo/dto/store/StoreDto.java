@@ -1,8 +1,6 @@
 package com.dongyang.dongpo.dto.store;
 
 import com.dongyang.dongpo.domain.member.Member;
-import com.dongyang.dongpo.domain.store.OperatingDay;
-import com.dongyang.dongpo.domain.store.PayMethod;
 import com.dongyang.dongpo.domain.store.Store;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
@@ -31,8 +29,8 @@ public class StoreDto {
     private int reportCount;
     private boolean isToiletValid;
     private Store.StoreStatus status;
-    private List<OperatingDay> operatingDays;
-    private List<PayMethod> payMethods;
+    private List<Store.OperatingDay> operatingDays;
+    private List<Store.PayMethod> payMethods;
     private List<ReviewDto> reviews;
 
     public Store toStore(Member member){

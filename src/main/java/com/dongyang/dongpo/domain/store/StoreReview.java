@@ -39,6 +39,7 @@ public class StoreReview {
     @Column(length = 24)
     private String registerIp;
 
+    @Column(columnDefinition = "VARCHAR(255)")
     @Enumerated(EnumType.STRING)
     @Builder.Default
     private ReviewStatus status = ReviewStatus.VISIBLE;

@@ -36,18 +36,22 @@ public class Member implements UserDetails {
     @Column(length = 128)
     private String profilePic;
 
+    @Column(columnDefinition = "VARCHAR(255)")
     @Enumerated(EnumType.STRING)
     @Builder.Default
     private Title mainTitle = Title.BASIC_TITLE;
 
+    @Column(columnDefinition = "VARCHAR(255)")
     @Enumerated(EnumType.STRING)
     private Role role;
 
+    @Column(columnDefinition = "VARCHAR(255)")
     @Enumerated(EnumType.STRING)
     private Gender gender;
 
     private String ageGroup;
 
+    @Column(columnDefinition = "VARCHAR(255)")
     @Enumerated(EnumType.STRING)
     private SocialType socialType;
 
@@ -59,6 +63,7 @@ public class Member implements UserDetails {
 
     private LocalDateTime leaveDate;
 
+    @Column(columnDefinition = "VARCHAR(255)")
     @Enumerated(EnumType.STRING)
     private Status status;
 

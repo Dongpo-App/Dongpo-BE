@@ -20,6 +20,7 @@ public class MemberTitle {
     @JoinColumn(name = "member")
     private Member member;
 
+    @Column(columnDefinition = "VARCHAR(255)")
     @Enumerated(EnumType.STRING)
     private Title title;
 

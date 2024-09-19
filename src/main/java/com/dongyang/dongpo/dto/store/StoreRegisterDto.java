@@ -1,8 +1,6 @@
 package com.dongyang.dongpo.dto.store;
 
 import com.dongyang.dongpo.domain.member.Member;
-import com.dongyang.dongpo.domain.store.OperatingDay;
-import com.dongyang.dongpo.domain.store.PayMethod;
 import com.dongyang.dongpo.domain.store.Store;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
@@ -27,8 +25,8 @@ public class StoreRegisterDto {
     private LocalTime openTime;
     private LocalTime closeTime;
     private boolean isToiletValid;
-    private List<OperatingDay> operatingDays;
-    private List<PayMethod> payMethods;
+    private List<Store.OperatingDay> operatingDays;
+    private List<Store.PayMethod> payMethods;
 
     // 등록하는 사용자의 현재 좌표
     private double currentLatitude;

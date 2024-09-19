@@ -38,6 +38,7 @@ public class ReviewReport {
     @Column(length = 24)
     private String issueIp;
 
+    @Column(columnDefinition = "VARCHAR(255)")
     @Enumerated(EnumType.STRING)
     @Builder.Default
     private ReportStatus status = ReportStatus.OPEN;
