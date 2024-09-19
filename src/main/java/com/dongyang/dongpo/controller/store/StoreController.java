@@ -4,6 +4,7 @@ import com.dongyang.dongpo.apiresponse.ApiResponse;
 import com.dongyang.dongpo.domain.member.Member;
 import com.dongyang.dongpo.dto.location.LatLong;
 import com.dongyang.dongpo.dto.store.StoreDto;
+import com.dongyang.dongpo.dto.store.StoreRegisterDto;
 import com.dongyang.dongpo.service.store.StoreService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
@@ -46,7 +47,7 @@ public class StoreController {
 
     @PostMapping("")
     @Operation(summary = "점포 등록")
-    public ResponseEntity<ApiResponse<String>> addStore(@RequestBody StoreDto request,
+    public ResponseEntity<ApiResponse<String>> addStore(@RequestBody StoreRegisterDto request,
                                                         @AuthenticationPrincipal Member member) {
         storeService.addStore(request, member);
         return ResponseEntity.ok(new ApiResponse<>("success"));

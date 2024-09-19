@@ -7,8 +7,10 @@ import com.dongyang.dongpo.dto.location.CoordinateRange;
 import com.dongyang.dongpo.dto.location.LatLong;
 import com.dongyang.dongpo.dto.store.ReviewDto;
 import com.dongyang.dongpo.dto.store.StoreDto;
+import com.dongyang.dongpo.dto.store.StoreRegisterDto;
 import com.dongyang.dongpo.exception.member.MemberNotFoundException;
 import com.dongyang.dongpo.exception.store.StoreNotFoundException;
+import com.dongyang.dongpo.exception.store.StoreRegistrationNotValidException;
 import com.dongyang.dongpo.repository.store.StoreRepository;
 import com.dongyang.dongpo.service.location.LocationService;
 import lombok.RequiredArgsConstructor;
@@ -30,7 +32,11 @@ public class StoreService {
 
 
     @Transactional
-    public void addStore(StoreDto request, Member member){
+    public void addStore(StoreRegisterDto request, Member member) {
+        // 사용자의 현재 위치와 점포 등록 위치가 범위 내에 있는지 검증
+        if (!locationService.verifyStoreRegistration(request))
+            throw new StoreRegistrationNotValidException();
+
         Store store = request.toStore(member);
         Store save = storeRepository.save(store);
 

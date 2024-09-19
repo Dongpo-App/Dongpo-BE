@@ -4,6 +4,7 @@ import com.dongyang.dongpo.domain.store.Store;
 import com.dongyang.dongpo.dto.location.LatLong;
 import com.dongyang.dongpo.dto.location.LatLongComparisonDto;
 import com.dongyang.dongpo.dto.location.CoordinateRange;
+import com.dongyang.dongpo.dto.store.StoreRegisterDto;
 import com.dongyang.dongpo.exception.data.DataNotFoundException;
 import com.dongyang.dongpo.repository.store.StoreRepository;
 import jakarta.transaction.Transactional;
@@ -55,8 +56,8 @@ public class LocationService {
         return calcDistance(newCoordinate, getStoreCoordinates(latLongComparison.getTargetStoreId()));
     }
 
-    // 신규 좌표가 기존 좌표의 오차범위 내에 위치하는지 검증
-    public Boolean verifyCoordinate(LatLongComparisonDto latLongComparison) {
+    // 신규 좌표가 기존 좌표의 오차범위 내에 위치하는지 검증 (방문 인증 검증)
+    public Boolean verifyVisitCert(LatLongComparisonDto latLongComparison) {
         LatLong newCoordinate = LatLong.builder()
                 .latitude(latLongComparison.getLatitude())
                 .longitude(latLongComparison.getLongitude())
@@ -79,5 +80,23 @@ public class LocationService {
                 .minLong(latLong.getLongitude() - deltaLong)
                 .maxLong(latLong.getLongitude() + deltaLong)
                 .build();
+    }
+
+    // 점포 등록 시 좌표 검증
+    public Boolean verifyStoreRegistration(StoreRegisterDto request) {
+        // 등록 하고자 하는 점포의 좌표
+        LatLong storeCord =  LatLong.builder()
+                .latitude(request.getLatitude())
+                .longitude(request.getLongitude())
+                .build();
+
+        // 사용자의 현재 좌표
+        LatLong userCord =  LatLong.builder()
+                .latitude(request.getCurrentLatitude())
+                .longitude(request.getCurrentLongitude())
+                .build();
+
+        // 오차가 100m 이내일 경우 true, 초과일 경우 false 반환
+        return calcDistance(userCord, storeCord) <= 100;
     }
 }

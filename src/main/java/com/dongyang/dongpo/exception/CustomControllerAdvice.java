@@ -7,6 +7,7 @@ import com.dongyang.dongpo.exception.data.DataNotFoundException;
 import com.dongyang.dongpo.exception.member.MemberNotFoundException;
 import com.dongyang.dongpo.exception.social.SocialTokenNotValidException;
 import com.dongyang.dongpo.exception.store.StoreNotFoundException;
+import com.dongyang.dongpo.exception.store.StoreRegistrationNotValidException;
 import com.dongyang.dongpo.jwt.exception.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -88,6 +89,12 @@ public class CustomControllerAdvice {
     @ExceptionHandler(ArgumentNotSatisfiedException.class)
     public ResponseEntity<ApiResponse<String>> handleArgumentNotSatisfiedException() {
         response.setMessage("요청이 잘못되었습니다.");
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+    }
+
+    @ExceptionHandler(StoreRegistrationNotValidException.class)
+    public ResponseEntity<ApiResponse<String>> handleStoreRegistrationNotValidException() {
+        response.setMessage("위치 정보가 오차를 벗어났습니다.");
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 
