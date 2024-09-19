@@ -1,6 +1,5 @@
 package com.dongyang.dongpo.admin.controller.dashboard;
 
-import com.dongyang.dongpo.exception.member.MemberNotFoundException;
 import com.dongyang.dongpo.service.member.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -16,7 +15,7 @@ public class AdminMemberController {
     private final MemberService memberService;
 
     @GetMapping("/{id}")
-    public String detail(@PathVariable("id") Long id) throws MemberNotFoundException {
+    public String detail(@PathVariable("id") Long id) {
         memberService.findOne(id);
         return "null";
     }

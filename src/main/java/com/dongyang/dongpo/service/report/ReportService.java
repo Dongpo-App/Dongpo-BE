@@ -6,8 +6,8 @@ import com.dongyang.dongpo.domain.report.StoreReport;
 import com.dongyang.dongpo.domain.store.Store;
 import com.dongyang.dongpo.domain.store.StoreReview;
 import com.dongyang.dongpo.dto.report.ReportDto;
-import com.dongyang.dongpo.exception.store.ReviewNotFoundException;
-import com.dongyang.dongpo.exception.store.StoreNotFoundException;
+import com.dongyang.dongpo.exception.CustomException;
+import com.dongyang.dongpo.exception.ErrorCode;
 import com.dongyang.dongpo.repository.report.ReviewReportRepository;
 import com.dongyang.dongpo.repository.report.StoreReportRepository;
 import com.dongyang.dongpo.repository.store.StoreRepository;
@@ -32,8 +32,9 @@ public class ReportService {
     private final StoreReviewRepository storeReviewRepository;
 
     @Transactional
-    public void addStoreReport(Long storeId, Member member, ReportDto request) throws Exception{
-        Store store = storeRepository.findById(storeId).orElseThrow(StoreNotFoundException::new);
+    public void addStoreReport(Long storeId, Member member, ReportDto request){
+        Store store = storeRepository.findById(storeId)
+                .orElseThrow(() -> new CustomException(ErrorCode.STORE_NOT_FOUND));
 
         storeRepository.save(store.addReport());
 
@@ -44,8 +45,9 @@ public class ReportService {
     }
 
     @Transactional
-    public void addReviewReport(Long reviewId, Member member, ReportDto request) throws Exception {
-        StoreReview review = storeReviewRepository.findById(reviewId).orElseThrow(ReviewNotFoundException::new);
+    public void addReviewReport(Long reviewId, Member member, ReportDto request){
+        StoreReview review = storeReviewRepository.findById(reviewId)
+                .orElseThrow(() -> new CustomException(ErrorCode.REVIEW_NOT_FOUND));
 
         storeReviewRepository.save(review.addReport());
 

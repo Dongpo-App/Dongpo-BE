@@ -1,6 +1,7 @@
 package com.dongyang.dongpo.config.security;
 
-import com.dongyang.dongpo.exception.member.MemberNotFoundException;
+import com.dongyang.dongpo.exception.CustomException;
+import com.dongyang.dongpo.exception.ErrorCode;
 import com.dongyang.dongpo.repository.member.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -17,10 +18,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        try {
-            return memberRepository.findByEmail(username).orElseThrow(MemberNotFoundException::new);
-        } catch (MemberNotFoundException e) {
-            throw new RuntimeException(e);
-        }
+        return memberRepository.findByEmail(username)
+                .orElseThrow(() -> new CustomException(ErrorCode.REVIEW_NOT_FOUND));
     }
 }

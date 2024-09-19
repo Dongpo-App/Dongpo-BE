@@ -5,7 +5,8 @@ import com.dongyang.dongpo.domain.member.MemberTitle;
 import com.dongyang.dongpo.domain.store.Store;
 import com.dongyang.dongpo.dto.mypage.MyPageDto;
 import com.dongyang.dongpo.dto.mypage.MyPageUpdateDto;
-import com.dongyang.dongpo.exception.data.ArgumentNotSatisfiedException;
+import com.dongyang.dongpo.exception.CustomException;
+import com.dongyang.dongpo.exception.ErrorCode;
 import com.dongyang.dongpo.repository.member.MemberRepository;
 import com.dongyang.dongpo.repository.member.MemberTitleRepository;
 import com.dongyang.dongpo.repository.store.StoreRepository;
@@ -41,7 +42,7 @@ public class MyPageService {
     @Transactional
     public void updateMyPageInfo(String email, MyPageUpdateDto myPageUpdateDto) {
         if (myPageUpdateDto.getNickname().length() > 7) // 문자 수 7자 초과시 예외 발생
-            throw new ArgumentNotSatisfiedException();
+            throw new CustomException(ErrorCode.ARGUMENT_NOT_SATISFIED);
 
         memberRepository.findByEmail(email).ifPresent(member -> {
             if (myPageUpdateDto.getProfilePic() != null && !myPageUpdateDto.getProfilePic().isBlank()) {

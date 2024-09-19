@@ -5,7 +5,8 @@ import com.dongyang.dongpo.domain.member.Member;
 import com.dongyang.dongpo.domain.member.MemberTitle;
 import com.dongyang.dongpo.dto.JwtToken;
 import com.dongyang.dongpo.dto.auth.UserInfo;
-import com.dongyang.dongpo.exception.member.MemberNotFoundException;
+import com.dongyang.dongpo.exception.CustomException;
+import com.dongyang.dongpo.exception.ErrorCode;
 import com.dongyang.dongpo.jwt.JwtTokenProvider;
 import com.dongyang.dongpo.repository.member.MemberRepository;
 import com.dongyang.dongpo.repository.RefreshTokenRepository;
@@ -61,7 +62,7 @@ public class MemberService {
         return memberRepository.findAll();
     }
 
-    public Member findOne(Long id) throws MemberNotFoundException {
-        return memberRepository.findById(id).orElseThrow(MemberNotFoundException::new);
+    public Member findOne(Long id) {
+        return memberRepository.findById(id).orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
     }
 }

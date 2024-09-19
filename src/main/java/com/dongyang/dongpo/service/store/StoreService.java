@@ -8,9 +8,8 @@ import com.dongyang.dongpo.dto.location.LatLong;
 import com.dongyang.dongpo.dto.store.ReviewDto;
 import com.dongyang.dongpo.dto.store.StoreDto;
 import com.dongyang.dongpo.dto.store.StoreRegisterDto;
-import com.dongyang.dongpo.exception.member.MemberNotFoundException;
-import com.dongyang.dongpo.exception.store.StoreNotFoundException;
-import com.dongyang.dongpo.exception.store.StoreRegistrationNotValidException;
+import com.dongyang.dongpo.exception.CustomException;
+import com.dongyang.dongpo.exception.ErrorCode;
 import com.dongyang.dongpo.repository.store.StoreRepository;
 import com.dongyang.dongpo.service.location.LocationService;
 import lombok.RequiredArgsConstructor;
@@ -35,7 +34,7 @@ public class StoreService {
     public void addStore(StoreRegisterDto request, Member member) {
         // 사용자의 현재 위치와 점포 등록 위치가 범위 내에 있는지 검증
         if (!locationService.verifyStoreRegistration(request))
-            throw new StoreRegistrationNotValidException();
+            throw new CustomException(ErrorCode.STORE_REGISTRATION_NOT_VALID);
 
         Store store = request.toStore(member);
         Store save = storeRepository.save(store);
@@ -63,8 +62,10 @@ public class StoreService {
         return stores;
     }
 
-    public StoreDto detailStore(Long id) throws Exception {
-        Store store = storeRepository.findById(id).orElseThrow(StoreNotFoundException::new);
+    public StoreDto detailStore(Long id) {
+        Store store = storeRepository.findById(id)
+                .orElseThrow(() -> new CustomException(ErrorCode.STORE_NOT_FOUND));
+
         List<ReviewDto> reviewDtos = new ArrayList<>();
 
         if (store.getReviews() != null) {
@@ -83,14 +84,15 @@ public class StoreService {
     }
 
     @Transactional
-    public void updateStore(Long id, StoreDto request, Member member) throws Exception{
-        Store store = storeRepository.findById(id).orElseThrow(StoreNotFoundException::new);
+    public void updateStore(Long id, StoreDto request, Member member){
+        Store store = storeRepository.findById(id)
+                .orElseThrow(() -> new CustomException(ErrorCode.STORE_NOT_FOUND));
 
         if (member == store.getMember()) {
             store.update(request);
             storeRepository.save(store);
         }else
-            throw new MemberNotFoundException(); // 임시
+            throw new CustomException(ErrorCode.MEMBER_NOT_FOUND); // 임시
 
         log.info("member {} update store: {}",member.getId(), store.getId());
     }
@@ -105,8 +107,10 @@ public class StoreService {
         return storeResponse;
     }
 
-    public StoreDto findOne(Long id) throws StoreNotFoundException {
-        Store store = storeRepository.findById(id).orElseThrow(StoreNotFoundException::new);
+    public StoreDto findOne(Long id) {
+        Store store = storeRepository.findById(id)
+                .orElseThrow(() -> new CustomException(ErrorCode.STORE_NOT_FOUND));
+
         return store.toResponse();
     }
 }

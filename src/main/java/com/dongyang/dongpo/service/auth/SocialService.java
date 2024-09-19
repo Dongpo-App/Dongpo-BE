@@ -5,7 +5,8 @@ import com.dongyang.dongpo.domain.member.Member;
 import com.dongyang.dongpo.domain.member.Member.SocialType;
 import com.dongyang.dongpo.dto.JwtToken;
 import com.dongyang.dongpo.dto.auth.UserInfo;
-import com.dongyang.dongpo.exception.social.SocialTokenNotValidException;
+import com.dongyang.dongpo.exception.CustomException;
+import com.dongyang.dongpo.exception.ErrorCode;
 import com.dongyang.dongpo.service.member.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.json.JSONObject;
@@ -69,7 +70,7 @@ public class SocialService {
                     .build());
         } catch (WebClientResponseException e) {
             if (e.getStatusCode().value() == 401)
-                throw new SocialTokenNotValidException();
+                throw new CustomException(ErrorCode.SOCIAL_TOKEN_NOT_VALID);
             else
                 throw e;
         }
@@ -123,7 +124,7 @@ public class SocialService {
                     .build());
         } catch (WebClientResponseException e) {
             if (e.getStatusCode().value() == 401)
-                throw new SocialTokenNotValidException();
+                throw new CustomException(ErrorCode.SOCIAL_TOKEN_NOT_VALID);
             else
                 throw e;
         }
