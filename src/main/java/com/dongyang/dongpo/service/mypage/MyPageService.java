@@ -45,7 +45,7 @@ public class MyPageService {
 
         memberRepository.findByEmail(email).ifPresent(member -> {
             if (myPageUpdateDto.getProfilePic() != null && !myPageUpdateDto.getProfilePic().isBlank()) {
-                if (member.getProfilePic().startsWith(bucketFullUrl))
+                if (member.getProfilePic() != null && member.getProfilePic().startsWith(bucketFullUrl))
                     s3Service.deleteFile(member.getProfilePic()); // S3에 있는 기존 프로필 사진 삭제
                 member.setProfilePic(myPageUpdateDto.getProfilePic());
                 log.info("Updated Member profilePic : {}", member.getEmail());
