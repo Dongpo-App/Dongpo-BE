@@ -46,6 +46,7 @@ public class Store {
     @Column(length = 24)
     private String registerIp;
 
+    @Column(columnDefinition = "VARCHAR(255)")
     @Enumerated(EnumType.STRING)
     @Builder.Default
     private StoreStatus status = StoreStatus.ACTIVE;
@@ -56,13 +57,13 @@ public class Store {
     @ElementCollection(targetClass = PayMethod.class)
     @Enumerated(EnumType.STRING)
     @CollectionTable(name = "store_pay_method", joinColumns = @JoinColumn(name = "store_id"))
-    @Column(name = "payMethod")
+    @Column(name = "payMethod", columnDefinition = "VARCHAR(255)")
     private List<PayMethod> payMethods;
 
     @ElementCollection(targetClass = OperatingDay.class)
     @Enumerated(EnumType.STRING)
     @CollectionTable(name = "store_operating_day", joinColumns = @JoinColumn(name = "store_id"))
-    @Column(name = "operatingDay")
+    @Column(name = "operatingDay", columnDefinition = "VARCHAR(255)")
     private List<OperatingDay> operatingDays;
 
     @OneToMany(mappedBy = "store", cascade = CascadeType.ALL)
@@ -71,6 +72,14 @@ public class Store {
 
     public enum StoreStatus {
         ACTIVE, INACTIVE, HIDDEN, CLOSED
+    }
+
+    public enum OperatingDay {
+        MON, TUE, WED, THU, FRI, SAT, SUN
+    }
+
+    public enum PayMethod {
+        CASH, CARD, TRANSFER
     }
 
     public StoreDto toResponse(){

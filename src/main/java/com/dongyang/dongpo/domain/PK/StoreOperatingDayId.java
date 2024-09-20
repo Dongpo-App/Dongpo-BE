@@ -1,6 +1,6 @@
 package com.dongyang.dongpo.domain.PK;
 
-import com.dongyang.dongpo.domain.store.OperatingDay;
+import com.dongyang.dongpo.domain.store.Store;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,5 +14,5 @@ import java.io.Serializable;
 @EqualsAndHashCode
 public class StoreOperatingDayId implements Serializable {
     private Long id;
-    private OperatingDay operatingDay;
+    private Store.OperatingDay operatingDay;
 }
