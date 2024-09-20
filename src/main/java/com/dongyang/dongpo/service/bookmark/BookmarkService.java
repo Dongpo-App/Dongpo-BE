@@ -4,7 +4,8 @@ import com.dongyang.dongpo.domain.member.Member;
 import com.dongyang.dongpo.domain.member.StoreBookmark;
 import com.dongyang.dongpo.domain.store.Store;
 import com.dongyang.dongpo.dto.bookmark.BookmarkDto;
-import com.dongyang.dongpo.exception.store.StoreNotFoundException;
+import com.dongyang.dongpo.exception.CustomException;
+import com.dongyang.dongpo.exception.ErrorCode;
 import com.dongyang.dongpo.repository.bookmark.BookmarkRepository;
 import com.dongyang.dongpo.repository.store.StoreRepository;
 import lombok.RequiredArgsConstructor;
@@ -25,8 +26,9 @@ public class BookmarkService {
     private final StoreRepository storeRepository;
 
     @Transactional
-    public void addBookmark(Member member, Long storeId) throws Exception {
-        Store store = storeRepository.findById(storeId).orElseThrow(StoreNotFoundException::new);
+    public void addBookmark(Member member, Long storeId) {
+        Store store = storeRepository.findById(storeId)
+                .orElseThrow(() -> new CustomException(ErrorCode.STORE_NOT_FOUND));
 
         StoreBookmark bookmark = StoreBookmark.builder()
                 .store(store)
@@ -53,8 +55,9 @@ public class BookmarkService {
     }
 
     @Transactional
-    public void deleteBookmark(Long id, Member member) throws Exception {
-        StoreBookmark bookmark = bookmarkRepository.findById(id).orElseThrow(StoreNotFoundException::new);
+    public void deleteBookmark(Long id, Member member) {
+        StoreBookmark bookmark = bookmarkRepository.findById(id)
+                .orElseThrow(() -> new CustomException(ErrorCode.BOOKMARK_NOT_FOUND));
 
         bookmarkRepository.delete(bookmark);
         log.info("Member Id : {} is Delete Bookmark Id : {}", member.getId(), id);

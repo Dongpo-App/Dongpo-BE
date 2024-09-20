@@ -5,7 +5,8 @@ import com.dongyang.dongpo.dto.location.LatLong;
 import com.dongyang.dongpo.dto.location.LatLongComparisonDto;
 import com.dongyang.dongpo.dto.location.CoordinateRange;
 import com.dongyang.dongpo.dto.store.StoreRegisterDto;
-import com.dongyang.dongpo.exception.data.DataNotFoundException;
+import com.dongyang.dongpo.exception.CustomException;
+import com.dongyang.dongpo.exception.ErrorCode;
 import com.dongyang.dongpo.repository.store.StoreRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,7 +39,9 @@ public class LocationService {
 
     // 비교 대상 점포의 좌표 반환
     private LatLong getStoreCoordinates(Long storeId) {
-        Store targetStore = storeRepository.findById(storeId).orElseThrow(DataNotFoundException::new);
+        Store targetStore = storeRepository.findById(storeId)
+                .orElseThrow(() -> new CustomException(ErrorCode.STORE_NOT_FOUND));
+
         return LatLong.builder()
                 .latitude(targetStore.getLatitude())
                 .longitude(targetStore.getLongitude())

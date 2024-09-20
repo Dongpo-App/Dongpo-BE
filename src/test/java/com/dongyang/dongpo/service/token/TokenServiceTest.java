@@ -3,8 +3,9 @@ package com.dongyang.dongpo.service.token;
 import com.dongyang.dongpo.domain.RefreshToken;
 import com.dongyang.dongpo.domain.member.Member;
 import com.dongyang.dongpo.dto.JwtToken;
+import com.dongyang.dongpo.exception.CustomException;
+import com.dongyang.dongpo.exception.ErrorCode;
 import com.dongyang.dongpo.jwt.JwtTokenProvider;
-import com.dongyang.dongpo.jwt.exception.CustomExpiredException;
 import com.dongyang.dongpo.repository.RefreshTokenRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -72,7 +73,8 @@ class TokenServiceTest {
 
         Exception exception = assertThrows(Exception.class, () -> tokenService.reissueAccessToken(member));
 
-        assertInstanceOf(CustomExpiredException.class, exception);
+        assertInstanceOf(CustomException.class, exception);
+        assertEquals(ErrorCode.EXPIRED_TOKEN.getMessage(), exception.getMessage());
         verify(refreshTokenRepository).findByEmail(member.getEmail());
     }
 

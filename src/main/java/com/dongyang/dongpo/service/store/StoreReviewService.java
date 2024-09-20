@@ -4,7 +4,8 @@ import com.dongyang.dongpo.domain.member.Member;
 import com.dongyang.dongpo.domain.store.Store;
 import com.dongyang.dongpo.domain.store.StoreReview;
 import com.dongyang.dongpo.dto.store.ReviewDto;
-import com.dongyang.dongpo.exception.store.StoreNotFoundException;
+import com.dongyang.dongpo.exception.CustomException;
+import com.dongyang.dongpo.exception.ErrorCode;
 import com.dongyang.dongpo.repository.store.StoreRepository;
 import com.dongyang.dongpo.repository.store.StoreReviewRepository;
 import lombok.RequiredArgsConstructor;
@@ -25,8 +26,9 @@ public class StoreReviewService {
     private final StoreRepository storeRepository;
 
     @Transactional
-    public void addReview(Member member, Long storeId, ReviewDto reviewDto) throws Exception{
-        Store store = storeRepository.findById(storeId).orElseThrow(StoreNotFoundException::new);
+    public void addReview(Member member, Long storeId, ReviewDto reviewDto){
+        Store store = storeRepository.findById(storeId)
+                .orElseThrow(() -> new CustomException(ErrorCode.STORE_NOT_FOUND));
 
         StoreReview storeReview = reviewDto.toEntity(store, member);
         reviewRepository.save(storeReview);
@@ -48,8 +50,10 @@ public class StoreReviewService {
         return reviewRepository.findAll();
     }
 
-    public ReviewDto findOne(Long id) throws StoreNotFoundException {
-        StoreReview review = reviewRepository.findById(id).orElseThrow(StoreNotFoundException::new);
+    public ReviewDto findOne(Long id){
+        StoreReview review = reviewRepository.findById(id)
+                .orElseThrow(() -> new CustomException(ErrorCode.REVIEW_NOT_FOUND));
+
         return review.toResponse();
     }
 }

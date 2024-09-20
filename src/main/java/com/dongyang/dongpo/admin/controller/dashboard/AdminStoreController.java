@@ -1,6 +1,5 @@
 package com.dongyang.dongpo.admin.controller.dashboard;
 
-import com.dongyang.dongpo.exception.store.StoreNotFoundException;
 import com.dongyang.dongpo.service.store.StoreService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -16,7 +15,7 @@ public class AdminStoreController {
     private final StoreService storeService;
 
     @GetMapping("/{id}")
-    public String detail(@PathVariable Long id) throws StoreNotFoundException {
+    public String detail(@PathVariable Long id) {
         storeService.findOne(id);
         return "null";
     }

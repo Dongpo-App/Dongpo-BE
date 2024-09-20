@@ -3,7 +3,8 @@ package com.dongyang.dongpo.jwt;
 import com.dongyang.dongpo.config.security.CustomUserDetailsService;
 import com.dongyang.dongpo.domain.member.Member.Role;
 import com.dongyang.dongpo.dto.JwtToken;
-import com.dongyang.dongpo.jwt.exception.*;
+import com.dongyang.dongpo.exception.CustomException;
+import com.dongyang.dongpo.exception.ErrorCode;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -74,19 +75,19 @@ public class JwtTokenProvider {
             return true;
         } catch (SecurityException | MalformedJwtException | SignatureException e){
             log.error(e.getMessage());
-            throw new CustomMalformedException(); // jwt서명이 유효하지 않음
+            throw new CustomException(ErrorCode.MALFORMED_TOKEN); // jwt서명이 유효하지 않음
         } catch (UnsupportedJwtException e){
             log.error(e.getMessage());
-            throw new CustomUnsupportedException();  // 지원하지않는 jwt 토큰
+            throw new CustomException(ErrorCode.UNSUPPORTED_TOKEN); // 지원하지않는 jwt 토큰
         } catch (ExpiredJwtException e){
             log.error(e.getMessage());
-            throw new CustomExpiredException();  // 토큰 시간 만료
+            throw new CustomException(ErrorCode.EXPIRED_TOKEN); // 토큰 시간 만료
         } catch (IllegalArgumentException e){
             log.error(e.getMessage());
-            throw new CustomWorngTokenException(); // claims 없음
+            throw new CustomException(ErrorCode.CLAIMS_NOT_FOUND); // claims 없음
         } catch (ClaimJwtException e) {
             log.error(e.getMessage());
-            throw new CustomClaimsException(); // Claim 검증 실패
+            throw new CustomException(ErrorCode.CLAIMS_NOT_VALID); // Claim 검증 실패
         }
     }
 
@@ -94,7 +95,7 @@ public class JwtTokenProvider {
         Claims claims = parseClaims(accessToken);
 
         if (claims == null || claims.get("role") == null)
-            throw new CustomClaimsException();
+            throw new CustomException(ErrorCode.CLAIMS_NOT_FOUND);
 
         Collection<? extends GrantedAuthority> authorities =
                 Arrays.stream(claims.get("role").toString().split(","))
