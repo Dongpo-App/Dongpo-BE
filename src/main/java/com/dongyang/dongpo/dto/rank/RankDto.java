@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 public class RankDto {
 
     private String nickname;
-    private Title title;
+    private String title;
     private String pic;
     private Long count;
 
@@ -24,7 +24,7 @@ public class RankDto {
 
         return RankDto.builder()
                 .nickname(member.getNickname())
-                .title(member.getMainTitle())
+                .title(member.getMainTitle().getDescription())
                 .pic(member.getProfilePic())
                 .count(count)
                 .build();
