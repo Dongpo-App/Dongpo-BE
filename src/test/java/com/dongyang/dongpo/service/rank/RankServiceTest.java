@@ -1,6 +1,7 @@
 package com.dongyang.dongpo.service.rank;
 
 import com.dongyang.dongpo.domain.member.Member;
+import com.dongyang.dongpo.domain.member.Title;
 import com.dongyang.dongpo.dto.rank.RankDto;
 import com.dongyang.dongpo.repository.store.StoreRepository;
 import com.dongyang.dongpo.repository.store.StoreReviewRepository;
@@ -36,6 +37,7 @@ class RankServiceTest {
     private StoreRepository storeRepository;
 
     private static final Pageable pageable = PageRequest.of(0, 10);
+    private static final Member mockMember = mock(Member.class);
 
     @Test
     @DisplayName("방문인증 랭킹")
@@ -43,10 +45,11 @@ class RankServiceTest {
         List<Object[]> mockVisitRank = new ArrayList<>();
         for (int i = 0; i < 10; i++) {
             Long count = (long) (Math.random() * 100 + 1L);
-            mockVisitRank.add(new Object[]{mock(Member.class), count});
+            mockVisitRank.add(new Object[]{mockMember, count});
         }
 
         when(visitCertRepository.findTop10MembersBySuccessfulVisitCount(pageable)).thenReturn(mockVisitRank);
+        when(mockMember.getMainTitle()).thenReturn(mock(Title.class));
 
         List<RankDto> rankDtos = rankService.getVisitRank();
 
@@ -62,10 +65,11 @@ class RankServiceTest {
         List<Object[]> mockVisitRank = new ArrayList<>();
         for (int i = 0; i < 10; i++) {
             Long count = (long) (Math.random() * 100 + 1L);
-            mockVisitRank.add(new Object[]{mock(Member.class), count});
+            mockVisitRank.add(new Object[]{mockMember, count});
         }
 
         when(reviewRepository.findTop10MembersByReviewCount(pageable)).thenReturn(mockVisitRank);
+        when(mockMember.getMainTitle()).thenReturn(mock(Title.class));
 
         List<RankDto> rankDtos = rankService.getReviewRank();
 
@@ -81,10 +85,11 @@ class RankServiceTest {
         List<Object[]> mockVisitRank = new ArrayList<>();
         for (int i = 0; i < 10; i++) {
             Long count = (long) (Math.random() * 100 + 1L);
-            mockVisitRank.add(new Object[]{mock(Member.class), count});
+            mockVisitRank.add(new Object[]{mockMember, count});
         }
 
         when(storeRepository.findTop10MembersByStoreCount(pageable)).thenReturn(mockVisitRank);
+        when(mockMember.getMainTitle()).thenReturn(mock(Title.class));
 
         List<RankDto> rankDtos = rankService.getStoreRank();
 
