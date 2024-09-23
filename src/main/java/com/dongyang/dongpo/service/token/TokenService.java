@@ -7,6 +7,8 @@ import com.dongyang.dongpo.exception.CustomException;
 import com.dongyang.dongpo.exception.ErrorCode;
 import com.dongyang.dongpo.jwt.JwtTokenProvider;
 import com.dongyang.dongpo.repository.RefreshTokenRepository;
+import com.dongyang.dongpo.repository.member.MemberRepository;
+import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -19,11 +21,16 @@ public class TokenService {
 
     private final JwtTokenProvider jwtTokenProvider;
     private final RefreshTokenRepository refreshTokenRepository;
+    private final MemberRepository memberRepository;
 
     @Transactional
-    public JwtToken reissueAccessToken(Member member) {
-        RefreshToken refreshToken = refreshTokenRepository.findByEmail(member.getEmail())
+    public JwtToken reissueAccessToken(String token) {
+        String email = jwtTokenProvider.parseClaims(token).getSubject();
+        RefreshToken refreshToken = refreshTokenRepository.findByEmail(email)
                 .orElseThrow(() -> new CustomException(ErrorCode.EXPIRED_TOKEN));
+
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 
         JwtToken jwtToken = jwtTokenProvider.createToken(member.getEmail(), member.getRole());
         refreshToken.updateRefreshToken(jwtToken.getRefreshToken());

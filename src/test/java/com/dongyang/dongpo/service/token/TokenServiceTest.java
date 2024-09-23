@@ -7,6 +7,8 @@ import com.dongyang.dongpo.exception.CustomException;
 import com.dongyang.dongpo.exception.ErrorCode;
 import com.dongyang.dongpo.jwt.JwtTokenProvider;
 import com.dongyang.dongpo.repository.RefreshTokenRepository;
+import com.dongyang.dongpo.repository.member.MemberRepository;
+import io.jsonwebtoken.Claims;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -29,6 +31,9 @@ class TokenServiceTest {
     @Mock
     private RefreshTokenRepository refreshTokenRepository;
 
+    @Mock
+    private MemberRepository memberRepository;
+
     @InjectMocks
     private TokenService tokenService;
 
@@ -37,26 +42,26 @@ class TokenServiceTest {
 
     @Test
     @DisplayName("토큰 재발급")
-    void reissueAccessToken() throws Exception {
+    void reissueAccessToken() {
         JwtToken mockJwtToken = mock(JwtToken.class);
-        when(mockJwtToken.getAccessToken()).thenReturn("testAccessToken");
-        when(mockJwtToken.getRefreshToken()).thenReturn("testRefreshToken");
+        when(mockJwtToken.getAccessToken()).thenReturn("AccessToken");
+        when(mockJwtToken.getRefreshToken()).thenReturn("RefreshToken");
 
-        when(member.getEmail()).thenReturn("test@test.com");
-        when(member.getRole()).thenReturn(Member.Role.ROLE_MEMBER);
+        Claims claims = mock(Claims.class);
+        claims.setSubject("test@email");
 
-        when(jwtTokenProvider.createToken(member.getEmail(), member.getRole())).thenReturn(mockJwtToken);
-
+        when(jwtTokenProvider.parseClaims(any())).thenReturn(claims);
         when(refreshTokenRepository.findByEmail(member.getEmail())).thenReturn(Optional.of(refreshToken));
+        when(memberRepository.findByEmail(any())).thenReturn(Optional.of(member));
+        when(jwtTokenProvider.createToken(any(), any())).thenReturn(mockJwtToken);
 
-        JwtToken jwtToken = tokenService.reissueAccessToken(member);
+        JwtToken jwtToken = tokenService.reissueAccessToken(any());
 
         assertNotNull(jwtToken);
         assertNotNull(jwtToken.getAccessToken());
         assertNotNull(jwtToken.getRefreshToken());
 
         verify(refreshTokenRepository).findByEmail(member.getEmail());
-
         verify(refreshTokenRepository).save(any(RefreshToken.class));
         verify(jwtTokenProvider).createToken(member.getEmail(), member.getRole());
     }
@@ -64,18 +69,39 @@ class TokenServiceTest {
 
     @Test
     @DisplayName("토큰 재발급 실패 - 토큰 만료")
-    void reissueAccessTokenFail() {
-        when(member.getEmail()).thenReturn("test@test.com");
-        when(member.getRole()).thenReturn(Member.Role.ROLE_MEMBER);
+    void reissueAccessTokenExpired() {
+        Claims claims = mock(Claims.class);
+        claims.setSubject("test@email");
+
+        when(jwtTokenProvider.parseClaims(any())).thenReturn(claims);
 
         // Exception
         when(refreshTokenRepository.findByEmail(member.getEmail())).thenReturn(Optional.empty());
 
-        Exception exception = assertThrows(Exception.class, () -> tokenService.reissueAccessToken(member));
+        Exception exception = assertThrows(Exception.class, () -> tokenService.reissueAccessToken(anyString()));
 
         assertInstanceOf(CustomException.class, exception);
         assertEquals(ErrorCode.EXPIRED_TOKEN.getMessage(), exception.getMessage());
         verify(refreshTokenRepository).findByEmail(member.getEmail());
+    }
+
+    @Test
+    @DisplayName("토큰 재발급 실패 - 회원 정보 없음")
+    void reissueAccessTokenMemberNotFound() {
+        Claims claims = mock(Claims.class);
+        claims.setSubject("test@email");
+
+        when(jwtTokenProvider.parseClaims(any())).thenReturn(claims);
+        when(refreshTokenRepository.findByEmail(any())).thenReturn(Optional.of(refreshToken));
+
+        // Exception
+        when(memberRepository.findByEmail(any())).thenReturn(Optional.empty());
+
+        Exception exception = assertThrows(Exception.class, () -> tokenService.reissueAccessToken(anyString()));
+
+        assertInstanceOf(CustomException.class, exception);
+        assertEquals(ErrorCode.MEMBER_NOT_FOUND.getMessage(), exception.getMessage());
+        verify(memberRepository).findByEmail(any());
     }
 
     @Test
