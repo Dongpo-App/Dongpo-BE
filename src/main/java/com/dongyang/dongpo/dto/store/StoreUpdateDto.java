@@ -19,7 +19,7 @@ public class StoreUpdateDto {
     private String name;
     private LocalTime openTime;
     private LocalTime closeTime;
-    private boolean isToiletValid;
+    private Boolean isToiletValid;
     private Store.StoreStatus status;
     private List<Store.OperatingDay> operatingDays;
     private List<Store.PayMethod> payMethods;

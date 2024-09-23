@@ -37,7 +37,7 @@ public class Store {
 
     private LocalTime closeTime;
 
-    private boolean isToiletValid;
+    private Boolean isToiletValid;
 
     @ManyToOne(fetch = FetchType.LAZY)
     private Member member;
@@ -115,7 +115,7 @@ public class Store {
         this.name = updateDto.getName();
         this.openTime = updateDto.getOpenTime();
         this.closeTime = updateDto.getCloseTime();
-        this.isToiletValid = updateDto.isToiletValid();
+        this.isToiletValid = updateDto.getIsToiletValid();
         this.status = updateDto.getStatus();
     }
 

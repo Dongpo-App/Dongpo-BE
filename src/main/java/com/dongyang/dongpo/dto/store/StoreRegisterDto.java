@@ -24,7 +24,7 @@ public class StoreRegisterDto {
     private double longitude;
     private LocalTime openTime;
     private LocalTime closeTime;
-    private boolean isToiletValid;
+    private Boolean isToiletValid;
     private List<Store.OperatingDay> operatingDays;
     private List<Store.PayMethod> payMethods;
 
