@@ -54,19 +54,15 @@ public class Store {
     @Builder.Default
     private Integer reportCount = 0;
 
-    @ElementCollection(targetClass = PayMethod.class)
-    @Enumerated(EnumType.STRING)
-    @CollectionTable(name = "store_pay_method", joinColumns = @JoinColumn(name = "store_id"))
-    @Column(name = "payMethod", columnDefinition = "VARCHAR(255)")
-    private List<PayMethod> payMethods;
+    @OneToMany(mappedBy = "store", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @Builder.Default
+    private List<StorePayMethod> storePayMethods = new ArrayList<>();
 
-    @ElementCollection(targetClass = OperatingDay.class)
-    @Enumerated(EnumType.STRING)
-    @CollectionTable(name = "store_operating_day", joinColumns = @JoinColumn(name = "store_id"))
-    @Column(name = "operatingDay", columnDefinition = "VARCHAR(255)")
-    private List<OperatingDay> operatingDays;
+    @OneToMany(mappedBy = "store", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @Builder.Default
+    private List<StoreOperatingDay> storeOperatingDays = new ArrayList<>();
 
-    @OneToMany(mappedBy = "store", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "store", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @Builder.Default
     private List<StoreReview> reviews = new ArrayList<>();
 
@@ -82,7 +78,11 @@ public class Store {
         CASH, CARD, TRANSFER
     }
 
-    public StoreDto toResponse(){
+    public StoreDto toResponse() {
+        List<ReviewDto> reviewDtos = this.reviews.stream()
+                .map(StoreReview::toResponse)
+                .toList();
+
         return StoreDto.builder()
                 .id(id)
                 .name(name)
@@ -94,30 +94,12 @@ public class Store {
                 .openTime(openTime)
                 .closeTime(closeTime)
                 .isToiletValid(isToiletValid)
-                .operatingDays(operatingDays)
-                .payMethods(payMethods)
-                .status(status)
-                .build();
-    }
-
-    public StoreDto toResponse(List<ReviewDto> reviewDtos){
-        return StoreDto.builder()
-                .id(id)
-                .name(name)
-                .address(address)
-                .latitude(latitude)
-                .longitude(longitude)
-                .memberId(member.getId())
-                .openTime(openTime)
-                .closeTime(closeTime)
-                .isToiletValid(isToiletValid)
-                .operatingDays(operatingDays)
-                .payMethods(payMethods)
+                .storeOperatingDays(storeOperatingDays)
+                .storePayMethods(storePayMethods)
                 .status(status)
                 .reviews(reviewDtos)
                 .build();
     }
-
 
     public void update(StoreDto storeDto){
         this.name = storeDto.getName();
@@ -127,8 +109,8 @@ public class Store {
         this.openTime = storeDto.getOpenTime();
         this.closeTime = storeDto.getCloseTime();
         this.isToiletValid = storeDto.isToiletValid();
-        this.payMethods = storeDto.getPayMethods();
-        this.operatingDays = storeDto.getOperatingDays();
+        this.storePayMethods = storeDto.getStorePayMethods();
+        this.storeOperatingDays = storeDto.getStoreOperatingDays();
     }
 
     public Store addReport(){
