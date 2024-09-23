@@ -1,7 +1,6 @@
-package com.dongyang.dongpo.domain.member;
+package com.dongyang.dongpo.domain.store;
 
-import com.dongyang.dongpo.domain.PK.StoreBookmarkId;
-import com.dongyang.dongpo.domain.store.Store;
+import com.dongyang.dongpo.domain.member.Member;
 import jakarta.persistence.*;
 import lombok.*;
 

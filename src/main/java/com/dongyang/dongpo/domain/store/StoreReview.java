@@ -19,9 +19,11 @@ public class StoreReview {
     private Long id;
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @JoinColumn(name = "store_id")
     private Store store;
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id")
     private Member member;
 
     private Integer reviewStar;

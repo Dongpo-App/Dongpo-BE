@@ -1,6 +1,6 @@
 package com.dongyang.dongpo.repository.store;
 
-import com.dongyang.dongpo.domain.member.StoreVisitCert;
+import com.dongyang.dongpo.domain.store.StoreVisitCert;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
