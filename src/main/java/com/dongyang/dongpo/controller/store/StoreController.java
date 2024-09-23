@@ -5,6 +5,7 @@ import com.dongyang.dongpo.domain.member.Member;
 import com.dongyang.dongpo.dto.location.LatLong;
 import com.dongyang.dongpo.dto.store.StoreDto;
 import com.dongyang.dongpo.dto.store.StoreRegisterDto;
+import com.dongyang.dongpo.dto.store.StoreUpdateDto;
 import com.dongyang.dongpo.service.store.StoreService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
@@ -60,12 +61,11 @@ public class StoreController {
         return ResponseEntity.ok(new ApiResponse<>("success"));
     }
 
-    @PutMapping("/{id}")
+    @PatchMapping("/{id}")
     @Operation(summary = "점포 정보 수정")
     public ResponseEntity<ApiResponse<String>> updateStore(@PathVariable Long id,
-                                      @RequestBody StoreDto request,
-                                                           @AuthenticationPrincipal Member member) throws Exception {
-
+                                                           @RequestBody StoreUpdateDto request,
+                                                           @AuthenticationPrincipal Member member) {
         storeService.updateStore(id, request, member);
         return ResponseEntity.ok(new ApiResponse<>("success"));
     }

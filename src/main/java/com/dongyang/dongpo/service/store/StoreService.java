@@ -8,6 +8,7 @@ import com.dongyang.dongpo.dto.location.CoordinateRange;
 import com.dongyang.dongpo.dto.location.LatLong;
 import com.dongyang.dongpo.dto.store.StoreDto;
 import com.dongyang.dongpo.dto.store.StoreRegisterDto;
+import com.dongyang.dongpo.dto.store.StoreUpdateDto;
 import com.dongyang.dongpo.exception.CustomException;
 import com.dongyang.dongpo.exception.ErrorCode;
 import com.dongyang.dongpo.repository.store.StoreOperatingDayRepository;
@@ -95,17 +96,39 @@ public class StoreService {
     }
 
     @Transactional
-    public void updateStore(Long id, StoreDto request, Member member){
+    public void updateStore(Long id, StoreUpdateDto request, Member member) {
         Store store = storeRepository.findById(id)
                 .orElseThrow(() -> new CustomException(ErrorCode.STORE_NOT_FOUND));
 
-        if (member == store.getMember()) {
+        // 사용자가 등록한 점포인지 확인
+        if (member.getEmail().equals(store.getMember().getEmail())) {
             store.update(request);
             storeRepository.save(store);
-        }else
-            throw new CustomException(ErrorCode.MEMBER_NOT_FOUND); // 임시
 
-        log.info("member {} update store: {}",member.getId(), store.getId());
+            if (request.getPayMethods() != null && !request.getPayMethods().isEmpty()) {
+                List<StorePayMethod> existingPayMethods = storePayMethodRepository.findByStore(store);
+                storePayMethodRepository.deleteAll(existingPayMethods);
+                for (Store.PayMethod payMethod : request.getPayMethods()) {
+                    StorePayMethod newPayMethod = StorePayMethod.builder()
+                            .store(store)
+                            .payMethod(payMethod)
+                            .build();
+                    storePayMethodRepository.save(newPayMethod);
+                }
+            }
+            if (request.getOperatingDays() != null && !request.getOperatingDays().isEmpty()) {
+                List<StoreOperatingDay> existingOperatingDays = storeOperatingDayRepository.findByStore(store);
+                storeOperatingDayRepository.deleteAll(existingOperatingDays);
+                for (Store.OperatingDay operatingDay : request.getOperatingDays()) {
+                    StoreOperatingDay newOperatingDay = StoreOperatingDay.builder()
+                            .store(store)
+                            .operatingDay(operatingDay)
+                            .build();
+                    storeOperatingDayRepository.save(newOperatingDay);
+                }
+            }
+            log.info("member {} update store: {}",member.getId(), store.getId());
+        } else throw new CustomException(ErrorCode.ARGUMENT_NOT_SATISFIED);
     }
 
     public List<StoreDto> myRegStore(Member member){
