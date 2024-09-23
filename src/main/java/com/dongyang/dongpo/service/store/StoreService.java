@@ -8,6 +8,7 @@ import com.dongyang.dongpo.dto.location.CoordinateRange;
 import com.dongyang.dongpo.dto.location.LatLong;
 import com.dongyang.dongpo.dto.store.StoreDto;
 import com.dongyang.dongpo.dto.store.StoreRegisterDto;
+import com.dongyang.dongpo.dto.store.StoreUpdateDto;
 import com.dongyang.dongpo.exception.CustomException;
 import com.dongyang.dongpo.exception.ErrorCode;
 import com.dongyang.dongpo.repository.store.StoreOperatingDayRepository;
@@ -16,6 +17,7 @@ import com.dongyang.dongpo.repository.store.StoreRepository;
 import com.dongyang.dongpo.service.location.LocationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -95,17 +97,77 @@ public class StoreService {
     }
 
     @Transactional
-    public void updateStore(Long id, StoreDto request, Member member){
+    public void updateStore(Long id, StoreUpdateDto request, Member member) {
         Store store = storeRepository.findById(id)
                 .orElseThrow(() -> new CustomException(ErrorCode.STORE_NOT_FOUND));
 
-        if (member == store.getMember()) {
+        // 사용자가 등록한 점포인지 확인
+        if (member.getEmail().equals(store.getMember().getEmail())) {
             store.update(request);
             storeRepository.save(store);
-        }else
-            throw new CustomException(ErrorCode.MEMBER_NOT_FOUND); // 임시
 
-        log.info("member {} update store: {}",member.getId(), store.getId());
+            if (request.getPayMethods() != null && !request.getPayMethods().isEmpty()) {
+                List<StorePayMethod> existingPayMethods = storePayMethodRepository.findByStore(store);
+                List<Store.PayMethod> newPayMethods = request.getPayMethods();
+
+                // 기존 payMethod 목록에서 새로운 payMethod 목록에 없는 항목 삭제
+                for (StorePayMethod existingPayMethod : existingPayMethods) {
+                    if (!newPayMethods.contains(existingPayMethod.getPayMethod())) {
+                        storePayMethodRepository.delete(existingPayMethod);
+                    }
+                }
+
+                // 새로운 payMethod 목록에서 기존 payMethod 목록에 없는 항목 추가
+                for (Store.PayMethod newPayMethod : newPayMethods) {
+                    boolean exists = existingPayMethods.stream()
+                            .anyMatch(existingPayMethod -> existingPayMethod.getPayMethod().equals(newPayMethod));
+                    if (!exists) {
+                        StorePayMethod storePayMethod = StorePayMethod.builder()
+                                .store(store)
+                                .payMethod(newPayMethod)
+                                .build();
+                        try {
+                            storePayMethodRepository.save(storePayMethod);
+                        } catch (DataIntegrityViolationException ignored) {
+                            // 중복 예외 발생 시 무시
+                        }
+                    }
+                }
+            }
+
+            if (request.getOperatingDays() != null && !request.getOperatingDays().isEmpty()) {
+                List<StoreOperatingDay> existingOperatingDays = storeOperatingDayRepository.findByStore(store);
+                List<Store.OperatingDay> newOperatingDays = request.getOperatingDays();
+
+                // 기존 operatingDay 목록에서 새로운 operatingDay 목록에 없는 항목 삭제
+                for (StoreOperatingDay existingOperatingDay : existingOperatingDays) {
+                    if (!newOperatingDays.contains(existingOperatingDay.getOperatingDay())) {
+                        storeOperatingDayRepository.delete(existingOperatingDay);
+                    }
+                }
+
+                // 새로운 operatingDay 목록에서 기존 operatingDay 목록에 없는 항목 추가
+                for (Store.OperatingDay newOperatingDay : newOperatingDays) {
+                    boolean exists = existingOperatingDays.stream()
+                            .anyMatch(existingOperatingDay -> existingOperatingDay.getOperatingDay().equals(newOperatingDay));
+                    if (!exists) {
+                        StoreOperatingDay storeOperatingDay = StoreOperatingDay.builder()
+                                .store(store)
+                                .operatingDay(newOperatingDay)
+                                .build();
+                        try {
+                            storeOperatingDayRepository.save(storeOperatingDay);
+                        } catch (DataIntegrityViolationException ignored) {
+                            // 중복 예외 발생 시 무시
+                        }
+                    }
+                }
+            }
+
+            log.info("member {} updated store: {}", member.getId(), store.getId());
+        } else {
+            throw new CustomException(ErrorCode.ARGUMENT_NOT_SATISFIED);
+        }
     }
 
     public List<StoreDto> myRegStore(Member member){

@@ -3,6 +3,7 @@ package com.dongyang.dongpo.domain.store;
 import com.dongyang.dongpo.domain.member.Member;
 import com.dongyang.dongpo.dto.store.ReviewDto;
 import com.dongyang.dongpo.dto.store.StoreDto;
+import com.dongyang.dongpo.dto.store.StoreUpdateDto;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -10,6 +11,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Entity
 @Getter
@@ -79,6 +81,14 @@ public class Store {
     }
 
     public StoreDto toResponse() {
+        List<Store.OperatingDay> operatingDayValues = this.storeOperatingDays.stream()
+                .map(StoreOperatingDay::getOperatingDay)
+                .collect(Collectors.toList());
+
+        List<Store.PayMethod> payMethodValues = this.storePayMethods.stream()
+                .map(StorePayMethod::getPayMethod)
+                .collect(Collectors.toList());
+
         List<ReviewDto> reviewDtos = this.reviews.stream()
                 .map(StoreReview::toResponse)
                 .toList();
@@ -94,23 +104,19 @@ public class Store {
                 .openTime(openTime)
                 .closeTime(closeTime)
                 .isToiletValid(isToiletValid)
-                .storeOperatingDays(storeOperatingDays)
-                .storePayMethods(storePayMethods)
+                .operatingDays(operatingDayValues)
+                .payMethods(payMethodValues)
                 .status(status)
                 .reviews(reviewDtos)
                 .build();
     }
 
-    public void update(StoreDto storeDto){
-        this.name = storeDto.getName();
-        this.address = storeDto.getAddress();
-        this.latitude = storeDto.getLatitude();
-        this.longitude = storeDto.getLongitude();
-        this.openTime = storeDto.getOpenTime();
-        this.closeTime = storeDto.getCloseTime();
-        this.isToiletValid = storeDto.isToiletValid();
-        this.storePayMethods = storeDto.getStorePayMethods();
-        this.storeOperatingDays = storeDto.getStoreOperatingDays();
+    public void update(StoreUpdateDto updateDto){
+        this.name = updateDto.getName();
+        this.openTime = updateDto.getOpenTime();
+        this.closeTime = updateDto.getCloseTime();
+        this.isToiletValid = updateDto.isToiletValid();
+        this.status = updateDto.getStatus();
     }
 
     public Store addReport(){
