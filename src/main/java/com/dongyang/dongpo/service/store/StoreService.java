@@ -17,6 +17,7 @@ import com.dongyang.dongpo.repository.store.StoreRepository;
 import com.dongyang.dongpo.service.location.LocationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -107,28 +108,66 @@ public class StoreService {
 
             if (request.getPayMethods() != null && !request.getPayMethods().isEmpty()) {
                 List<StorePayMethod> existingPayMethods = storePayMethodRepository.findByStore(store);
-                storePayMethodRepository.deleteAll(existingPayMethods);
-                for (Store.PayMethod payMethod : request.getPayMethods()) {
-                    StorePayMethod newPayMethod = StorePayMethod.builder()
-                            .store(store)
-                            .payMethod(payMethod)
-                            .build();
-                    storePayMethodRepository.save(newPayMethod);
+                List<Store.PayMethod> newPayMethods = request.getPayMethods();
+
+                // 기존 payMethod 목록에서 새로운 payMethod 목록에 없는 항목 삭제
+                for (StorePayMethod existingPayMethod : existingPayMethods) {
+                    if (!newPayMethods.contains(existingPayMethod.getPayMethod())) {
+                        storePayMethodRepository.delete(existingPayMethod);
+                    }
+                }
+
+                // 새로운 payMethod 목록에서 기존 payMethod 목록에 없는 항목 추가
+                for (Store.PayMethod newPayMethod : newPayMethods) {
+                    boolean exists = existingPayMethods.stream()
+                            .anyMatch(existingPayMethod -> existingPayMethod.getPayMethod().equals(newPayMethod));
+                    if (!exists) {
+                        StorePayMethod storePayMethod = StorePayMethod.builder()
+                                .store(store)
+                                .payMethod(newPayMethod)
+                                .build();
+                        try {
+                            storePayMethodRepository.save(storePayMethod);
+                        } catch (DataIntegrityViolationException ignored) {
+                            // 중복 예외 발생 시 무시
+                        }
+                    }
                 }
             }
+
             if (request.getOperatingDays() != null && !request.getOperatingDays().isEmpty()) {
                 List<StoreOperatingDay> existingOperatingDays = storeOperatingDayRepository.findByStore(store);
-                storeOperatingDayRepository.deleteAll(existingOperatingDays);
-                for (Store.OperatingDay operatingDay : request.getOperatingDays()) {
-                    StoreOperatingDay newOperatingDay = StoreOperatingDay.builder()
-                            .store(store)
-                            .operatingDay(operatingDay)
-                            .build();
-                    storeOperatingDayRepository.save(newOperatingDay);
+                List<Store.OperatingDay> newOperatingDays = request.getOperatingDays();
+
+                // 기존 operatingDay 목록에서 새로운 operatingDay 목록에 없는 항목 삭제
+                for (StoreOperatingDay existingOperatingDay : existingOperatingDays) {
+                    if (!newOperatingDays.contains(existingOperatingDay.getOperatingDay())) {
+                        storeOperatingDayRepository.delete(existingOperatingDay);
+                    }
+                }
+
+                // 새로운 operatingDay 목록에서 기존 operatingDay 목록에 없는 항목 추가
+                for (Store.OperatingDay newOperatingDay : newOperatingDays) {
+                    boolean exists = existingOperatingDays.stream()
+                            .anyMatch(existingOperatingDay -> existingOperatingDay.getOperatingDay().equals(newOperatingDay));
+                    if (!exists) {
+                        StoreOperatingDay storeOperatingDay = StoreOperatingDay.builder()
+                                .store(store)
+                                .operatingDay(newOperatingDay)
+                                .build();
+                        try {
+                            storeOperatingDayRepository.save(storeOperatingDay);
+                        } catch (DataIntegrityViolationException ignored) {
+                            // 중복 예외 발생 시 무시
+                        }
+                    }
                 }
             }
-            log.info("member {} update store: {}",member.getId(), store.getId());
-        } else throw new CustomException(ErrorCode.ARGUMENT_NOT_SATISFIED);
+
+            log.info("member {} updated store: {}", member.getId(), store.getId());
+        } else {
+            throw new CustomException(ErrorCode.ARGUMENT_NOT_SATISFIED);
+        }
     }
 
     public List<StoreDto> myRegStore(Member member){

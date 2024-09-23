@@ -11,6 +11,9 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Table(uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"store_id", "operating_day"})
+})
 public class StoreOperatingDay {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

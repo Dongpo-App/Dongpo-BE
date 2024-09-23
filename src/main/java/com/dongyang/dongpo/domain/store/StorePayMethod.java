@@ -11,6 +11,9 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Table(uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"store_id", "pay_method"})
+})
 public class StorePayMethod {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
