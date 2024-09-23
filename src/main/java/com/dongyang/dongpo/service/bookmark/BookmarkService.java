@@ -1,7 +1,7 @@
 package com.dongyang.dongpo.service.bookmark;
 
 import com.dongyang.dongpo.domain.member.Member;
-import com.dongyang.dongpo.domain.member.StoreBookmark;
+import com.dongyang.dongpo.domain.store.StoreBookmark;
 import com.dongyang.dongpo.domain.store.Store;
 import com.dongyang.dongpo.dto.bookmark.BookmarkDto;
 import com.dongyang.dongpo.exception.CustomException;

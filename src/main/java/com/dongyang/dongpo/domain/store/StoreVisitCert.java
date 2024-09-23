@@ -1,6 +1,6 @@
-package com.dongyang.dongpo.domain.member;
+package com.dongyang.dongpo.domain.store;
 
-import com.dongyang.dongpo.domain.store.Store;
+import com.dongyang.dongpo.domain.member.Member;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -8,7 +8,6 @@ import java.time.LocalDateTime;
 
 @Entity
 @Getter
-@Setter
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor

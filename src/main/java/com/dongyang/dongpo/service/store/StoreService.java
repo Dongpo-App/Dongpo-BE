@@ -2,14 +2,16 @@ package com.dongyang.dongpo.service.store;
 
 import com.dongyang.dongpo.domain.member.Member;
 import com.dongyang.dongpo.domain.store.Store;
-import com.dongyang.dongpo.domain.store.StoreReview;
+import com.dongyang.dongpo.domain.store.StoreOperatingDay;
+import com.dongyang.dongpo.domain.store.StorePayMethod;
 import com.dongyang.dongpo.dto.location.CoordinateRange;
 import com.dongyang.dongpo.dto.location.LatLong;
-import com.dongyang.dongpo.dto.store.ReviewDto;
 import com.dongyang.dongpo.dto.store.StoreDto;
 import com.dongyang.dongpo.dto.store.StoreRegisterDto;
 import com.dongyang.dongpo.exception.CustomException;
 import com.dongyang.dongpo.exception.ErrorCode;
+import com.dongyang.dongpo.repository.store.StoreOperatingDayRepository;
+import com.dongyang.dongpo.repository.store.StorePayMethodRepository;
 import com.dongyang.dongpo.repository.store.StoreRepository;
 import com.dongyang.dongpo.service.location.LocationService;
 import lombok.RequiredArgsConstructor;
@@ -27,19 +29,36 @@ import java.util.List;
 public class StoreService {
 
     private final StoreRepository storeRepository;
+    private final StorePayMethodRepository storePayMethodRepository;
+    private final StoreOperatingDayRepository storeOperatingDayRepository;
     private final LocationService locationService;
 
 
     @Transactional
-    public void addStore(StoreRegisterDto request, Member member) {
+    public void addStore(StoreRegisterDto registerDto, Member member) {
         // 사용자의 현재 위치와 점포 등록 위치가 범위 내에 있는지 검증
-        if (!locationService.verifyStoreRegistration(request))
+        if (!locationService.verifyStoreRegistration(registerDto))
             throw new CustomException(ErrorCode.STORE_REGISTRATION_NOT_VALID);
 
-        Store store = request.toStore(member);
-        Store save = storeRepository.save(store);
+        Store savedStore = storeRepository.save(registerDto.toStore(member));
 
-        log.info("member {} add store: {}", member.getId(), save.getId());
+        for (Store.PayMethod payMethod : registerDto.getPayMethods()) {
+            StorePayMethod storePayMethod = StorePayMethod.builder()
+                    .store(savedStore)
+                    .payMethod(payMethod)
+                    .build();
+            storePayMethodRepository.save(storePayMethod);
+        }
+
+        for (Store.OperatingDay operatingDay : registerDto.getOperatingDays()) {
+            StoreOperatingDay storeOperatingDay = StoreOperatingDay.builder()
+                    .store(savedStore)
+                    .operatingDay(operatingDay)
+                    .build();
+            storeOperatingDayRepository.save(storeOperatingDay);
+        }
+
+        log.info("member {} add store: {}", member.getId(), savedStore.getId());
     }
 
     public List<StoreDto> findAll() {
@@ -65,15 +84,7 @@ public class StoreService {
     public StoreDto detailStore(Long id) {
         Store store = storeRepository.findById(id)
                 .orElseThrow(() -> new CustomException(ErrorCode.STORE_NOT_FOUND));
-
-        List<ReviewDto> reviewDtos = new ArrayList<>();
-
-        if (store.getReviews() != null) {
-            for (StoreReview review : store.getReviews())
-                reviewDtos.add(review.toResponse());
-        }
-
-        return store.toResponse(reviewDtos);
+        return store.toResponse();
     }
 
     @Transactional

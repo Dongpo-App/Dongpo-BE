@@ -42,8 +42,6 @@ public class StoreRegisterDto {
                 .closeTime(closeTime)
                 .member(member)
                 .isToiletValid(isToiletValid)
-                .operatingDays(operatingDays)
-                .payMethods(payMethods)
                 .build();
     }
 }
