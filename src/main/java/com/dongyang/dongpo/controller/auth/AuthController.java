@@ -27,6 +27,11 @@ public class AuthController {
         return ResponseEntity.ok(new ApiResponse<>(socialService.getKakaoUserInfo(token.getToken())));
     }
 
+    @GetMapping("/kakao/callback")
+    public ResponseEntity<ApiResponse<JwtToken>> kakaoCallback(@RequestParam("code") String AccessCode) {
+        return ResponseEntity.ok(new ApiResponse<>(socialService.kakaoCallback(AccessCode)));
+    }
+
     @PostMapping("/naver")
     public ResponseEntity<ApiResponse<JwtToken>> naver(@RequestBody SocialTokenDto token) {
         return ResponseEntity.ok(new ApiResponse<>(socialService.getNaverUserInfo(token.getToken())));
