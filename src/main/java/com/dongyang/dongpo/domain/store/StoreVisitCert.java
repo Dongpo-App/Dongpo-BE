@@ -25,7 +25,7 @@ public class StoreVisitCert {
     @JoinColumn(name = "cert_store")
     private Store store;
 
-    private boolean isVisitSuccessful;
+    private Boolean isVisitSuccessful;
 
     @Column(length = 24)
     private String certIp;
