@@ -10,9 +10,14 @@ import com.dongyang.dongpo.exception.ErrorCode;
 import com.dongyang.dongpo.service.member.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
+import org.springframework.web.util.UriBuilder;
 
 
 @Service
@@ -20,6 +25,36 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 public class SocialService {
 
     private final MemberService memberService;
+
+    @Value("${kakao.client_id}")
+    private String clientId;
+
+    @Value("${kakao.redirect_uri}")
+    private String redirectUri;
+
+    public JwtToken kakaoCallback(String AccessCode) {
+        WebClient webClient = WebClient.builder()
+                .baseUrl("https://kauth.kakao.com/oauth/token")
+                .defaultHeader("Content-Type", "application/x-www-form-urlencoded;charset=utf-8")
+                .build();
+
+        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        params.add("grant_type", "authorization_code");
+        params.add("client_id", clientId);
+        params.add("redirect_uri", redirectUri);
+        params.add("code", AccessCode);
+
+        String responseBody = webClient.post()
+                .uri(UriBuilder::build)
+                .body(BodyInserters.fromFormData(params))
+                .retrieve()
+                .bodyToMono(String.class)
+                .block();
+
+        JSONObject jsonObject = new JSONObject(responseBody);
+        String accessToken = jsonObject.getString("access_token");
+        return getKakaoUserInfo(accessToken);
+    }
 
     public JwtToken getKakaoUserInfo(String accessToken) {
         try {
