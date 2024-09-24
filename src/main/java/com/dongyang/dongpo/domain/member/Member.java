@@ -65,7 +65,7 @@ public class Member implements UserDetails {
     @Enumerated(EnumType.STRING)
     private Status status;
 
-    @OneToMany(mappedBy = "member", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     List<MemberTitle> titles = new ArrayList<>();
 
     public void addTitle(MemberTitle memberTitle){
