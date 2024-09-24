@@ -1,28 +1,36 @@
 package com.dongyang.dongpo.service.location;
 
+import com.dongyang.dongpo.domain.member.Member;
+import com.dongyang.dongpo.domain.member.MemberTitle;
+import com.dongyang.dongpo.domain.member.Title;
 import com.dongyang.dongpo.domain.store.Store;
+import com.dongyang.dongpo.domain.store.StoreVisitCert;
 import com.dongyang.dongpo.dto.location.LatLong;
 import com.dongyang.dongpo.dto.location.LatLongComparisonDto;
 import com.dongyang.dongpo.dto.location.CoordinateRange;
 import com.dongyang.dongpo.dto.store.StoreRegisterDto;
 import com.dongyang.dongpo.exception.CustomException;
 import com.dongyang.dongpo.exception.ErrorCode;
+import com.dongyang.dongpo.repository.member.MemberRepository;
 import com.dongyang.dongpo.repository.store.StoreRepository;
+import com.dongyang.dongpo.repository.store.StoreVisitCertRepository;
 import jakarta.transaction.Transactional;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
 
 @Service
 @Transactional
+@RequiredArgsConstructor
+@Slf4j
 public class LocationService {
 
     private final StoreRepository storeRepository;
+    private final StoreVisitCertRepository storeVisitCertRepository;
+    private final MemberRepository memberRepository;
 
-
-    @Autowired
-    public LocationService(StoreRepository storeRepository) {
-        this.storeRepository = storeRepository;
-    }
 
     // 두 개의 좌표를 비교하여 직선 거리 계산
     public Long calcDistance(LatLong newLatLong, LatLong targetLatLong) {
@@ -60,14 +68,44 @@ public class LocationService {
     }
 
     // 신규 좌표가 기존 좌표의 오차범위 내에 위치하는지 검증 (방문 인증 검증)
-    public Boolean verifyVisitCert(LatLongComparisonDto latLongComparison) {
+    public Boolean verifyVisitCert(LatLongComparisonDto latLongComparison, Member member) {
         LatLong newCoordinate = LatLong.builder()
                 .latitude(latLongComparison.getLatitude())
                 .longitude(latLongComparison.getLongitude())
                 .build();
 
+        boolean verify = calcDistance(newCoordinate, getStoreCoordinates(latLongComparison.getTargetStoreId())) <= 50;
+        if (verify){
+            storeVisitCertRepository.save(StoreVisitCert.builder()
+                    .store(storeRepository.findById(latLongComparison.getTargetStoreId()).orElseThrow(() -> new CustomException(ErrorCode.STORE_NOT_FOUND)))
+                    .member(member)
+                    .isVisitSuccessful(true)
+                    .certDate(LocalDateTime.now())
+                    .build());
+
+            Long count = storeVisitCertRepository.countByMemberAndIsVisitSuccessfulIsTrue(member);
+            if (count == 1 && member.getTitles().stream().noneMatch(title -> title.getTitle().equals(Title.FIRST_VISIT_CERT))) {
+                member.addTitle(MemberTitle.builder()
+                        .title(Title.FIRST_VISIT_CERT)
+                        .achieveDate(LocalDateTime.now())
+                        .member(member)
+                        .build());
+                memberRepository.save(member);
+
+                log.info("member {} add title : {}", member.getId(), Title.FIRST_VISIT_CERT.getDescription());
+            }
+        }else {
+            storeVisitCertRepository.save(StoreVisitCert.builder()
+                    .store(storeRepository.findById(latLongComparison.getTargetStoreId()).orElseThrow(() -> new CustomException(ErrorCode.STORE_NOT_FOUND)))
+                    .member(member)
+                    .isVisitSuccessful(false)
+                    .certDate(LocalDateTime.now())
+                    .build());
+        }
+
+
         // 오차가 50m 이내일 경우 true, 초과일 경우 false 반환
-        return calcDistance(newCoordinate, getStoreCoordinates(latLongComparison.getTargetStoreId())) <= 50;
+        return verify;
     }
 
     public CoordinateRange calcCoordinateRangeByCurrentLocation(LatLong latLong) {

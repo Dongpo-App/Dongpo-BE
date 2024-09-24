@@ -8,6 +8,7 @@ import com.dongyang.dongpo.domain.store.StoreReview;
 import com.dongyang.dongpo.dto.store.ReviewDto;
 import com.dongyang.dongpo.exception.CustomException;
 import com.dongyang.dongpo.exception.ErrorCode;
+import com.dongyang.dongpo.repository.member.MemberRepository;
 import com.dongyang.dongpo.repository.store.StoreRepository;
 import com.dongyang.dongpo.repository.store.StoreReviewRepository;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +28,7 @@ public class StoreReviewService {
 
     private final StoreReviewRepository reviewRepository;
     private final StoreRepository storeRepository;
+    private final MemberRepository memberRepository;
 
     @Transactional
     public void addReview(Member member, Long storeId, ReviewDto reviewDto){
@@ -45,6 +47,7 @@ public class StoreReviewService {
                     .achieveDate(LocalDateTime.now())
                     .member(member)
                     .build());
+            memberRepository.save(member);
 
             log.info("member {} add title : {}", member.getId(), Title.REVIEW_PRO.getDescription());
         }

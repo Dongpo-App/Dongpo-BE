@@ -13,6 +13,7 @@ import com.dongyang.dongpo.dto.store.StoreRegisterDto;
 import com.dongyang.dongpo.dto.store.StoreUpdateDto;
 import com.dongyang.dongpo.exception.CustomException;
 import com.dongyang.dongpo.exception.ErrorCode;
+import com.dongyang.dongpo.repository.member.MemberRepository;
 import com.dongyang.dongpo.repository.store.StoreOperatingDayRepository;
 import com.dongyang.dongpo.repository.store.StorePayMethodRepository;
 import com.dongyang.dongpo.repository.store.StoreRepository;
@@ -36,6 +37,7 @@ public class StoreService {
     private final StoreRepository storeRepository;
     private final StorePayMethodRepository storePayMethodRepository;
     private final StoreOperatingDayRepository storeOperatingDayRepository;
+    private final MemberRepository memberRepository;
     private final LocationService locationService;
 
 
@@ -72,6 +74,8 @@ public class StoreService {
                     .achieveDate(LocalDateTime.now())
                     .member(member)
                     .build());
+
+            memberRepository.save(member);
 
             log.info("member {} add title : {}", member.getId(), Title.REGISTER_PRO.getDescription());
         }
