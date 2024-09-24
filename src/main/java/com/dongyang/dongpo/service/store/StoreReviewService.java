@@ -1,6 +1,7 @@
 package com.dongyang.dongpo.service.store;
 
 import com.dongyang.dongpo.domain.member.Member;
+import com.dongyang.dongpo.domain.member.Title;
 import com.dongyang.dongpo.domain.store.Store;
 import com.dongyang.dongpo.domain.store.StoreReview;
 import com.dongyang.dongpo.dto.store.ReviewDto;
@@ -8,6 +9,7 @@ import com.dongyang.dongpo.exception.CustomException;
 import com.dongyang.dongpo.exception.ErrorCode;
 import com.dongyang.dongpo.repository.store.StoreRepository;
 import com.dongyang.dongpo.repository.store.StoreReviewRepository;
+import com.dongyang.dongpo.service.title.TitleService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -24,6 +26,7 @@ public class StoreReviewService {
 
     private final StoreReviewRepository reviewRepository;
     private final StoreRepository storeRepository;
+    private final TitleService titleService;
 
     @Transactional
     public void addReview(Member member, Long storeId, ReviewDto reviewDto){
@@ -34,6 +37,10 @@ public class StoreReviewService {
         reviewRepository.save(storeReview);
 
         log.info("member {} add review store ID : {}", member.getId(), store.getId());
+
+        Long count = reviewRepository.countByMember(member);
+        if (count.equals(3L))
+            titleService.addTitle(member, Title.REVIEW_PRO);
     }
 
     public List<ReviewDto> myRegReview(Long memberId){

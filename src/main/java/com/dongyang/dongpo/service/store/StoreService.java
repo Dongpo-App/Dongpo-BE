@@ -1,6 +1,7 @@
 package com.dongyang.dongpo.service.store;
 
 import com.dongyang.dongpo.domain.member.Member;
+import com.dongyang.dongpo.domain.member.Title;
 import com.dongyang.dongpo.domain.store.Store;
 import com.dongyang.dongpo.domain.store.StoreOperatingDay;
 import com.dongyang.dongpo.domain.store.StorePayMethod;
@@ -15,6 +16,7 @@ import com.dongyang.dongpo.repository.store.StoreOperatingDayRepository;
 import com.dongyang.dongpo.repository.store.StorePayMethodRepository;
 import com.dongyang.dongpo.repository.store.StoreRepository;
 import com.dongyang.dongpo.service.location.LocationService;
+import com.dongyang.dongpo.service.title.TitleService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -34,6 +36,7 @@ public class StoreService {
     private final StorePayMethodRepository storePayMethodRepository;
     private final StoreOperatingDayRepository storeOperatingDayRepository;
     private final LocationService locationService;
+    private final TitleService titleService;
 
 
     @Transactional
@@ -61,6 +64,10 @@ public class StoreService {
         }
 
         log.info("member {} add store: {}", member.getId(), savedStore.getId());
+
+        Long count = storeRepository.countByMember(member);
+        if (count.equals(3L))
+            titleService.addTitle(member, Title.REGISTER_PRO);
     }
 
     public List<StoreDto> findAll() {

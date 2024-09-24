@@ -8,9 +8,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDateTime;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 @Entity
 @Getter
@@ -66,6 +64,13 @@ public class Member implements UserDetails {
     @Column(columnDefinition = "VARCHAR(255)")
     @Enumerated(EnumType.STRING)
     private Status status;
+
+    @OneToMany(mappedBy = "member", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    List<MemberTitle> titles = new ArrayList<>();
+
+    public void addTitle(MemberTitle memberTitle){
+        titles.add(memberTitle);
+    }
 
     public static Member toEntity(UserInfo userInfo){
         return Member.builder()
