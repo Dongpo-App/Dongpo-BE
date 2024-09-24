@@ -1,14 +1,12 @@
 package com.dongyang.dongpo.service.store;
 
 import com.dongyang.dongpo.domain.member.Member;
-import com.dongyang.dongpo.domain.member.MemberTitle;
 import com.dongyang.dongpo.domain.member.Title;
 import com.dongyang.dongpo.domain.store.Store;
 import com.dongyang.dongpo.domain.store.StoreReview;
 import com.dongyang.dongpo.dto.store.ReviewDto;
 import com.dongyang.dongpo.exception.CustomException;
 import com.dongyang.dongpo.exception.ErrorCode;
-import com.dongyang.dongpo.repository.member.MemberRepository;
 import com.dongyang.dongpo.repository.store.StoreRepository;
 import com.dongyang.dongpo.repository.store.StoreReviewRepository;
 import com.dongyang.dongpo.service.title.TitleService;
@@ -17,7 +15,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,7 +26,6 @@ public class StoreReviewService {
 
     private final StoreReviewRepository reviewRepository;
     private final StoreRepository storeRepository;
-    private final MemberRepository memberRepository;
     private final TitleService titleService;
 
     @Transactional

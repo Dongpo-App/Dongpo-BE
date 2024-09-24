@@ -1,7 +1,6 @@
 package com.dongyang.dongpo.service.location;
 
 import com.dongyang.dongpo.domain.member.Member;
-import com.dongyang.dongpo.domain.member.MemberTitle;
 import com.dongyang.dongpo.domain.member.Title;
 import com.dongyang.dongpo.domain.store.Store;
 import com.dongyang.dongpo.domain.store.StoreVisitCert;
@@ -11,7 +10,6 @@ import com.dongyang.dongpo.dto.location.CoordinateRange;
 import com.dongyang.dongpo.dto.store.StoreRegisterDto;
 import com.dongyang.dongpo.exception.CustomException;
 import com.dongyang.dongpo.exception.ErrorCode;
-import com.dongyang.dongpo.repository.member.MemberRepository;
 import com.dongyang.dongpo.repository.store.StoreRepository;
 import com.dongyang.dongpo.repository.store.StoreVisitCertRepository;
 import com.dongyang.dongpo.service.title.TitleService;
@@ -30,7 +28,6 @@ public class LocationService {
 
     private final StoreRepository storeRepository;
     private final StoreVisitCertRepository storeVisitCertRepository;
-    private final MemberRepository memberRepository;
     private final TitleService titleService;
 
 

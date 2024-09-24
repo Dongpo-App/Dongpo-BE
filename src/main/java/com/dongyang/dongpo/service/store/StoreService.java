@@ -1,7 +1,6 @@
 package com.dongyang.dongpo.service.store;
 
 import com.dongyang.dongpo.domain.member.Member;
-import com.dongyang.dongpo.domain.member.MemberTitle;
 import com.dongyang.dongpo.domain.member.Title;
 import com.dongyang.dongpo.domain.store.Store;
 import com.dongyang.dongpo.domain.store.StoreOperatingDay;
@@ -13,7 +12,6 @@ import com.dongyang.dongpo.dto.store.StoreRegisterDto;
 import com.dongyang.dongpo.dto.store.StoreUpdateDto;
 import com.dongyang.dongpo.exception.CustomException;
 import com.dongyang.dongpo.exception.ErrorCode;
-import com.dongyang.dongpo.repository.member.MemberRepository;
 import com.dongyang.dongpo.repository.store.StoreOperatingDayRepository;
 import com.dongyang.dongpo.repository.store.StorePayMethodRepository;
 import com.dongyang.dongpo.repository.store.StoreRepository;
@@ -25,7 +23,6 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,7 +35,6 @@ public class StoreService {
     private final StoreRepository storeRepository;
     private final StorePayMethodRepository storePayMethodRepository;
     private final StoreOperatingDayRepository storeOperatingDayRepository;
-    private final MemberRepository memberRepository;
     private final LocationService locationService;
     private final TitleService titleService;
 
