@@ -20,8 +20,8 @@ public class TitleService {
     private final MemberRepository memberRepository;
 
     @Transactional
-    public void addTitle(Long count, Long currentCount, Member member, Title title) {
-        if (count.equals(currentCount) && member.getTitles().stream().noneMatch(t -> t.getTitle().equals(title))) {
+    public void addTitle(Member member, Title title) {
+        if (member.getTitles().stream().noneMatch(t -> t.getTitle().equals(title))) {
             member.addTitle(MemberTitle.builder()
                     .title(title)
                     .achieveDate(LocalDateTime.now())

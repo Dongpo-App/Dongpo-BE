@@ -66,8 +66,8 @@ public class StoreService {
         log.info("member {} add store: {}", member.getId(), savedStore.getId());
 
         Long count = storeRepository.countByMember(member);
-
-        titleService.addTitle(count, 3L, member, Title.REGISTER_PRO);
+        if (count.equals(3L))
+            titleService.addTitle(member, Title.REGISTER_PRO);
     }
 
     public List<StoreDto> findAll() {

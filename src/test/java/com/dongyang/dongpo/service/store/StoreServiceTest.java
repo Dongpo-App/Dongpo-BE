@@ -64,7 +64,7 @@ class StoreServiceTest {
         when(storeDto.getPayMethods()).thenReturn(List.of(Store.PayMethod.CASH, Store.PayMethod.CARD));
         when(storeDto.getOperatingDays()).thenReturn(List.of(Store.OperatingDay.MON, Store.OperatingDay.TUE));
 
-        doNothing().when(titleService).addTitle(anyLong(), anyLong(), any(Member.class), any(Title.class));
+        doNothing().when(titleService).addTitle(any(Member.class), any(Title.class));
 
         // when
         storeService.addStore(storeDto, member);

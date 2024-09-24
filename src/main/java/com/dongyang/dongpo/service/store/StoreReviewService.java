@@ -39,7 +39,8 @@ public class StoreReviewService {
         log.info("member {} add review store ID : {}", member.getId(), store.getId());
 
         Long count = reviewRepository.countByMember(member);
-        titleService.addTitle(count, 3L, member, Title.REVIEW_PRO);
+        if (count.equals(3L))
+            titleService.addTitle(member, Title.REVIEW_PRO);
     }
 
     public List<ReviewDto> myRegReview(Long memberId){

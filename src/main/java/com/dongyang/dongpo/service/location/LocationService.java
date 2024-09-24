@@ -83,10 +83,11 @@ public class LocationService {
                     .build());
 
             Long successCount = storeVisitCertRepository.countByMemberAndIsVisitSuccessfulIsTrue(member);
-            if (successCount < 3)
-                titleService.addTitle(successCount, 1L, member, Title.FIRST_VISIT_CERT);
-            else
-                titleService.addTitle(successCount, 3L, member, Title.REGULAR_CUSTOMER);
+            if (successCount.equals(1L))
+                titleService.addTitle(member, Title.FIRST_VISIT_CERT);
+            else if (successCount.equals(3L))
+                titleService.addTitle(member, Title.REGULAR_CUSTOMER);
+
         }else {
             storeVisitCertRepository.save(StoreVisitCert.builder()
                     .store(storeRepository.findById(latLongComparison.getTargetStoreId()).orElseThrow(() -> new CustomException(ErrorCode.STORE_NOT_FOUND)))
@@ -96,7 +97,8 @@ public class LocationService {
                     .build());
 
             Long failCount = storeVisitCertRepository.countByMemberAndIsVisitSuccessfulIsFalse(member);
-            titleService.addTitle(failCount, 3L, member, Title.FAILED_TO_VISIT);
+            if (failCount.equals(3L))
+                titleService.addTitle(member, Title.FAILED_TO_VISIT);
         }
 
         // 오차가 50m 이내일 경우 true, 초과일 경우 false 반환
