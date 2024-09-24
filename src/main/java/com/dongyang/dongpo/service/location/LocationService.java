@@ -75,6 +75,9 @@ public class LocationService {
                 .build();
 
         boolean verify = calcDistance(newCoordinate, getStoreCoordinates(latLongComparison.getTargetStoreId())) <= 50;
+        Long successCount = storeVisitCertRepository.countByMemberAndIsVisitSuccessfulIsTrue(member);
+        Long failCount = storeVisitCertRepository.countByMemberAndIsVisitSuccessfulIsFalse(member);
+
         if (verify){
             storeVisitCertRepository.save(StoreVisitCert.builder()
                     .store(storeRepository.findById(latLongComparison.getTargetStoreId()).orElseThrow(() -> new CustomException(ErrorCode.STORE_NOT_FOUND)))
@@ -83,8 +86,7 @@ public class LocationService {
                     .certDate(LocalDateTime.now())
                     .build());
 
-            Long count = storeVisitCertRepository.countByMemberAndIsVisitSuccessfulIsTrue(member);
-            if (count == 1 && member.getTitles().stream().noneMatch(title -> title.getTitle().equals(Title.FIRST_VISIT_CERT))) {
+            if (successCount == 1 && member.getTitles().stream().noneMatch(title -> title.getTitle().equals(Title.FIRST_VISIT_CERT))) {
                 member.addTitle(MemberTitle.builder()
                         .title(Title.FIRST_VISIT_CERT)
                         .achieveDate(LocalDateTime.now())
@@ -101,8 +103,18 @@ public class LocationService {
                     .isVisitSuccessful(false)
                     .certDate(LocalDateTime.now())
                     .build());
-        }
 
+            if(failCount == 3 && member.getTitles().stream().noneMatch(title -> title.getTitle().equals(Title.FAILED_TO_VISIT))) {
+                member.addTitle(MemberTitle.builder()
+                        .title(Title.FAILED_TO_VISIT)
+                        .achieveDate(LocalDateTime.now())
+                        .member(member)
+                        .build());
+                memberRepository.save(member);
+
+                log.info("member {} add title : {}", member.getId(), Title.FAILED_TO_VISIT.getDescription());
+            }
+        }
 
         // 오차가 50m 이내일 경우 true, 초과일 경우 false 반환
         return verify;
