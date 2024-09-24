@@ -66,7 +66,7 @@ public class StoreService {
         log.info("member {} add store: {}", member.getId(), savedStore.getId());
 
         Long count = storeRepository.countByMember(member);
-        if (count == 3){
+        if (count == 3 && member.getTitles().stream().noneMatch(title -> title.getTitle().equals(Title.REGISTER_PRO))) {
             member.addTitle(MemberTitle.builder()
                     .title(Title.REGISTER_PRO)
                     .achieveDate(LocalDateTime.now())

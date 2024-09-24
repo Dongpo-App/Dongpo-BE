@@ -39,7 +39,7 @@ public class StoreReviewService {
         log.info("member {} add review store ID : {}", member.getId(), store.getId());
 
         Long count = reviewRepository.countByMember(member);
-        if (count == 3){
+        if (count == 3 && member.getTitles().stream().noneMatch(title -> title.getTitle().equals(Title.REVIEW_PRO))) {
             member.addTitle(MemberTitle.builder()
                     .title(Title.REVIEW_PRO)
                     .achieveDate(LocalDateTime.now())
