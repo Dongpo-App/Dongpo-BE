@@ -44,12 +44,8 @@ public class BookmarkService {
         List<StoreBookmark> storeBookmarks = bookmarkRepository.findByMemberId(member.getId());
         List<BookmarkDto> bookmarkDtos = new ArrayList<>();
 
-        for (StoreBookmark storeBookmark : storeBookmarks){
-            bookmarkDtos.add(BookmarkDto.builder()
-                    .id(storeBookmark.getId())
-                    .store(storeBookmark.getStore().toResponse())
-                    .build());
-        }
+        for (StoreBookmark storeBookmark : storeBookmarks)
+            bookmarkDtos.add(BookmarkDto.toDto(storeBookmark));
 
         return bookmarkDtos;
     }
