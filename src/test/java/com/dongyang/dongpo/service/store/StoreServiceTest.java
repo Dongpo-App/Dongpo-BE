@@ -1,6 +1,7 @@
 package com.dongyang.dongpo.service.store;
 
 import com.dongyang.dongpo.domain.member.Member;
+import com.dongyang.dongpo.domain.member.Title;
 import com.dongyang.dongpo.domain.store.Store;
 import com.dongyang.dongpo.domain.store.StoreOperatingDay;
 import com.dongyang.dongpo.domain.store.StorePayMethod;
@@ -10,6 +11,7 @@ import com.dongyang.dongpo.repository.store.StoreOperatingDayRepository;
 import com.dongyang.dongpo.repository.store.StorePayMethodRepository;
 import com.dongyang.dongpo.repository.store.StoreRepository;
 import com.dongyang.dongpo.service.location.LocationService;
+import com.dongyang.dongpo.service.title.TitleService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -42,6 +44,9 @@ class StoreServiceTest {
     @Mock
     private LocationService locationService;
 
+    @Mock
+    private TitleService titleService;
+
     @Test
     @DisplayName("점포_등록")
     void addStore() {
@@ -58,6 +63,8 @@ class StoreServiceTest {
         when(storeOperatingDayRepository.save(any())).thenReturn(storeOperatingDay);
         when(storeDto.getPayMethods()).thenReturn(List.of(Store.PayMethod.CASH, Store.PayMethod.CARD));
         when(storeDto.getOperatingDays()).thenReturn(List.of(Store.OperatingDay.MON, Store.OperatingDay.TUE));
+
+        doNothing().when(titleService).addTitle(anyLong(), anyLong(), any(Member.class), any(Title.class));
 
         // when
         storeService.addStore(storeDto, member);
