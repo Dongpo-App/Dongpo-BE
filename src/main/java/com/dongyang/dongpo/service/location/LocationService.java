@@ -75,15 +75,17 @@ public class LocationService {
 
         boolean verify = calcDistance(newCoordinate, getStoreCoordinates(latLongComparison.getTargetStoreId())) <= 50;
         if (verify){
+            Store store = storeRepository.findById(latLongComparison.getTargetStoreId()).orElseThrow(() -> new CustomException(ErrorCode.STORE_NOT_FOUND));
             storeVisitCertRepository.save(StoreVisitCert.builder()
-                    .store(storeRepository.findById(latLongComparison.getTargetStoreId()).orElseThrow(() -> new CustomException(ErrorCode.STORE_NOT_FOUND)))
+                    .store(store)
                     .member(member)
                     .isVisitSuccessful(true)
                     .certDate(LocalDateTime.now())
                     .build());
 
             Long successCount = storeVisitCertRepository.countByMemberAndIsVisitSuccessfulIsTrue(member);
-            if (successCount.equals(1L))
+            Long firstStoreVisitCount = storeVisitCertRepository.countByStoreAndIsVisitSuccessfulTrue(store);
+            if (firstStoreVisitCount.equals(1L))
                 titleService.addTitle(member, Title.FIRST_VISIT_CERT);
             else if (successCount.equals(3L))
                 titleService.addTitle(member, Title.REGULAR_CUSTOMER);
