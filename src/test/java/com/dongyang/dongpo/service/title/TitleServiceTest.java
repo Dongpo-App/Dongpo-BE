@@ -4,6 +4,7 @@ import com.dongyang.dongpo.domain.member.Member;
 import com.dongyang.dongpo.domain.member.MemberTitle;
 import com.dongyang.dongpo.domain.member.Title;
 import com.dongyang.dongpo.repository.member.MemberRepository;
+import com.dongyang.dongpo.repository.member.MemberTitleRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -20,7 +21,7 @@ import static org.mockito.Mockito.*;
 class TitleServiceTest {
 
     @Mock
-    private MemberRepository memberRepository;
+    private MemberTitleRepository memberTitleRepository;
 
     @InjectMocks
     private TitleService titleService;
@@ -32,7 +33,8 @@ class TitleServiceTest {
 
         titleService.addTitle(member, Title.FAILED_TO_VISIT);
 
-        verify(memberRepository).save(member);
+
+        verify(memberTitleRepository).save(any());
     }
 
     @Test
@@ -43,12 +45,9 @@ class TitleServiceTest {
                 .title(Title.FAILED_TO_VISIT)
                 .build();
 
-        when(member.getTitles()).thenReturn(List.of(memberTitle));
-
-        member.addTitle(memberTitle);
-
+        when(memberTitleRepository.findByMember(member)).thenReturn(List.of(memberTitle));
         titleService.addTitle(member, Title.FAILED_TO_VISIT);
 
-        verify(memberRepository, never()).save(member);
+        verify(memberTitleRepository, never()).save(any());
     }
 }

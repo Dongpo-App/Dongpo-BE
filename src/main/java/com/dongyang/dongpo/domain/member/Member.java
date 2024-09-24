@@ -65,13 +65,6 @@ public class Member implements UserDetails {
     @Enumerated(EnumType.STRING)
     private Status status;
 
-    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    List<MemberTitle> titles = new ArrayList<>();
-
-    public void addTitle(MemberTitle memberTitle){
-        titles.add(memberTitle);
-    }
-
     public static Member toEntity(UserInfo userInfo){
         return Member.builder()
                 .email(userInfo.getEmail())
