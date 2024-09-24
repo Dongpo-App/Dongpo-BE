@@ -4,7 +4,6 @@ import com.dongyang.dongpo.domain.member.Member;
 import com.dongyang.dongpo.domain.member.MemberTitle;
 import com.dongyang.dongpo.domain.member.Title;
 import com.dongyang.dongpo.repository.member.MemberRepository;
-import com.dongyang.dongpo.repository.store.StoreVisitCertRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

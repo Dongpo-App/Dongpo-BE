@@ -44,8 +44,6 @@ class StoreServiceTest {
     @Mock
     private LocationService locationService;
 
-    @Mock
-    private TitleService titleService;
 
     @Test
     @DisplayName("점포_등록")
@@ -63,8 +61,6 @@ class StoreServiceTest {
         when(storeOperatingDayRepository.save(any())).thenReturn(storeOperatingDay);
         when(storeDto.getPayMethods()).thenReturn(List.of(Store.PayMethod.CASH, Store.PayMethod.CARD));
         when(storeDto.getOperatingDays()).thenReturn(List.of(Store.OperatingDay.MON, Store.OperatingDay.TUE));
-
-        doNothing().when(titleService).addTitle(any(Member.class), any(Title.class));
 
         // when
         storeService.addStore(storeDto, member);
