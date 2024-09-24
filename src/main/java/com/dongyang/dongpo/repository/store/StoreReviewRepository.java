@@ -1,5 +1,6 @@
 package com.dongyang.dongpo.repository.store;
 
+import com.dongyang.dongpo.domain.member.Member;
 import com.dongyang.dongpo.domain.store.StoreReview;
 import io.lettuce.core.dynamic.annotation.Param;
 import org.springframework.data.domain.Pageable;
@@ -18,4 +19,6 @@ public interface StoreReviewRepository extends JpaRepository<StoreReview, Long> 
             "GROUP BY s.member " +
             "ORDER BY reviewCount DESC")
     List<Object[]> findTop10MembersByReviewCount(Pageable pageable);
+
+    Long countByMember(Member member);
 }
