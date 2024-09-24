@@ -1,6 +1,8 @@
 package com.dongyang.dongpo.service.store;
 
 import com.dongyang.dongpo.domain.member.Member;
+import com.dongyang.dongpo.domain.member.MemberTitle;
+import com.dongyang.dongpo.domain.member.Title;
 import com.dongyang.dongpo.domain.store.Store;
 import com.dongyang.dongpo.domain.store.StoreOperatingDay;
 import com.dongyang.dongpo.domain.store.StorePayMethod;
@@ -21,6 +23,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -61,6 +64,17 @@ public class StoreService {
         }
 
         log.info("member {} add store: {}", member.getId(), savedStore.getId());
+
+        Long count = storeRepository.countByMember(member);
+        if (count == 3){
+            member.addTitle(MemberTitle.builder()
+                    .title(Title.REGISTER_PRO)
+                    .achieveDate(LocalDateTime.now())
+                    .member(member)
+                    .build());
+
+            log.info("member {} add title : {}", member.getId(), Title.REGISTER_PRO.getDescription());
+        }
     }
 
     public List<StoreDto> findAll() {

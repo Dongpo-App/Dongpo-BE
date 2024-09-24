@@ -26,4 +26,5 @@ public interface StoreRepository extends JpaRepository<Store, Long> {
             "ORDER BY storeCount DESC")
     List<Object[]> findTop10MembersByStoreCount(Pageable pageable);
 
+    Long countByMember(Member member);
 }
