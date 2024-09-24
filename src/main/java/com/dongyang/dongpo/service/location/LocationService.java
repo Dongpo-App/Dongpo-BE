@@ -14,6 +14,7 @@ import com.dongyang.dongpo.exception.ErrorCode;
 import com.dongyang.dongpo.repository.member.MemberRepository;
 import com.dongyang.dongpo.repository.store.StoreRepository;
 import com.dongyang.dongpo.repository.store.StoreVisitCertRepository;
+import com.dongyang.dongpo.service.title.TitleService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,6 +31,7 @@ public class LocationService {
     private final StoreRepository storeRepository;
     private final StoreVisitCertRepository storeVisitCertRepository;
     private final MemberRepository memberRepository;
+    private final TitleService titleService;
 
 
     // 두 개의 좌표를 비교하여 직선 거리 계산
@@ -86,16 +88,7 @@ public class LocationService {
                     .certDate(LocalDateTime.now())
                     .build());
 
-            if (successCount == 1 && member.getTitles().stream().noneMatch(title -> title.getTitle().equals(Title.FIRST_VISIT_CERT))) {
-                member.addTitle(MemberTitle.builder()
-                        .title(Title.FIRST_VISIT_CERT)
-                        .achieveDate(LocalDateTime.now())
-                        .member(member)
-                        .build());
-                memberRepository.save(member);
-
-                log.info("member {} add title : {}", member.getId(), Title.FIRST_VISIT_CERT.getDescription());
-            }
+            titleService.addTitle(successCount, 1L, member, Title.FIRST_VISIT_CERT);
         }else {
             storeVisitCertRepository.save(StoreVisitCert.builder()
                     .store(storeRepository.findById(latLongComparison.getTargetStoreId()).orElseThrow(() -> new CustomException(ErrorCode.STORE_NOT_FOUND)))
@@ -104,16 +97,7 @@ public class LocationService {
                     .certDate(LocalDateTime.now())
                     .build());
 
-            if(failCount == 3 && member.getTitles().stream().noneMatch(title -> title.getTitle().equals(Title.FAILED_TO_VISIT))) {
-                member.addTitle(MemberTitle.builder()
-                        .title(Title.FAILED_TO_VISIT)
-                        .achieveDate(LocalDateTime.now())
-                        .member(member)
-                        .build());
-                memberRepository.save(member);
-
-                log.info("member {} add title : {}", member.getId(), Title.FAILED_TO_VISIT.getDescription());
-            }
+            titleService.addTitle(failCount, 3L, member, Title.FAILED_TO_VISIT);
         }
 
         // 오차가 50m 이내일 경우 true, 초과일 경우 false 반환
