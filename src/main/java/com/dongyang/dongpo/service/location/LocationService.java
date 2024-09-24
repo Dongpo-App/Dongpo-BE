@@ -74,9 +74,6 @@ public class LocationService {
                 .build();
 
         boolean verify = calcDistance(newCoordinate, getStoreCoordinates(latLongComparison.getTargetStoreId())) <= 50;
-        Long successCount = storeVisitCertRepository.countByMemberAndIsVisitSuccessfulIsTrue(member);
-        Long failCount = storeVisitCertRepository.countByMemberAndIsVisitSuccessfulIsFalse(member);
-
         if (verify){
             storeVisitCertRepository.save(StoreVisitCert.builder()
                     .store(storeRepository.findById(latLongComparison.getTargetStoreId()).orElseThrow(() -> new CustomException(ErrorCode.STORE_NOT_FOUND)))
@@ -85,7 +82,11 @@ public class LocationService {
                     .certDate(LocalDateTime.now())
                     .build());
 
-            titleService.addTitle(successCount, 1L, member, Title.FIRST_VISIT_CERT);
+            Long successCount = storeVisitCertRepository.countByMemberAndIsVisitSuccessfulIsTrue(member);
+            if (successCount < 3)
+                titleService.addTitle(successCount, 1L, member, Title.FIRST_VISIT_CERT);
+            else
+                titleService.addTitle(successCount, 3L, member, Title.REGULAR_CUSTOMER);
         }else {
             storeVisitCertRepository.save(StoreVisitCert.builder()
                     .store(storeRepository.findById(latLongComparison.getTargetStoreId()).orElseThrow(() -> new CustomException(ErrorCode.STORE_NOT_FOUND)))
@@ -94,6 +95,7 @@ public class LocationService {
                     .certDate(LocalDateTime.now())
                     .build());
 
+            Long failCount = storeVisitCertRepository.countByMemberAndIsVisitSuccessfulIsFalse(member);
             titleService.addTitle(failCount, 3L, member, Title.FAILED_TO_VISIT);
         }
 
