@@ -67,6 +67,7 @@ public class LocationService {
     }
 
     // 신규 좌표가 기존 좌표의 오차범위 내에 위치하는지 검증 (방문 인증 검증)
+    @Transactional
     public Boolean verifyVisitCert(LatLongComparisonDto latLongComparison, Member member) {
         LatLong newCoordinate = LatLong.builder()
                 .latitude(latLongComparison.getLatitude())
@@ -74,8 +75,8 @@ public class LocationService {
                 .build();
 
         boolean verify = calcDistance(newCoordinate, getStoreCoordinates(latLongComparison.getTargetStoreId())) <= 50;
+        Store store = storeRepository.findById(latLongComparison.getTargetStoreId()).orElseThrow(() -> new CustomException(ErrorCode.STORE_NOT_FOUND));
         if (verify){
-            Store store = storeRepository.findById(latLongComparison.getTargetStoreId()).orElseThrow(() -> new CustomException(ErrorCode.STORE_NOT_FOUND));
             storeVisitCertRepository.save(StoreVisitCert.builder()
                     .store(store)
                     .member(member)
@@ -92,7 +93,7 @@ public class LocationService {
 
         }else {
             storeVisitCertRepository.save(StoreVisitCert.builder()
-                    .store(storeRepository.findById(latLongComparison.getTargetStoreId()).orElseThrow(() -> new CustomException(ErrorCode.STORE_NOT_FOUND)))
+                    .store(store)
                     .member(member)
                     .isVisitSuccessful(false)
                     .certDate(LocalDateTime.now())
