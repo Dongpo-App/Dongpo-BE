@@ -3,6 +3,7 @@ package com.dongyang.dongpo.domain.store;
 import com.dongyang.dongpo.domain.member.Member;
 import com.dongyang.dongpo.dto.store.ReviewDto;
 import com.dongyang.dongpo.dto.store.StoreDto;
+import com.dongyang.dongpo.dto.store.StoreIndexDto;
 import com.dongyang.dongpo.dto.store.StoreUpdateDto;
 import jakarta.persistence.*;
 import lombok.*;
@@ -108,6 +109,15 @@ public class Store {
                 .payMethods(payMethodValues)
                 .status(status)
                 .reviews(reviewDtos)
+                .build();
+    }
+
+    public StoreIndexDto toIndexResponse() {
+        return StoreIndexDto.builder()
+                .id(id)
+                .name(name)
+                .address(address)
+                .registerDate(registerDate)
                 .build();
     }
 

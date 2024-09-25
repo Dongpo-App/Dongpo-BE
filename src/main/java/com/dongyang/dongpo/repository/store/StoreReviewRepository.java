@@ -21,4 +21,6 @@ public interface StoreReviewRepository extends JpaRepository<StoreReview, Long> 
     List<Object[]> findTop10MembersByReviewCount(Pageable pageable);
 
     Long countByMember(Member member);
+
+    List<StoreReview> findByMember(Member member);
 }

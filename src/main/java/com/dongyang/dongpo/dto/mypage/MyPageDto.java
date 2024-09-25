@@ -3,12 +3,13 @@ package com.dongyang.dongpo.dto.mypage;
 import com.dongyang.dongpo.domain.member.Member;
 import com.dongyang.dongpo.domain.member.MemberTitle;
 import com.dongyang.dongpo.domain.member.Title;
-import com.dongyang.dongpo.domain.store.Store;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
@@ -29,12 +30,24 @@ public class MyPageDto {
     @JsonSerialize
     @JsonDeserialize
     @Builder
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     public static class TitleDto {
         private Title title;
         private String description;
+        private String achieveCondition;
+        private LocalDateTime achieveDate;
     }
 
-    public static MyPageDto toEntity(Member member, List<MemberTitle> memberTitles, List<Store> memberStores) {
+    public static TitleDto toTitleDto(MemberTitle memberTitle) {
+        return TitleDto.builder()
+                .title(memberTitle.getTitle())
+                .description(memberTitle.getTitle().getDescription())
+                .achieveCondition(memberTitle.getTitle().getAchieveCondition())
+                .achieveDate(memberTitle.getAchieveDate())
+                .build();
+    }
+
+    public static MyPageDto toEntity(Member member, List<MemberTitle> memberTitles, Long storeRegisterCount) {
         List<TitleDto> titles = memberTitles.stream()
                 .map(title -> TitleDto.builder()
                         .title(title.getTitle())
@@ -49,7 +62,7 @@ public class MyPageDto {
                         .description(member.getMainTitle().getDescription())
                         .build())
                 .titles(titles)
-                .registerCount(memberStores.size())
+                .registerCount(storeRegisterCount.intValue())
                 .titleCount(memberTitles.size())
                 .presentCount(0) // test
                 .build();

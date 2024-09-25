@@ -2,14 +2,18 @@ package com.dongyang.dongpo.service.mypage;
 
 import com.dongyang.dongpo.domain.member.Member;
 import com.dongyang.dongpo.domain.member.MemberTitle;
-import com.dongyang.dongpo.domain.store.Store;
+import com.dongyang.dongpo.dto.bookmark.BookmarkDto;
 import com.dongyang.dongpo.dto.mypage.MyPageDto;
 import com.dongyang.dongpo.dto.mypage.MyPageUpdateDto;
+import com.dongyang.dongpo.dto.store.ReviewDto;
+import com.dongyang.dongpo.dto.store.StoreIndexDto;
 import com.dongyang.dongpo.exception.CustomException;
 import com.dongyang.dongpo.exception.ErrorCode;
+import com.dongyang.dongpo.repository.bookmark.BookmarkRepository;
 import com.dongyang.dongpo.repository.member.MemberRepository;
 import com.dongyang.dongpo.repository.member.MemberTitleRepository;
 import com.dongyang.dongpo.repository.store.StoreRepository;
+import com.dongyang.dongpo.repository.store.StoreReviewRepository;
 import com.dongyang.dongpo.s3.S3Service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,6 +21,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -29,14 +34,48 @@ public class MyPageService {
     private final MemberTitleRepository memberTitleRepository;
     private final S3Service s3Service;
     private final StoreRepository storeRepository;
+    private final BookmarkRepository bookmarkRepository;
+    private final StoreReviewRepository storeReviewRepository;
 
     @Value("${cloud.aws.s3.bucket-full-url}")
     private String bucketFullUrl;
 
     public MyPageDto getMyPageIndex(Member member) {
         List<MemberTitle> memberTitles = memberTitleRepository.findByMember(member);
-        List<Store> memberStores = storeRepository.findByMember(member);
-        return MyPageDto.toEntity(member, memberTitles, memberStores);
+        Long storeRegisterCount = storeRepository.countByMember(member);
+        return MyPageDto.toEntity(member, memberTitles, storeRegisterCount);
+    }
+
+    public List<StoreIndexDto> getMyRegisteredStores(Member member) {
+        List<StoreIndexDto> storeIndexDtos = new ArrayList<>();
+        storeRepository.findByMember(member).forEach(store -> {
+            storeIndexDtos.add(store.toIndexResponse());
+        });
+        return storeIndexDtos;
+    }
+
+    public List<MyPageDto.TitleDto> getMyTitles(Member member) {
+        List<MyPageDto.TitleDto> titleDtos = new ArrayList<>();
+        memberTitleRepository.findByMember(member).forEach(memberTitle -> {
+            titleDtos.add(MyPageDto.toTitleDto(memberTitle));
+        });
+        return titleDtos;
+    }
+
+    public List<BookmarkDto> getMyBookmarks(Member member) {
+        List<BookmarkDto> bookmarkDtos = new ArrayList<>();
+        bookmarkRepository.findByMember(member).forEach(bookmark -> {
+            bookmarkDtos.add(BookmarkDto.toDto(bookmark));
+        });
+        return bookmarkDtos;
+    }
+
+    public List<ReviewDto> getMyReviews(Member member) {
+        List<ReviewDto> reviewDtos = new ArrayList<>();
+        storeReviewRepository.findByMember(member).forEach(storeReview -> {
+            reviewDtos.add(ReviewDto.toDto(storeReview));
+        });
+        return reviewDtos;
     }
 
     @Transactional

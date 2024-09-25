@@ -37,4 +37,18 @@ public class ReviewDto {
                 .reviewStar(reviewStar)
                 .build();
     }
+
+    public static ReviewDto toDto(StoreReview storeReview){
+        return ReviewDto.builder()
+                .id(storeReview.getId())
+                .storeId(storeReview.getStore().getId())
+                .memberId(storeReview.getMember().getId())
+                .reviewStar(storeReview.getReviewStar())
+                .text(storeReview.getText())
+                .reviewPic(storeReview.getReviewPic())
+                .registerDate(storeReview.getRegisterDate())
+                .status(storeReview.getStatus())
+                .reportCount(storeReview.getReportCount())
+                .build();
+    }
 }
