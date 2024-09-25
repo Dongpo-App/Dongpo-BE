@@ -7,10 +7,7 @@ import com.dongyang.dongpo.domain.store.StoreOperatingDay;
 import com.dongyang.dongpo.domain.store.StorePayMethod;
 import com.dongyang.dongpo.dto.location.CoordinateRange;
 import com.dongyang.dongpo.dto.location.LatLong;
-import com.dongyang.dongpo.dto.store.OpenPossibility;
-import com.dongyang.dongpo.dto.store.StoreDto;
-import com.dongyang.dongpo.dto.store.StoreRegisterDto;
-import com.dongyang.dongpo.dto.store.StoreUpdateDto;
+import com.dongyang.dongpo.dto.store.*;
 import com.dongyang.dongpo.exception.CustomException;
 import com.dongyang.dongpo.exception.ErrorCode;
 import com.dongyang.dongpo.repository.store.StoreOperatingDayRepository;
@@ -182,14 +179,16 @@ public class StoreService {
         }
     }
 
-    public List<StoreDto> myRegStore(Member member){
-        List<Store> stores = storeRepository.findByMember(member);
-        List<StoreDto> storeResponse = new ArrayList<>();
+    public List<StoreIndexDto> getMyRegisteredStores(Member member) {
+        List<StoreIndexDto> storeIndexDtos = new ArrayList<>();
+        storeRepository.findByMember(member).forEach(store -> {
+            storeIndexDtos.add(store.toIndexResponse());
+        });
+        return storeIndexDtos;
+    }
 
-        for (Store store : stores)
-            storeResponse.add(store.toResponse());
-
-        return storeResponse;
+    public Long getMyRegisteredStoreCount(Member member) {
+        return storeRepository.countByMember(member);
     }
 
     public StoreDto findOne(Long id) {

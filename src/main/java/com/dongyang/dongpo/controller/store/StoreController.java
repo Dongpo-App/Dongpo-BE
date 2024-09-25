@@ -40,12 +40,6 @@ public class StoreController {
         return ResponseEntity.ok(new ApiResponse<>(storeService.detailStore(id)));
     }
 
-    @GetMapping("/member")
-    @Operation(summary = "내가 등록한 점포조회")
-    public ResponseEntity<ApiResponse<List<StoreDto>>> myRegStore(@AuthenticationPrincipal Member member) {
-        return ResponseEntity.ok(new ApiResponse<>(storeService.myRegStore(member)));
-    }
-
     @PostMapping("")
     @Operation(summary = "점포 등록")
     public ResponseEntity<ApiResponse<String>> addStore(@RequestBody StoreRegisterDto request,

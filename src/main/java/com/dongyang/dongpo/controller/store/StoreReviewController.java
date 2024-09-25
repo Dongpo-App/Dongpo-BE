@@ -29,9 +29,4 @@ public class StoreReviewController {
         return ResponseEntity.ok(new ApiResponse<>("success"));
     }
 
-    @GetMapping("/{memberId}")
-    @Operation(summary = "내가 등록한 리뷰 조회")
-    public ResponseEntity<ApiResponse<List<ReviewDto>>> myRegReview(@PathVariable Long memberId) {
-        return ResponseEntity.ok(new ApiResponse<>(reviewService.myRegReview(memberId)));
-    }
 }

@@ -43,14 +43,12 @@ public class StoreReviewService {
             titleService.addTitle(member, Title.REVIEW_PRO);
     }
 
-    public List<ReviewDto> myRegReview(Long memberId){
-       List<StoreReview> storeReviews =  reviewRepository.findByMemberId(memberId);
-       List<ReviewDto> reviewDtos = new ArrayList<>();
-
-       for (StoreReview review : storeReviews)
-           reviewDtos.add(review.toResponse());
-
-       return reviewDtos;
+    public List<ReviewDto> getMyReviews(Member member) {
+        List<ReviewDto> reviewDtos = new ArrayList<>();
+        reviewRepository.findByMember(member).forEach(storeReview -> {
+            reviewDtos.add(ReviewDto.toDto(storeReview));
+        });
+        return reviewDtos;
     }
 
     public List<StoreReview> findAll(){
