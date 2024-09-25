@@ -120,6 +120,8 @@ public class Store {
                 .name(name)
                 .address(address)
                 .registerDate(registerDate)
+                .build();
+    }
           
     public StoreDto toResponse(OpenPossibility openPossibility) {
         List<Store.OperatingDay> operatingDayValues = this.storeOperatingDays.stream()
