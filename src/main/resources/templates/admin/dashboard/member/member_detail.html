@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{admin/common/header :: header}"></head>
+<body class="layout-fixed sidebar-expand-lg bg-body-tertiary">
+<div class="app-wrapper">
+    <div th:replace="~{admin/common/nav :: nav}"></div>
+    <div th:replace="~{admin/common/sideber :: sidebar}"></div>
+
+    <main class="app-main">
+        <div class="app-content">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="card-header">
+                        <h3 class="card-title">회원 목록</h3>
+                    </div>
+                    <div class="card-body">
+                        <table class="table table-bordered">
+                            <thead>
+                            <tr>
+                                <th style="width: 10px">ID</th>
+                                <th>이름</th>
+                                <th>이메일</th>
+                                <th>닉네임</th>
+                                <th style="width: 100px"><input type="checkbox" id="selectAll" onclick="toggleCheckboxes(this)"></th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr class="align-middle" th:each="member : ${members}">
+                                <td th:text="${member.id}"></td>
+                                <td th:text="${member.name}"></td>
+                                <td th:text="${member.email}"></td>
+                                <td th:text="${member.nickname}"></td>
+                                <td><input type="checkbox" name="selectedMembers" th:value="${member.id}"></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div th:replace="~{admin/common/footer :: footer}"></div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/overlayscrollbars@2.3.0/browser/overlayscrollbars.browser.es6.min.js" integrity="sha256-H2VM7BKda+v2Z4+DRy69uknwxjyDRhszjXFhsL4gD3w=" crossorigin="anonymous"></script> <!--end::Third Party Plugin(OverlayScrollbars)--><!--begin::Required Plugin(popperjs for Bootstrap 5)-->
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha256-whL0tQWoY1Ku1iskqPFvmZ+CHsvmRWx/PIoEvIeWh4I=" crossorigin="anonymous"></script> <!--end::Required Plugin(popperjs for Bootstrap 5)--><!--begin::Required Plugin(Bootstrap 5)-->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js" integrity="sha256-YMa+wAM6QkVyz999odX7lPRxkoYAan8suedu4k2Zur8=" crossorigin="anonymous"></script> <!--end::Required Plugin(Bootstrap 5)--><!--begin::Required Plugin(AdminLTE)-->
+<script th:src="@{/js/adminlte.js}"></script>
+<script>
+    function toggleCheckboxes(source) {
+        checkboxes = document.getElementsByName('selectedMembers');
+        for(var i=0, n=checkboxes.length; i<n; i++) {
+            checkboxes[i].checked = source.checked;
+        }
+    }
+</script>
+</body>
+</html>
+
