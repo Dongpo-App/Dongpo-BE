@@ -6,6 +6,7 @@ import com.dongyang.dongpo.service.notice.NoticeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -23,16 +24,17 @@ public class AdminNoticeController {
     private final NoticeService noticeService;
 
     @GetMapping("/write")
-    public String write(Model model) {
-        model.addAttribute("admin", getPrincipal());
+    public String write(Model model, @AuthenticationPrincipal Admin admin) {
+        model.addAttribute("admin", admin);
         model.addAttribute("notice", new NoticeDto());
         return "admin/dashboard/notice/notice_write";
     }
 
     @PostMapping("/write.do")
     public String write(@ModelAttribute NoticeDto noticeDto,
-                        @RequestParam("images") List<MultipartFile> images) throws IOException {
-        noticeService.addNotice(noticeDto, getPrincipal(), images);
+                        @RequestParam("images") List<MultipartFile> images,
+                        @AuthenticationPrincipal Admin admin) throws IOException {
+        noticeService.addNotice(noticeDto, admin, images);
         return "redirect:/admin/dashboard/notice";
     }
 
@@ -46,11 +48,5 @@ public class AdminNoticeController {
     public String delete(@PathVariable Long id){
         noticeService.delete(id);
         return "redirect:/admin/dashboard/notice";
-    }
-
-
-    private Admin getPrincipal(){
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        return (Admin) authentication.getPrincipal();
     }
 }

@@ -9,8 +9,7 @@ import com.dongyang.dongpo.service.report.ReportService;
 import com.dongyang.dongpo.service.store.StoreReviewService;
 import com.dongyang.dongpo.service.store.StoreService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,60 +29,55 @@ public class DashBoardController {
 
 
     @GetMapping("/member")
-    public String memberBoard(Model model){
+    public String memberBoard(Model model, @AuthenticationPrincipal Admin admin){
         model.addAttribute("members", memberService.findAll());
-        model.addAttribute("admin", getPrincipal());
+        model.addAttribute("admin", admin);
         return "admin/dashboard/member/member_board";
     }
 
     @GetMapping("/store")
-    public String storeBoard(Model model){
-        model.addAttribute("admin", getPrincipal());
+    public String storeBoard(Model model, @AuthenticationPrincipal Admin admin){
+        model.addAttribute("admin", admin);
         model.addAttribute("stores", storeService.findAll());
         return "admin/dashboard/store/store_board";
     }
 
     @GetMapping("/review")
-    public String reviewBoard(Model model){
-        model.addAttribute("admin", getPrincipal());
+    public String reviewBoard(Model model, @AuthenticationPrincipal Admin admin){
+        model.addAttribute("admin", admin);
         model.addAttribute("reviews", reviewService.findAll());
         return "admin/dashboard/review/review_board";
     }
 
     @GetMapping("/confirm")
-    public String adminBoard(Model model){
-        model.addAttribute("admin", getPrincipal());
+    public String adminBoard(Model model, @AuthenticationPrincipal Admin admin){
+        model.addAttribute("admin", admin);
         model.addAttribute("grants", adminService.findProcessAdmin());
         model.addAttribute("confirm", new ConfrimDto());
         return "admin/dashboard/admin_board";
     }
 
     @GetMapping("/store/report")
-    public String storeReport(Model model){
-        model.addAttribute("admin", getPrincipal());
+    public String storeReport(Model model, @AuthenticationPrincipal Admin admin){
+        model.addAttribute("admin", admin);
         model.addAttribute("reports", reportService.findAllStoreReport());
 
         return "admin/dashboard/store/store_report_board";
     }
 
     @GetMapping("/review/report")
-    public String reviewReport(Model model){
-        model.addAttribute("admin", getPrincipal());
+    public String reviewReport(Model model, @AuthenticationPrincipal Admin admin){
+        model.addAttribute("admin", admin);
         model.addAttribute("reports", reportService.findAllReviewReport());
 
         return "admin/dashboard/review/review_report_board";
     }
 
     @GetMapping("/notice")
-    public String notice(Model model){
-        model.addAttribute("admin", getPrincipal());
+    public String notice(Model model, @AuthenticationPrincipal Admin admin){
+        model.addAttribute("admin", admin);
         model.addAttribute("notices", noticeService.findAll());
 
         return "admin/dashboard/notice/notice_board";
-    }
-
-    private Admin getPrincipal(){
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        return (Admin) authentication.getPrincipal();
     }
 }
