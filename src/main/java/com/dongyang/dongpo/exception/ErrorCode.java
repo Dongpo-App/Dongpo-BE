@@ -19,6 +19,7 @@ public enum ErrorCode {
 
     STORE_REGISTRATION_NOT_VALID(400, "위치 정보가 오차를 벗어났습니다."),
     ARGUMENT_NOT_SATISFIED(400, "요청이 잘못되었습니다."),
+    BOOKMARK_ALREADY_EXISTS(400, "해당 점포의 북마크가 이미 존재합니다."),
     ;
 
     private final int code;
