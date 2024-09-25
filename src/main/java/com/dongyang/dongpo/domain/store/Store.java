@@ -4,6 +4,7 @@ import com.dongyang.dongpo.domain.member.Member;
 import com.dongyang.dongpo.dto.store.OpenPossibility;
 import com.dongyang.dongpo.dto.store.ReviewDto;
 import com.dongyang.dongpo.dto.store.StoreDto;
+import com.dongyang.dongpo.dto.store.StoreIndexDto;
 import com.dongyang.dongpo.dto.store.StoreUpdateDto;
 import jakarta.persistence.*;
 import lombok.*;
@@ -113,6 +114,15 @@ public class Store {
                 .build();
     }
 
+    public StoreIndexDto toIndexResponse() {
+        return StoreIndexDto.builder()
+                .id(id)
+                .name(name)
+                .address(address)
+                .registerDate(registerDate)
+                .build();
+    }
+          
     public StoreDto toResponse(OpenPossibility openPossibility) {
         List<Store.OperatingDay> operatingDayValues = this.storeOperatingDays.stream()
                 .map(StoreOperatingDay::getOperatingDay)
