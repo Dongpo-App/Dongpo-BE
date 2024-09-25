@@ -10,6 +10,7 @@ import com.dongyang.dongpo.repository.bookmark.BookmarkRepository;
 import com.dongyang.dongpo.repository.store.StoreRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,7 +36,11 @@ public class BookmarkService {
                 .member(member)
                 .build();
 
-        bookmarkRepository.save(bookmark);
+        try {
+            bookmarkRepository.save(bookmark);
+        } catch (DataIntegrityViolationException ignore) {
+            throw new CustomException(ErrorCode.BOOKMARK_ALREADY_EXISTS);
+        }
 
         log.info("Member Id : {} is Add Bookmark Store Id : {}", member.getId(), storeId);
     }

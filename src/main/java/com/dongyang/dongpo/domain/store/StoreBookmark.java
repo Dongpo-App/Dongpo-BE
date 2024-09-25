@@ -11,7 +11,9 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-@Table(name = "store_bookmark")
+@Table(name = "store_bookmark", uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"member_id", "store_id"})
+})
 public class StoreBookmark {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
