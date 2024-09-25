@@ -37,8 +37,10 @@ public class StoreVisitCert {
     private LocalDateTime certDate;
 
     @Enumerated(EnumType.STRING)
+    @Column(columnDefinition = "VARCHAR(255)")
     private DayOfWeek openDay;
 
     @Enumerated(EnumType.STRING)
+    @Column(columnDefinition = "VARCHAR(255)")
     private OpenTime openTime;
 }
