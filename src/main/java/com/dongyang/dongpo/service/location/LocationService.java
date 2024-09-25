@@ -2,6 +2,7 @@ package com.dongyang.dongpo.service.location;
 
 import com.dongyang.dongpo.domain.member.Member;
 import com.dongyang.dongpo.domain.member.Title;
+import com.dongyang.dongpo.domain.store.OpenTime;
 import com.dongyang.dongpo.domain.store.Store;
 import com.dongyang.dongpo.domain.store.StoreVisitCert;
 import com.dongyang.dongpo.dto.location.LatLong;
@@ -18,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 
 @Service
@@ -76,12 +78,17 @@ public class LocationService {
 
         boolean verify = calcDistance(newCoordinate, getStoreCoordinates(latLongComparison.getTargetStoreId())) <= 50;
         Store store = storeRepository.findById(latLongComparison.getTargetStoreId()).orElseThrow(() -> new CustomException(ErrorCode.STORE_NOT_FOUND));
+
+        LocalDateTime now = LocalDateTime.now();
+        OpenTime openTime = getOpenTime(now);
         if (verify){
             storeVisitCertRepository.save(StoreVisitCert.builder()
                     .store(store)
                     .member(member)
                     .isVisitSuccessful(true)
-                    .certDate(LocalDateTime.now())
+                    .certDate(now)
+                    .openDay(now.getDayOfWeek())
+                    .openTime(openTime)
                     .build());
 
             Long successCount = storeVisitCertRepository.countByMemberAndIsVisitSuccessfulIsTrue(member);
@@ -96,7 +103,9 @@ public class LocationService {
                     .store(store)
                     .member(member)
                     .isVisitSuccessful(false)
-                    .certDate(LocalDateTime.now())
+                    .certDate(now)
+                    .openDay(now.getDayOfWeek())
+                    .openTime(openTime)
                     .build());
 
             Long failCount = storeVisitCertRepository.countByMemberAndIsVisitSuccessfulIsFalse(member);
@@ -139,5 +148,26 @@ public class LocationService {
 
         // 오차가 100m 이내일 경우 true, 초과일 경우 false 반환
         return calcDistance(userCord, storeCord) <= 100;
+    }
+
+    // 오픈 시간대 반환
+    private OpenTime getOpenTime(LocalDateTime now){
+        int hour = now.getHour();
+        if (hour < 3)
+            return OpenTime.MIDNIGHT_TO_3AM;
+        else if (hour < 6)
+            return OpenTime.THREE_AM_TO_6AM;
+        else if (hour < 9)
+            return OpenTime.SIX_AM_TO_9AM;
+        else if (hour < 12)
+            return OpenTime.NINE_AM_TO_NOON;
+        else if (hour < 15)
+            return OpenTime.NOON_TO_3PM;
+        else if (hour < 18)
+            return OpenTime.THREE_PM_TO_6PM;
+        else if (hour < 21)
+            return OpenTime.SIX_PM_TO_9PM;
+        else
+            return OpenTime.NINE_PM_TO_MIDNIGHT;
     }
 }

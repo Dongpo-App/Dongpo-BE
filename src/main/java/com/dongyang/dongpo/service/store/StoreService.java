@@ -7,6 +7,7 @@ import com.dongyang.dongpo.domain.store.StoreOperatingDay;
 import com.dongyang.dongpo.domain.store.StorePayMethod;
 import com.dongyang.dongpo.dto.location.CoordinateRange;
 import com.dongyang.dongpo.dto.location.LatLong;
+import com.dongyang.dongpo.dto.store.OpenPossibility;
 import com.dongyang.dongpo.dto.store.StoreDto;
 import com.dongyang.dongpo.dto.store.StoreRegisterDto;
 import com.dongyang.dongpo.dto.store.StoreUpdateDto;
@@ -16,6 +17,7 @@ import com.dongyang.dongpo.repository.store.StoreOperatingDayRepository;
 import com.dongyang.dongpo.repository.store.StorePayMethodRepository;
 import com.dongyang.dongpo.repository.store.StoreRepository;
 import com.dongyang.dongpo.service.location.LocationService;
+import com.dongyang.dongpo.service.open.OpenPossibilityService;
 import com.dongyang.dongpo.service.title.TitleService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -37,6 +39,7 @@ public class StoreService {
     private final StoreOperatingDayRepository storeOperatingDayRepository;
     private final LocationService locationService;
     private final TitleService titleService;
+    private final OpenPossibilityService openPossibilityService;
 
 
     @Transactional
@@ -93,7 +96,9 @@ public class StoreService {
     public StoreDto detailStore(Long id) {
         Store store = storeRepository.findById(id)
                 .orElseThrow(() -> new CustomException(ErrorCode.STORE_NOT_FOUND));
-        return store.toResponse();
+        OpenPossibility openPossibility = openPossibilityService.getOpenPossibility(store);
+
+        return store.toResponse(openPossibility);
     }
 
     @Transactional

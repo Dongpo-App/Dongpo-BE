@@ -4,6 +4,7 @@ import com.dongyang.dongpo.domain.member.Member;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 
 @Entity
@@ -34,4 +35,10 @@ public class StoreVisitCert {
 
     @Column(columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP")
     private LocalDateTime certDate;
+
+    @Enumerated(EnumType.STRING)
+    private DayOfWeek openDay;
+
+    @Enumerated(EnumType.STRING)
+    private OpenTime openTime;
 }
