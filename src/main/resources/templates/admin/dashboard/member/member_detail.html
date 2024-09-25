@@ -13,29 +13,22 @@
             <div class="container-fluid">
                 <div class="row">
                     <div class="card-header">
-                        <h3 class="card-title">회원 목록</h3>
+                        <h3 class="card-title" th:text="${member.nickname}"></h3>
                     </div>
                     <div class="card-body">
-                        <table class="table table-bordered">
-                            <thead>
-                            <tr>
-                                <th style="width: 10px">ID</th>
-                                <th>이름</th>
-                                <th>이메일</th>
-                                <th>닉네임</th>
-                                <th style="width: 100px"><input type="checkbox" id="selectAll" onclick="toggleCheckboxes(this)"></th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <tr class="align-middle" th:each="member : ${members}">
-                                <td th:text="${member.id}"></td>
-                                <td th:text="${member.name}"></td>
-                                <td th:text="${member.email}"></td>
-                                <td th:text="${member.nickname}"></td>
-                                <td><input type="checkbox" name="selectedMembers" th:value="${member.id}"></td>
-                            </tr>
-                            </tbody>
-                        </table>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p><strong>닉네임:</strong> <span th:text="${member.nickname}"></span></p>
+                                <p><strong>이메일:</strong> <span th:text="${member.email}"></span></p>
+                                <p><strong>권한:</strong> <span th:text="${member.role}"></span></p>
+                                <p><strong>가입일자:</strong> <span th:text="${#dates.format(member.getSignupDate, 'yyyy-MM-dd')}"></span></p>
+                            </div>
+                        </div>
+                        <!-- Optionally, add a section for actions like edit, delete, or promote member -->
+                        <div class="mt-3">
+                            <button type="button" class="btn btn-primary">수정</button>
+                            <button type="button" class="btn btn-danger">삭제</button>
+                        </div>
                     </div>
                 </div>
             </div>
