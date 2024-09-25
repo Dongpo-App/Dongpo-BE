@@ -5,12 +5,14 @@ import com.dongyang.dongpo.domain.member.Title;
 import com.dongyang.dongpo.domain.store.Store;
 import com.dongyang.dongpo.domain.store.StoreOperatingDay;
 import com.dongyang.dongpo.domain.store.StorePayMethod;
+import com.dongyang.dongpo.dto.store.OpenPossibility;
 import com.dongyang.dongpo.dto.store.StoreDto;
 import com.dongyang.dongpo.dto.store.StoreRegisterDto;
 import com.dongyang.dongpo.repository.store.StoreOperatingDayRepository;
 import com.dongyang.dongpo.repository.store.StorePayMethodRepository;
 import com.dongyang.dongpo.repository.store.StoreRepository;
 import com.dongyang.dongpo.service.location.LocationService;
+import com.dongyang.dongpo.service.open.OpenPossibilityService;
 import com.dongyang.dongpo.service.title.TitleService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -43,6 +45,9 @@ class StoreServiceTest {
 
     @Mock
     private LocationService locationService;
+
+    @Mock
+    private OpenPossibilityService openPossibilityService;
 
 
     @Test
@@ -90,8 +95,10 @@ class StoreServiceTest {
         // given
         Store store = mock(Store.class);
         Optional<Store> optionalStore = Optional.of(store);
+        OpenPossibility openPossibility = mock(OpenPossibility.class);
 
         when(storeRepository.findById(any())).thenReturn(optionalStore);
+        when(openPossibilityService.getOpenPossibility(any())).thenReturn(openPossibility);
 
         // when
         storeService.detailStore(store.getId());
