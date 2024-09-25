@@ -27,7 +27,7 @@ import java.util.Date;
 public class JwtTokenProvider {
 
     private final Key key;
-    private final long ACCESSTOKEN_VALIDTIME = 30L * 24 * 60 * 60 * 1000; // 30분 // 테스트 위해 1달로 설정
+    private final long ACCESSTOKEN_VALIDTIME = 30 * 60 * 1000L; // 30분
     private final long REFRESHTOKEN_VALIDTIME = 7L * 24 * 60 * 60 * 1000; // 7일
 
     private final CustomUserDetailsService customUserDetailsService;
