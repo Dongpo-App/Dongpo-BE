@@ -30,4 +30,5 @@ public class StoreDto {
     private List<Store.OperatingDay> operatingDays;
     private List<Store.PayMethod> payMethods;
     private List<ReviewDto> reviews;
+    private OpenPossibility openPossibility;
 }

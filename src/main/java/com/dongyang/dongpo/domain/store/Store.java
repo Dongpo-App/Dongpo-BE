@@ -1,6 +1,7 @@
 package com.dongyang.dongpo.domain.store;
 
 import com.dongyang.dongpo.domain.member.Member;
+import com.dongyang.dongpo.dto.store.OpenPossibility;
 import com.dongyang.dongpo.dto.store.ReviewDto;
 import com.dongyang.dongpo.dto.store.StoreDto;
 import com.dongyang.dongpo.dto.store.StoreIndexDto;
@@ -81,6 +82,7 @@ public class Store {
         CASH, CARD, TRANSFER
     }
 
+
     public StoreDto toResponse() {
         List<Store.OperatingDay> operatingDayValues = this.storeOperatingDays.stream()
                 .map(StoreOperatingDay::getOperatingDay)
@@ -118,6 +120,36 @@ public class Store {
                 .name(name)
                 .address(address)
                 .registerDate(registerDate)
+          
+    public StoreDto toResponse(OpenPossibility openPossibility) {
+        List<Store.OperatingDay> operatingDayValues = this.storeOperatingDays.stream()
+                .map(StoreOperatingDay::getOperatingDay)
+                .collect(Collectors.toList());
+
+        List<Store.PayMethod> payMethodValues = this.storePayMethods.stream()
+                .map(StorePayMethod::getPayMethod)
+                .collect(Collectors.toList());
+
+        List<ReviewDto> reviewDtos = this.reviews.stream()
+                .map(StoreReview::toResponse)
+                .toList();
+
+        return StoreDto.builder()
+                .id(id)
+                .name(name)
+                .address(address)
+                .latitude(latitude)
+                .longitude(longitude)
+                .reportCount(reportCount)
+                .memberId(member.getId())
+                .openTime(openTime)
+                .closeTime(closeTime)
+                .isToiletValid(isToiletValid)
+                .operatingDays(operatingDayValues)
+                .payMethods(payMethodValues)
+                .status(status)
+                .reviews(reviewDtos)
+                .openPossibility(openPossibility)
                 .build();
     }
 

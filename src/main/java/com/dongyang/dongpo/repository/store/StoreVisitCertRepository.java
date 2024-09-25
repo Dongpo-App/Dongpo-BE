@@ -18,6 +18,8 @@ public interface StoreVisitCertRepository extends JpaRepository<StoreVisitCert, 
             "ORDER BY visitCount DESC")
     List<Object[]> findTop10MembersBySuccessfulVisitCount(Pageable pageable);
 
+    List<StoreVisitCert> findByStoreAndAndIsVisitSuccessfulTrue(Store store);
+
     Long countByStoreAndIsVisitSuccessfulTrue(Store store); // 점포 방문인증 성공 카운트
     Long countByMemberAndIsVisitSuccessfulIsTrue(Member member); // 방문 인증 성공 카운트
     Long countByMemberAndIsVisitSuccessfulIsFalse(Member member); // 방문 인증 실패 카운트
