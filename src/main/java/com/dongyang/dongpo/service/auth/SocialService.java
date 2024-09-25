@@ -78,11 +78,6 @@ public class SocialService {
             String age = kakaoAccount.getString("age_range");
             String name = kakaoAccount.getString("name");
             String nickname = profile.getString("nickname");
-            String profilePic;
-            if (profile.has("profile_image_url"))
-                profilePic = profile.getString("profile_image_url");
-            else
-                profilePic = null;
             Member.Gender gender;
 
             if (kakaoAccount.getString("gender").equals("female"))
@@ -100,7 +95,6 @@ public class SocialService {
                     .nickname(nickname)
                     .age(age)
                     .gender(gender)
-                    .profilePic(profilePic)
                     .provider(SocialType.KAKAO)
                     .build());
         } catch (WebClientResponseException e) {
@@ -133,11 +127,6 @@ public class SocialService {
             String id = response.getString("id");
             String name = response.getString("name");
             String nickname = response.getString("nickname");
-            String profilePic;
-            if (response.has("profile_image"))
-                profilePic = response.getString("profile_image");
-            else
-                profilePic = null;
             Member.Gender gender;
 
             if (response.getString("gender").equals("F"))
@@ -154,7 +143,6 @@ public class SocialService {
                     .nickname(nickname)
                     .gender(gender)
                     .age(age)
-                    .profilePic(profilePic)
                     .provider(SocialType.NAVER)
                     .build());
         } catch (WebClientResponseException e) {
