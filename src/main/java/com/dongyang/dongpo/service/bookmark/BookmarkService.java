@@ -40,13 +40,11 @@ public class BookmarkService {
         log.info("Member Id : {} is Add Bookmark Store Id : {}", member.getId(), storeId);
     }
 
-    public List<BookmarkDto> bookmarkList(Member member) {
-        List<StoreBookmark> storeBookmarks = bookmarkRepository.findByMemberId(member.getId());
+    public List<BookmarkDto> getMyBookmarks(Member member) {
         List<BookmarkDto> bookmarkDtos = new ArrayList<>();
-
-        for (StoreBookmark storeBookmark : storeBookmarks)
-            bookmarkDtos.add(BookmarkDto.toDto(storeBookmark));
-
+        bookmarkRepository.findByMember(member).forEach(bookmark -> {
+            bookmarkDtos.add(BookmarkDto.toDto(bookmark));
+        });
         return bookmarkDtos;
     }
 

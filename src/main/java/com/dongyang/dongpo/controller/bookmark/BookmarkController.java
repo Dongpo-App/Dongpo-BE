@@ -27,12 +27,6 @@ public class BookmarkController {
         return ResponseEntity.ok(new ApiResponse<>("success"));
     }
 
-    @GetMapping("")
-    @Operation(summary = "북마크 조회")
-    public ResponseEntity<ApiResponse<List<BookmarkDto>>> getBookmarks(@AuthenticationPrincipal Member member) {
-        return ResponseEntity.ok(new ApiResponse<>(bookmarkService.bookmarkList(member)));
-    }
-
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<String>> deleteBookmark(@PathVariable Long id,
                                                               @AuthenticationPrincipal Member member) throws Exception {
