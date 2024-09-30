@@ -3,7 +3,7 @@ package com.dongyang.dongpo.service.member;
 import com.dongyang.dongpo.domain.RefreshToken;
 import com.dongyang.dongpo.domain.member.Member;
 import com.dongyang.dongpo.domain.member.MemberTitle;
-import com.dongyang.dongpo.dto.JwtToken;
+import com.dongyang.dongpo.dto.auth.JwtToken;
 import com.dongyang.dongpo.dto.auth.UserInfo;
 import com.dongyang.dongpo.dto.mypage.MyPageDto;
 import com.dongyang.dongpo.dto.mypage.MyPageUpdateDto;

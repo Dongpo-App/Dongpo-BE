@@ -1,4 +1,4 @@
-package com.dongyang.dongpo.dto;
+package com.dongyang.dongpo.dto.auth;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
