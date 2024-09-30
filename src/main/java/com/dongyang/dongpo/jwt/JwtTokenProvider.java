@@ -2,7 +2,7 @@ package com.dongyang.dongpo.jwt;
 
 import com.dongyang.dongpo.config.security.CustomUserDetailsService;
 import com.dongyang.dongpo.domain.member.Member.Role;
-import com.dongyang.dongpo.dto.JwtToken;
+import com.dongyang.dongpo.dto.auth.JwtToken;
 import com.dongyang.dongpo.exception.CustomException;
 import com.dongyang.dongpo.exception.ErrorCode;
 import io.jsonwebtoken.*;

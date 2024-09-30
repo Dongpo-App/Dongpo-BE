@@ -2,7 +2,8 @@ package com.dongyang.dongpo.service.token;
 
 import com.dongyang.dongpo.domain.RefreshToken;
 import com.dongyang.dongpo.domain.member.Member;
-import com.dongyang.dongpo.dto.JwtToken;
+import com.dongyang.dongpo.dto.auth.JwtToken;
+import com.dongyang.dongpo.dto.auth.JwtTokenReissueDto;
 import com.dongyang.dongpo.exception.CustomException;
 import com.dongyang.dongpo.exception.ErrorCode;
 import com.dongyang.dongpo.jwt.JwtTokenProvider;
@@ -44,6 +45,7 @@ class TokenServiceTest {
     @DisplayName("토큰 재발급")
     void reissueAccessToken() {
         JwtToken mockJwtToken = mock(JwtToken.class);
+        JwtTokenReissueDto jwtTokenReissueDto = new JwtTokenReissueDto();
         when(mockJwtToken.getAccessToken()).thenReturn("AccessToken");
         when(mockJwtToken.getRefreshToken()).thenReturn("RefreshToken");
 
@@ -55,7 +57,7 @@ class TokenServiceTest {
         when(memberRepository.findByEmail(any())).thenReturn(Optional.of(member));
         when(jwtTokenProvider.createToken(any(), any())).thenReturn(mockJwtToken);
 
-        JwtToken jwtToken = tokenService.reissueAccessToken(any());
+        JwtToken jwtToken = tokenService.reissueAccessToken(jwtTokenReissueDto);
 
         assertNotNull(jwtToken);
         assertNotNull(jwtToken.getAccessToken());
@@ -72,13 +74,14 @@ class TokenServiceTest {
     void reissueAccessTokenExpired() {
         Claims claims = mock(Claims.class);
         claims.setSubject("test@email");
+        JwtTokenReissueDto jwtTokenReissueDto = new JwtTokenReissueDto();
 
         when(jwtTokenProvider.parseClaims(any())).thenReturn(claims);
 
         // Exception
         when(refreshTokenRepository.findByEmail(member.getEmail())).thenReturn(Optional.empty());
 
-        Exception exception = assertThrows(Exception.class, () -> tokenService.reissueAccessToken(anyString()));
+        Exception exception = assertThrows(Exception.class, () -> tokenService.reissueAccessToken(jwtTokenReissueDto));
 
         assertInstanceOf(CustomException.class, exception);
         assertEquals(ErrorCode.EXPIRED_TOKEN.getMessage(), exception.getMessage());
@@ -90,6 +93,7 @@ class TokenServiceTest {
     void reissueAccessTokenMemberNotFound() {
         Claims claims = mock(Claims.class);
         claims.setSubject("test@email");
+        JwtTokenReissueDto jwtTokenReissueDto = new JwtTokenReissueDto();
 
         when(jwtTokenProvider.parseClaims(any())).thenReturn(claims);
         when(refreshTokenRepository.findByEmail(any())).thenReturn(Optional.of(refreshToken));
@@ -97,7 +101,7 @@ class TokenServiceTest {
         // Exception
         when(memberRepository.findByEmail(any())).thenReturn(Optional.empty());
 
-        Exception exception = assertThrows(Exception.class, () -> tokenService.reissueAccessToken(anyString()));
+        Exception exception = assertThrows(Exception.class, () -> tokenService.reissueAccessToken(jwtTokenReissueDto));
 
         assertInstanceOf(CustomException.class, exception);
         assertEquals(ErrorCode.MEMBER_NOT_FOUND.getMessage(), exception.getMessage());
