@@ -85,6 +85,4 @@ jobs:
           script: |
             cd ~/Dongpo_dev
             aws secretsmanager get-secret-value --secret-id ${{ secrets.DEV_AWS_SECRET_NAME }} --query 'SecretString' --output text | jq -r 'to_entries|map("\(.key)=\(.value|tostring)")|.[]' > .env
-            docker-compose pull
-            docker-compose up -d
-            docker image prune -f
+            ./deploy.sh
