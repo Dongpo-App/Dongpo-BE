@@ -115,7 +115,7 @@ public class JwtTokenProvider {
                     .getBody();
         } catch (Exception e) {
             log.error("Error parsing claims: ", e);
-            throw new RuntimeException(e);
+            throw new CustomException(ErrorCode.EXPIRED_TOKEN);
         }
     }
 
