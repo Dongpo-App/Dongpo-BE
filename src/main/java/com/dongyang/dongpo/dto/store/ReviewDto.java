@@ -22,6 +22,7 @@ public class ReviewDto {
     private Long id;
     private Long storeId;
     private Long memberId;
+    private String memberProfilePic;
     private Integer reviewStar;
     private String text;
     private List<String> reviewPics;

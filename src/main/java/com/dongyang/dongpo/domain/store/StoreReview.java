@@ -65,6 +65,7 @@ public class StoreReview {
                 .reviewStar(reviewStar)
                 .text(text)
                 .memberId(member.getId())
+                .memberProfilePic(member.getProfilePic())
                 .storeId(store.getId())
                 .reviewPics(reviewOnlyPic)
                 .build();

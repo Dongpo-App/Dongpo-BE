@@ -8,6 +8,7 @@ import lombok.*;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -65,6 +66,9 @@ public class Store {
     @OneToMany(mappedBy = "store", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @Builder.Default
     private List<StoreReview> reviews = new ArrayList<>();
+
+    @OneToMany(mappedBy = "store", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<StoreVisitCert> storeVisitCerts = new ArrayList<>();
 
     public enum StoreStatus {
         ACTIVE, INACTIVE, HIDDEN, CLOSED
@@ -153,8 +157,18 @@ public class Store {
                 .collect(Collectors.toList());
 
         List<ReviewDto> reviewDtos = this.reviews.stream()
+                .sorted(Comparator.comparingLong(StoreReview::getId).reversed())
                 .map(StoreReview::toResponse)
+                .limit(3)
                 .toList();
+
+        Long visitSuccessfulCount = storeVisitCerts.stream()
+                .filter(StoreVisitCert::getIsVisitSuccessful)
+                .count();
+
+        Long visitFailCount = storeVisitCerts.stream()
+                .filter(cert -> !cert.getIsVisitSuccessful())
+                .count();
 
         return StoreDto.builder()
                 .id(id)
@@ -173,6 +187,8 @@ public class Store {
                 .reviews(reviewDtos)
                 .openPossibility(openPossibility)
                 .isBookmarked(isBookmarked)
+                .visitSuccessfulCount(visitSuccessfulCount)
+                .visitFailCount(visitFailCount)
                 .build();
     }
 
