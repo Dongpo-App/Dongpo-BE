@@ -4,6 +4,7 @@ import com.dongyang.dongpo.domain.member.Member;
 import com.dongyang.dongpo.domain.member.Title;
 import com.dongyang.dongpo.domain.store.Store;
 import com.dongyang.dongpo.domain.store.StoreReview;
+import com.dongyang.dongpo.domain.store.StoreReviewPic;
 import com.dongyang.dongpo.dto.store.ReviewDto;
 import com.dongyang.dongpo.exception.CustomException;
 import com.dongyang.dongpo.exception.ErrorCode;
@@ -17,6 +18,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
@@ -60,5 +63,13 @@ public class StoreReviewService {
                 .orElseThrow(() -> new CustomException(ErrorCode.REVIEW_NOT_FOUND));
 
         return review.toResponse();
+    }
+
+    public List<String> getReviewPicsByStoreId(Long id) {
+        return reviewRepository.findByStoreId(id).stream()
+                .flatMap(storeReview -> storeReview.getReviewPics().stream())
+                .map(StoreReviewPic::getPicUrl)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
     }
 }

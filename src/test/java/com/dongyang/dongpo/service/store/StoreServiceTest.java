@@ -11,6 +11,7 @@ import com.dongyang.dongpo.dto.store.StoreRegisterDto;
 import com.dongyang.dongpo.repository.store.StoreOperatingDayRepository;
 import com.dongyang.dongpo.repository.store.StorePayMethodRepository;
 import com.dongyang.dongpo.repository.store.StoreRepository;
+import com.dongyang.dongpo.service.bookmark.BookmarkService;
 import com.dongyang.dongpo.service.location.LocationService;
 import com.dongyang.dongpo.service.open.OpenPossibilityService;
 import org.junit.jupiter.api.DisplayName;
@@ -48,6 +49,9 @@ class StoreServiceTest {
 
     @Mock
     private OpenPossibilityService openPossibilityService;
+
+    @Mock
+    private BookmarkService bookmarkService;
 
 
     @Test
@@ -94,14 +98,16 @@ class StoreServiceTest {
     void detailStore() {
         // given
         Store store = mock(Store.class);
+        Member member = mock(Member.class);
         Optional<Store> optionalStore = Optional.of(store);
         OpenPossibility openPossibility = mock(OpenPossibility.class);
 
         when(storeRepository.findById(any())).thenReturn(optionalStore);
         when(openPossibilityService.getOpenPossibility(any())).thenReturn(openPossibility);
+        when(bookmarkService.isStoreBookmarkedByMember(any(), any())).thenReturn(true);
 
         // when
-        storeService.detailStore(store.getId());
+        storeService.detailStore(store.getId(), member);
 
         // then
         verify(storeRepository).findById(any());

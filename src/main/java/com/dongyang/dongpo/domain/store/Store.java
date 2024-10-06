@@ -1,11 +1,7 @@
 package com.dongyang.dongpo.domain.store;
 
 import com.dongyang.dongpo.domain.member.Member;
-import com.dongyang.dongpo.dto.store.OpenPossibility;
-import com.dongyang.dongpo.dto.store.ReviewDto;
-import com.dongyang.dongpo.dto.store.StoreDto;
-import com.dongyang.dongpo.dto.store.StoreIndexDto;
-import com.dongyang.dongpo.dto.store.StoreUpdateDto;
+import com.dongyang.dongpo.dto.store.*;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -122,8 +118,33 @@ public class Store {
                 .registerDate(registerDate)
                 .build();
     }
+
+    public StoreIndexDto toIndexResponse(OpenPossibility openPossibility, Boolean isBookmarked, List<String> reviewPics) {
+        return StoreIndexDto.builder()
+                .id(id)
+                .name(name)
+                .address(address)
+                .registerDate(registerDate)
+                .status(status)
+                .openPossibility(openPossibility)
+                .isBookmarked(isBookmarked)
+                .reviewPics(reviewPics)
+                .build();
+    }
+
+    public StoreIndexDto toIndexResponse(Boolean isBookmarked, OpenPossibility openPossibility) {
+        return StoreIndexDto.builder()
+                .id(id)
+                .name(name)
+                .latitude(latitude)
+                .longitude(longitude)
+                .status(status)
+                .openPossibility(openPossibility)
+                .isBookmarked(isBookmarked)
+                .build();
+    }
           
-    public StoreDto toResponse(OpenPossibility openPossibility) {
+    public StoreDto toResponse(OpenPossibility openPossibility, boolean isBookmarked) {
         List<Store.OperatingDay> operatingDayValues = this.storeOperatingDays.stream()
                 .map(StoreOperatingDay::getOperatingDay)
                 .collect(Collectors.toList());
@@ -152,6 +173,7 @@ public class Store {
                 .status(status)
                 .reviews(reviewDtos)
                 .openPossibility(openPossibility)
+                .isBookmarked(isBookmarked)
                 .build();
     }
 

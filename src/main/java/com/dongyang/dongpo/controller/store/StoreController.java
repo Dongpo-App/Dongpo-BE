@@ -3,9 +3,7 @@ package com.dongyang.dongpo.controller.store;
 import com.dongyang.dongpo.apiresponse.ApiResponse;
 import com.dongyang.dongpo.domain.member.Member;
 import com.dongyang.dongpo.dto.location.LatLong;
-import com.dongyang.dongpo.dto.store.StoreDto;
-import com.dongyang.dongpo.dto.store.StoreRegisterDto;
-import com.dongyang.dongpo.dto.store.StoreUpdateDto;
+import com.dongyang.dongpo.dto.store.*;
 import com.dongyang.dongpo.service.store.StoreService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
@@ -30,14 +28,21 @@ public class StoreController {
 
     @GetMapping("")
     @Operation(summary = "현재 위치 기준 주변 점포 조회")
-    public ResponseEntity<ApiResponse<List<StoreDto>>> getStoresByCurrentLocation(@ModelAttribute LatLong latLong) {
-        return ResponseEntity.ok(new ApiResponse<>(storeService.findStoresByCurrentLocation(latLong)));
+    public ResponseEntity<ApiResponse<List<StoreIndexDto>>> getStoresByCurrentLocation(@ModelAttribute LatLong latLong,
+                                                                                       @AuthenticationPrincipal Member member) {
+        return ResponseEntity.ok(new ApiResponse<>(storeService.findStoresByCurrentLocation(latLong, member)));
+    }
+
+    @GetMapping("/{id}/summary")
+    @Operation(summary = "점포 간략 정보 조회")
+    public ResponseEntity<ApiResponse<StoreIndexDto>> getStoreSummary(@PathVariable Long id, @AuthenticationPrincipal Member member) {
+        return ResponseEntity.ok(new ApiResponse<>(storeService.getStoreSummary(id, member)));
     }
 
     @GetMapping("/{id}")
     @Operation(summary = "점포 상세 조회")
-    public ResponseEntity<ApiResponse<StoreDto>> detailStore(@PathVariable Long id) throws Exception {
-        return ResponseEntity.ok(new ApiResponse<>(storeService.detailStore(id)));
+    public ResponseEntity<ApiResponse<StoreDto>> detailStore(@PathVariable Long id, @AuthenticationPrincipal Member member) {
+        return ResponseEntity.ok(new ApiResponse<>(storeService.detailStore(id, member)));
     }
 
     @PostMapping("")

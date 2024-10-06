@@ -6,6 +6,8 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -31,9 +33,6 @@ public class StoreReview {
     @Column(columnDefinition = "TEXT")
     private String text;
 
-    @Column(length = 128)
-    private String reviewPic;
-
     @Column(columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP")
     @Builder.Default
     private LocalDateTime registerDate = LocalDateTime.now();
@@ -49,11 +48,17 @@ public class StoreReview {
     @Builder.Default
     private Integer reportCount = 0;
 
+    @OneToMany(mappedBy = "reviewId", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @Builder.Default
+    private List<StoreReviewPic> reviewPics = new ArrayList<>();
+
     public enum ReviewStatus {
         VISIBLE, HIDDEN, DELETED
     }
 
     public ReviewDto toResponse(){
+        List<String> reviewOnlyPic = reviewPics.stream().map(StoreReviewPic::getPicUrl).toList();
+
         return ReviewDto.builder()
                 .id(id)
                 .registerDate(registerDate)
@@ -61,7 +66,7 @@ public class StoreReview {
                 .text(text)
                 .memberId(member.getId())
                 .storeId(store.getId())
-                .reviewPic(reviewPic)
+                .reviewPics(reviewOnlyPic)
                 .build();
     }
 
