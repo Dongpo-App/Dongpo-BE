@@ -2,6 +2,7 @@ package com.dongyang.dongpo.repository.bookmark;
 
 
 import com.dongyang.dongpo.domain.member.Member;
+import com.dongyang.dongpo.domain.store.Store;
 import com.dongyang.dongpo.domain.store.StoreBookmark;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -11,4 +12,6 @@ public interface BookmarkRepository extends JpaRepository<StoreBookmark, Long> {
     List<StoreBookmark> findByMemberId(Long id);
 
     List<StoreBookmark> findByMember(Member member);
+
+    boolean existsByStoreAndMember(Store store, Member member);
 }

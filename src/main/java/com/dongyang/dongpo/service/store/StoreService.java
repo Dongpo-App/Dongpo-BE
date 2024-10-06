@@ -5,6 +5,7 @@ import com.dongyang.dongpo.domain.member.Title;
 import com.dongyang.dongpo.domain.store.Store;
 import com.dongyang.dongpo.domain.store.StoreOperatingDay;
 import com.dongyang.dongpo.domain.store.StorePayMethod;
+import com.dongyang.dongpo.dto.bookmark.BookmarkDto;
 import com.dongyang.dongpo.dto.location.CoordinateRange;
 import com.dongyang.dongpo.dto.location.LatLong;
 import com.dongyang.dongpo.dto.store.*;
@@ -13,6 +14,7 @@ import com.dongyang.dongpo.exception.ErrorCode;
 import com.dongyang.dongpo.repository.store.StoreOperatingDayRepository;
 import com.dongyang.dongpo.repository.store.StorePayMethodRepository;
 import com.dongyang.dongpo.repository.store.StoreRepository;
+import com.dongyang.dongpo.service.bookmark.BookmarkService;
 import com.dongyang.dongpo.service.location.LocationService;
 import com.dongyang.dongpo.service.open.OpenPossibilityService;
 import com.dongyang.dongpo.service.title.TitleService;
@@ -24,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -37,6 +40,8 @@ public class StoreService {
     private final LocationService locationService;
     private final TitleService titleService;
     private final OpenPossibilityService openPossibilityService;
+    private final BookmarkService bookmarkService;
+    private final StoreReviewService storeReviewService;
 
 
     @Transactional
@@ -80,22 +85,38 @@ public class StoreService {
         return storeResponse;
     }
 
-    public List<StoreDto> findStoresByCurrentLocation(LatLong latLong) {
+    public List<StoreIndexDto> findStoresByCurrentLocation(LatLong latLong, Member member) {
         CoordinateRange coordinateRange = locationService.calcCoordinateRangeByCurrentLocation(latLong);
 
-        List<StoreDto> stores = new ArrayList<>();
-        for (Store store : storeRepository.findStoresWithinRange(coordinateRange.getMinLat(), coordinateRange.getMaxLat(),
-                                                                 coordinateRange.getMinLong(), coordinateRange.getMaxLong())
-            ) stores.add(store.toResponse());
-        return stores;
+        List<BookmarkDto> myBookmarks = bookmarkService.getMyBookmarks(member);
+
+        return storeRepository.findStoresWithinRange(coordinateRange.getMinLat(), coordinateRange.getMaxLat(),
+                                                     coordinateRange.getMinLong(), coordinateRange.getMaxLong())
+                .stream()
+                .map(store -> {
+                    boolean isBookmarked = myBookmarks.stream()
+                            .anyMatch(bookmark -> store.getId().equals(bookmark.getStoreId()));
+
+                    return store.toIndexResponse(isBookmarked, openPossibilityService.getOpenPossibility(store));
+                })
+                .collect(Collectors.toList());
     }
 
-    public StoreDto detailStore(Long id) {
+    public StoreIndexDto getStoreSummary(Long id, Member member) {
         Store store = storeRepository.findById(id)
                 .orElseThrow(() -> new CustomException(ErrorCode.STORE_NOT_FOUND));
-        OpenPossibility openPossibility = openPossibilityService.getOpenPossibility(store);
 
-        return store.toResponse(openPossibility);
+        return store.toIndexResponse(openPossibilityService.getOpenPossibility(store),
+                                    bookmarkService.isStoreBookmarkedByMember(store, member),
+                                    storeReviewService.getReviewPicsByStoreId(id));
+    }
+
+    public StoreDto detailStore(Long id, Member member) {
+        Store store = storeRepository.findById(id)
+                .orElseThrow(() -> new CustomException(ErrorCode.STORE_NOT_FOUND));
+
+        return store.toResponse(openPossibilityService.getOpenPossibility(store),
+                                bookmarkService.isStoreBookmarkedByMember(store, member));
     }
 
     @Transactional

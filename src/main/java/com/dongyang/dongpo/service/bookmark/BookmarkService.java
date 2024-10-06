@@ -61,4 +61,8 @@ public class BookmarkService {
         bookmarkRepository.delete(bookmark);
         log.info("Member Id : {} is Delete Bookmark Id : {}", member.getId(), id);
     }
+
+    public boolean isStoreBookmarkedByMember(Store store, Member member) {
+        return bookmarkRepository.existsByStoreAndMember(store, member);
+    }
 }
