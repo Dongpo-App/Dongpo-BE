@@ -124,7 +124,6 @@ public class Store {
                 .id(id)
                 .name(name)
                 .address(address)
-                .registerDate(registerDate)
                 .status(status)
                 .openPossibility(openPossibility)
                 .isBookmarked(isBookmarked)
