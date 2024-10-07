@@ -26,10 +26,11 @@ public class BookmarkController {
         return ResponseEntity.ok(new ApiResponse<>("success"));
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<ApiResponse<String>> deleteBookmark(@PathVariable Long id,
+    @DeleteMapping("/{storeId}")
+    @Operation(summary = "북마크 제거")
+    public ResponseEntity<ApiResponse<String>> deleteBookmark(@PathVariable Long storeId,
                                                               @AuthenticationPrincipal Member member) {
-        bookmarkService.deleteBookmark(id, member);
+        bookmarkService.deleteBookmark(storeId, member);
         return ResponseEntity.ok(new ApiResponse<>("success"));
     }
 }
