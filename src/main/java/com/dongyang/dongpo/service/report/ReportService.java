@@ -1,6 +1,7 @@
 package com.dongyang.dongpo.service.report;
 
 import com.dongyang.dongpo.domain.member.Member;
+import com.dongyang.dongpo.domain.report.ReportReason;
 import com.dongyang.dongpo.domain.report.ReviewReport;
 import com.dongyang.dongpo.domain.report.StoreReport;
 import com.dongyang.dongpo.domain.store.Store;
@@ -46,6 +47,9 @@ public class ReportService {
 
     @Transactional
     public void addReviewReport(Long reviewId, Member member, ReportDto request){
+        if (request.getReason() == ReportReason.ETC && (request.getText() == null || request.getText().isEmpty()))
+            throw new CustomException(ErrorCode.REPORT_REASON_TEXT_REQUIRED);
+
         StoreReview review = storeReviewRepository.findById(reviewId)
                 .orElseThrow(() -> new CustomException(ErrorCode.REVIEW_NOT_FOUND));
 
