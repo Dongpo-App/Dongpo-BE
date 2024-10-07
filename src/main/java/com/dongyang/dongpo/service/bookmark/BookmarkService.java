@@ -54,11 +54,13 @@ public class BookmarkService {
     }
 
     @Transactional
-    public void deleteBookmark(Long id, Member member) {
-        StoreBookmark bookmark = bookmarkRepository.findById(id)
+    public void deleteBookmark(Long storeId, Member member) {
+        Store store = storeRepository.findById(storeId)
+                .orElseThrow(() -> new CustomException(ErrorCode.STORE_NOT_FOUND));
+        StoreBookmark bookmark = bookmarkRepository.findByStoreAndMember(store, member)
                 .orElseThrow(() -> new CustomException(ErrorCode.BOOKMARK_NOT_FOUND));
 
         bookmarkRepository.delete(bookmark);
-        log.info("Member Id : {} is Delete Bookmark Id : {}", member.getId(), id);
+        log.info("Member {} deleted Bookmark : storeId -> {}", member.getEmail(), storeId);
     }
 }
