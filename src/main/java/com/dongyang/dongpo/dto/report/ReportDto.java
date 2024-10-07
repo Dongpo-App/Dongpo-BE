@@ -1,6 +1,7 @@
 package com.dongyang.dongpo.dto.report;
 
 import com.dongyang.dongpo.domain.member.Member;
+import com.dongyang.dongpo.domain.report.ReportReason;
 import com.dongyang.dongpo.domain.report.ReviewReport;
 import com.dongyang.dongpo.domain.report.StoreReport;
 import com.dongyang.dongpo.domain.store.Store;
@@ -25,13 +26,15 @@ public class ReportDto {
     private Long reviewId;
     private Long storeId;
     private LocalDateTime issueDate;
+    private ReportReason reason;
     private String text;
 
 
-    public StoreReport toStoreEntity(Member member, Store store ) {
+    public StoreReport toStoreEntity(Member member, Store store) {
         return StoreReport.builder()
                 .store(store)
                 .member(member)
+                .reason(reason)
                 .text(text)
                 .build();
     }
@@ -40,6 +43,7 @@ public class ReportDto {
         return ReviewReport.builder()
                 .member(member)
                 .review(review)
+                .reason(reason)
                 .text(text)
                 .build();
     }

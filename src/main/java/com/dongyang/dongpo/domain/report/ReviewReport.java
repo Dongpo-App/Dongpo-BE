@@ -24,6 +24,10 @@ public class ReviewReport {
     @JoinColumn(name = "report_writer")
     private Member member;
 
+    @Column(name = "report_reason")
+    @Enumerated(EnumType.STRING)
+    private ReportReason reason;
+
     @Column(columnDefinition = "TEXT")
     private String text;
 
