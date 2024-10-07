@@ -47,11 +47,9 @@ public class StoreReviewService {
     }
 
     public List<ReviewDto> getMyReviews(Member member) {
-        List<ReviewDto> reviewDtos = new ArrayList<>();
-        reviewRepository.findByMember(member).forEach(storeReview -> {
-            reviewDtos.add(ReviewDto.toDto(storeReview));
-        });
-        return reviewDtos;
+        return reviewRepository.findByMemberWithReviewPicsAndStore(member).stream()
+                .map(StoreReview::toMyPageResponse)
+                .toList();
     }
 
     public List<StoreReview> findAll(){

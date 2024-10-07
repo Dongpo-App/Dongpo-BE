@@ -68,6 +68,7 @@ public class Store {
     private List<StoreReview> reviews = new ArrayList<>();
 
     @OneToMany(mappedBy = "store", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @Builder.Default
     private List<StoreVisitCert> storeVisitCerts = new ArrayList<>();
 
     public enum StoreStatus {

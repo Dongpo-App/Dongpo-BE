@@ -2,10 +2,10 @@ package com.dongyang.dongpo.repository.store;
 
 import com.dongyang.dongpo.domain.member.Member;
 import com.dongyang.dongpo.domain.store.StoreReview;
-import io.lettuce.core.dynamic.annotation.Param;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
@@ -23,4 +23,7 @@ public interface StoreReviewRepository extends JpaRepository<StoreReview, Long> 
     Long countByMember(Member member);
 
     List<StoreReview> findByMember(Member member);
+
+    @Query("SELECT sr FROM StoreReview sr LEFT JOIN FETCH sr.reviewPics LEFT JOIN FETCH sr.store WHERE sr.member = :member")
+    List<StoreReview> findByMemberWithReviewPicsAndStore(@Param("member") Member member);
 }

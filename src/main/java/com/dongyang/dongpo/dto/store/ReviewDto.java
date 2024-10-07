@@ -21,6 +21,7 @@ import java.util.List;
 public class ReviewDto {
     private Long id;
     private Long storeId;
+    private String storeName;
     private Long memberId;
     private String memberProfilePic;
     private Integer reviewStar;

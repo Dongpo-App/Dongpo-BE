@@ -60,13 +60,28 @@ public class StoreReview {
         List<String> reviewOnlyPic = reviewPics.stream().map(StoreReviewPic::getPicUrl).toList();
 
         return ReviewDto.builder()
-                .id(id)
-                .registerDate(registerDate)
-                .reviewStar(reviewStar)
-                .text(text)
-                .memberId(member.getId())
-                .memberProfilePic(member.getProfilePic())
-                .storeId(store.getId())
+                .id(this.id)
+                .registerDate(this.registerDate)
+                .reviewStar(this.reviewStar)
+                .text(this.text)
+                .memberId(this.member.getId())
+                .memberProfilePic(this.member.getProfilePic())
+                .storeId(this.store.getId())
+                .storeName(this.store.getName())
+                .reviewPics(reviewOnlyPic)
+                .build();
+    }
+
+    public ReviewDto toMyPageResponse(){
+        List<String> reviewOnlyPic = reviewPics.stream().map(StoreReviewPic::getPicUrl).toList();
+
+        return ReviewDto.builder()
+                .id(this.id)
+                .registerDate(this.registerDate)
+                .reviewStar(this.reviewStar)
+                .text(this.text)
+                .storeId(this.store.getId())
+                .storeName(this.store.getName())
                 .reviewPics(reviewOnlyPic)
                 .build();
     }
