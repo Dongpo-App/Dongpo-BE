@@ -31,4 +31,7 @@ public class StoreDto {
     private List<Store.PayMethod> payMethods;
     private List<ReviewDto> reviews;
     private OpenPossibility openPossibility;
+    private Boolean isBookmarked;
+    private Long visitSuccessfulCount;
+    private Long visitFailCount;
 }

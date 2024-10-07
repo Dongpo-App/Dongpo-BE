@@ -1,17 +1,14 @@
 package com.dongyang.dongpo.domain.store;
 
 import com.dongyang.dongpo.domain.member.Member;
-import com.dongyang.dongpo.dto.store.OpenPossibility;
-import com.dongyang.dongpo.dto.store.ReviewDto;
-import com.dongyang.dongpo.dto.store.StoreDto;
-import com.dongyang.dongpo.dto.store.StoreIndexDto;
-import com.dongyang.dongpo.dto.store.StoreUpdateDto;
+import com.dongyang.dongpo.dto.store.*;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -70,6 +67,9 @@ public class Store {
     @Builder.Default
     private List<StoreReview> reviews = new ArrayList<>();
 
+    @OneToMany(mappedBy = "store", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<StoreVisitCert> storeVisitCerts = new ArrayList<>();
+
     public enum StoreStatus {
         ACTIVE, INACTIVE, HIDDEN, CLOSED
     }
@@ -122,8 +122,32 @@ public class Store {
                 .registerDate(registerDate)
                 .build();
     }
+
+    public StoreIndexDto toIndexResponse(OpenPossibility openPossibility, Boolean isBookmarked, List<String> reviewPics) {
+        return StoreIndexDto.builder()
+                .id(id)
+                .name(name)
+                .address(address)
+                .status(status)
+                .openPossibility(openPossibility)
+                .isBookmarked(isBookmarked)
+                .reviewPics(reviewPics)
+                .build();
+    }
+
+    public StoreIndexDto toIndexResponse(Boolean isBookmarked, OpenPossibility openPossibility) {
+        return StoreIndexDto.builder()
+                .id(id)
+                .name(name)
+                .latitude(latitude)
+                .longitude(longitude)
+                .status(status)
+                .openPossibility(openPossibility)
+                .isBookmarked(isBookmarked)
+                .build();
+    }
           
-    public StoreDto toResponse(OpenPossibility openPossibility) {
+    public StoreDto toResponse(OpenPossibility openPossibility, boolean isBookmarked) {
         List<Store.OperatingDay> operatingDayValues = this.storeOperatingDays.stream()
                 .map(StoreOperatingDay::getOperatingDay)
                 .collect(Collectors.toList());
@@ -133,8 +157,18 @@ public class Store {
                 .collect(Collectors.toList());
 
         List<ReviewDto> reviewDtos = this.reviews.stream()
+                .sorted(Comparator.comparingLong(StoreReview::getId).reversed())
                 .map(StoreReview::toResponse)
+                .limit(3)
                 .toList();
+
+        Long visitSuccessfulCount = storeVisitCerts.stream()
+                .filter(StoreVisitCert::getIsVisitSuccessful)
+                .count();
+
+        Long visitFailCount = storeVisitCerts.stream()
+                .filter(cert -> !cert.getIsVisitSuccessful())
+                .count();
 
         return StoreDto.builder()
                 .id(id)
@@ -152,6 +186,9 @@ public class Store {
                 .status(status)
                 .reviews(reviewDtos)
                 .openPossibility(openPossibility)
+                .isBookmarked(isBookmarked)
+                .visitSuccessfulCount(visitSuccessfulCount)
+                .visitFailCount(visitFailCount)
                 .build();
     }
 
