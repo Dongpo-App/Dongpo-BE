@@ -1,9 +1,11 @@
 package com.dongyang.dongpo.controller.auth;
 
 import com.dongyang.dongpo.apiresponse.ApiResponse;
+import com.dongyang.dongpo.dto.auth.AppleLoginDto;
 import com.dongyang.dongpo.dto.auth.JwtToken;
 import com.dongyang.dongpo.dto.auth.JwtTokenReissueDto;
 import com.dongyang.dongpo.dto.auth.SocialTokenDto;
+import com.dongyang.dongpo.service.auth.AppleLoginService;
 import com.dongyang.dongpo.service.auth.SocialService;
 import com.dongyang.dongpo.service.token.TokenService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -18,6 +20,7 @@ public class AuthController {
 
     private final SocialService socialService;
     private final TokenService tokenService;
+    private final AppleLoginService appleLoginService;
 
     @PostMapping("/kakao")
     public ResponseEntity<ApiResponse<JwtToken>> kakao(@RequestBody SocialTokenDto token) {
@@ -34,9 +37,9 @@ public class AuthController {
         return ResponseEntity.ok(new ApiResponse<>(socialService.getNaverUserInfo(token.getToken())));
     }
 
-    @GetMapping("/apple/callback")
-    public ResponseEntity callback(){
-        return null;
+    @PostMapping("/apple/callback")
+    public ResponseEntity<ApiResponse<AppleLoginDto>> appleCallback(@RequestParam("code") String code) throws Exception {
+        return ResponseEntity.ok(new ApiResponse<>(appleLoginService.getAppleInfo(code)));
     }
 
     @PostMapping("/reissue")
