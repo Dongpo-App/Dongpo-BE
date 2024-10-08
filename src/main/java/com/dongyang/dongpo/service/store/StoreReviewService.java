@@ -10,15 +10,12 @@ import com.dongyang.dongpo.exception.CustomException;
 import com.dongyang.dongpo.exception.ErrorCode;
 import com.dongyang.dongpo.repository.store.StoreRepository;
 import com.dongyang.dongpo.repository.store.StoreReviewRepository;
-import com.dongyang.dongpo.s3.S3Service;
 import com.dongyang.dongpo.service.title.TitleService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
