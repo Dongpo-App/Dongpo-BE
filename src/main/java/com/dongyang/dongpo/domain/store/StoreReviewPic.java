@@ -28,4 +28,8 @@ public class StoreReviewPic {
 
     @Column(length = 24)
     private String registerIp;
+
+    public void addReview(StoreReview review) {
+        this.reviewId = review;
+    }
 }

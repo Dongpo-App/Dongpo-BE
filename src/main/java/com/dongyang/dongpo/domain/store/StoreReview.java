@@ -56,6 +56,11 @@ public class StoreReview {
         VISIBLE, HIDDEN, DELETED
     }
 
+    public void addReviewPic(StoreReviewPic reviewPic) {
+        reviewPics.add(reviewPic);
+        reviewPic.addReview(this);
+    }
+
     public ReviewDto toResponse(){
         List<String> reviewOnlyPic = reviewPics.stream().map(StoreReviewPic::getPicUrl).toList();
 
