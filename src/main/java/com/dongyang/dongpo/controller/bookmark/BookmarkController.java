@@ -18,11 +18,11 @@ public class BookmarkController {
 
     private final BookmarkService bookmarkService;
 
-    @PostMapping("")
+    @PostMapping("/{storeId}")
     @Operation(summary = "북마크 추가")
-    public ResponseEntity<ApiResponse<String>> addBookmark(@RequestBody Map<String, Long> request,
+    public ResponseEntity<ApiResponse<String>> addBookmark(@PathVariable Long storeId,
                                                            @AuthenticationPrincipal Member member) {
-        bookmarkService.addBookmark(member, request.get("storeId"));
+        bookmarkService.addBookmark(member, storeId);
         return ResponseEntity.ok(new ApiResponse<>("success"));
     }
 
