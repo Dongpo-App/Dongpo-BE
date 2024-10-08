@@ -11,6 +11,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -32,13 +33,22 @@ public class ReviewDto {
     private Integer reportCount;
 
 
-    public StoreReview toEntity(Store store, Member member){
-        return StoreReview.builder()
-                .member(member)
-                .store(store)
-                .text(text)
-                .reviewStar(reviewStar)
+    public StoreReview toEntity(Store store, Member member) {
+        StoreReview storeReview = StoreReview.builder()
+            .member(member)
+            .store(store)
+            .text(text)
+            .reviewStar(reviewStar)
+            .build();
+
+        reviewPics.forEach(picUrl -> {
+            StoreReviewPic pic = StoreReviewPic.builder()
+                .picUrl(picUrl)
                 .build();
+            storeReview.addReviewPic(pic);
+        });
+
+        return storeReview;
     }
 
     public static ReviewDto toDto(StoreReview storeReview){
