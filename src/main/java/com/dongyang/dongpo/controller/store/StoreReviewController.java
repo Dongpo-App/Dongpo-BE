@@ -29,4 +29,23 @@ public class StoreReviewController {
         return ResponseEntity.ok(new ApiResponse<>("success"));
     }
 
+    @PatchMapping("/{reviewId}")
+    @Operation(summary = "리뷰 수정")
+    public ResponseEntity<ApiResponse<Boolean>> updateReview(@AuthenticationPrincipal Member member,
+                                    @PathVariable Long reviewId,
+                                    @RequestBody ReviewDto reviewDto) throws Exception {
+
+        reviewService.updateReview(member, reviewId, reviewDto);
+        return null;
+    }
+
+    @DeleteMapping("/{reviewId}")
+    @Operation(summary = "리뷰 삭제")
+    public ResponseEntity<ApiResponse<Boolean>> deleteReview(@AuthenticationPrincipal Member member,
+                                    @PathVariable Long reviewId) throws Exception {
+
+        reviewService.deleteReview(member, reviewId);
+        return null;
+    }
+
 }
