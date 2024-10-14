@@ -49,6 +49,8 @@ class StoreReviewServiceTest {
         when(storeReviewRepository.findByMemberWithReviewPicsAndStore(member)).thenReturn(List.of(review1, review2));
         when(review1.toMyPageResponse()).thenReturn(reviewDto1);
         when(review2.toMyPageResponse()).thenReturn(reviewDto2);
+        when(review1.getStatus()).thenReturn(StoreReview.ReviewStatus.VISIBLE);
+        when(review2.getStatus()).thenReturn(StoreReview.ReviewStatus.VISIBLE);
 
         // when
         List<ReviewDto> reviewDtos = storeReviewService.getMyReviews(member);

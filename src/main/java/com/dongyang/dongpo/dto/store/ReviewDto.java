@@ -32,7 +32,6 @@ public class ReviewDto {
     private StoreReview.ReviewStatus status;
     private Integer reportCount;
 
-
     public StoreReview toEntity(Store store, Member member) {
         StoreReview storeReview = StoreReview.builder()
             .member(member)

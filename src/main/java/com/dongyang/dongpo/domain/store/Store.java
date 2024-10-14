@@ -94,6 +94,7 @@ public class Store {
                 .collect(Collectors.toList());
 
         List<ReviewDto> reviewDtos = this.reviews.stream()
+                .filter(review -> review.getStatus().equals(StoreReview.ReviewStatus.VISIBLE))
                 .map(StoreReview::toResponse)
                 .toList();
 
