@@ -31,21 +31,21 @@ public class StoreReviewController {
 
     @PatchMapping("/{reviewId}")
     @Operation(summary = "리뷰 수정")
-    public ResponseEntity<ApiResponse<Boolean>> updateReview(@AuthenticationPrincipal Member member,
+    public ResponseEntity<ApiResponse<String>> updateReview(@AuthenticationPrincipal Member member,
                                     @PathVariable Long reviewId,
-                                    @RequestBody ReviewDto reviewDto) throws Exception {
+                                    @RequestBody ReviewDto reviewDto) {
 
         reviewService.updateReview(member, reviewId, reviewDto);
-        return null;
+        return ResponseEntity.ok(new ApiResponse<>("success"));
     }
 
     @DeleteMapping("/{reviewId}")
     @Operation(summary = "리뷰 삭제")
-    public ResponseEntity<ApiResponse<Boolean>> deleteReview(@AuthenticationPrincipal Member member,
-                                    @PathVariable Long reviewId) throws Exception {
+    public ResponseEntity<ApiResponse<String>> deleteReview(@AuthenticationPrincipal Member member,
+                                    @PathVariable Long reviewId) {
 
         reviewService.deleteReview(member, reviewId);
-        return null;
+        return ResponseEntity.ok(new ApiResponse<>("success"));
     }
 
 }

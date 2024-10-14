@@ -107,5 +107,6 @@ public class StoreReviewService {
             throw new CustomException(ErrorCode.UNAUTHORIZED);
 
         review.delete();
+        log.info("Deleted Review: {} by Member: {}", reviewId, member.getEmail());
     }
 }
