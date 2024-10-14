@@ -26,7 +26,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
-@Transactional(readOnly = true)
 @RequiredArgsConstructor
 @Slf4j
 public class MemberService {
@@ -83,26 +82,26 @@ public class MemberService {
     }
 
     @Transactional
-    public void updateMemberInfo(String email, MyPageUpdateDto myPageUpdateDto) {
+    public void updateMemberInfo(String memberEmail, MyPageUpdateDto myPageUpdateDto) {
         if (myPageUpdateDto.getNickname().length() > 7) // 문자 수 7자 초과시 예외 발생
             throw new CustomException(ErrorCode.ARGUMENT_NOT_SATISFIED);
 
-        memberRepository.findByEmail(email).ifPresent(member -> {
-            if (myPageUpdateDto.getProfilePic() != null && !myPageUpdateDto.getProfilePic().isBlank()) {
-                if (member.getProfilePic() != null && member.getProfilePic().startsWith(bucketFullUrl))
-                    s3Service.deleteFile(member.getProfilePic()); // S3에 있는 기존 프로필 사진 삭제
-                member.setProfilePic(myPageUpdateDto.getProfilePic());
-                log.info("Updated Member profilePic : {}", member.getEmail());
-            }
-            if (myPageUpdateDto.getNickname() != null && !myPageUpdateDto.getNickname().equals(member.getNickname())) {
-                member.setNickname(myPageUpdateDto.getNickname());
-                log.info("Updated Member nickname : {}", member.getEmail());
-            }
-            if (myPageUpdateDto.getNewMainTitle() != null && !myPageUpdateDto.getNewMainTitle().equals(member.getMainTitle())) {
-                MemberTitle memberTitle = memberTitleRepository.findByMemberAndTitle(member, myPageUpdateDto.getNewMainTitle());
-                member.setMainTitle(memberTitle.getTitle());
-                log.info("Updated Member mainTitle : {}", member.getEmail());
-            }
-        });
+        Member member = memberRepository.findByEmail(memberEmail).orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+
+        if (myPageUpdateDto.getProfilePic() != null && !myPageUpdateDto.getProfilePic().isBlank()) {
+            if (member.getProfilePic() != null && member.getProfilePic().startsWith(bucketFullUrl))
+                s3Service.deleteFile(member.getProfilePic()); // S3에 있는 기존 프로필 사진 삭제
+            member.updateMemberProfilePic(myPageUpdateDto.getProfilePic());
+            log.info("Member {} - updated profilePic", member.getEmail());
+        }
+        if (myPageUpdateDto.getNickname() != null && !myPageUpdateDto.getNickname().equals(member.getNickname())) {
+            member.updateMemberNickname(myPageUpdateDto.getNickname());
+            log.info("Member {} - updated nickname : ", member.getEmail());
+        }
+        if (myPageUpdateDto.getNewMainTitle() != null && !myPageUpdateDto.getNewMainTitle().equals(member.getMainTitle())) {
+            MemberTitle memberTitle = memberTitleRepository.findByMemberAndTitle(member, myPageUpdateDto.getNewMainTitle());
+            member.updateMemberMainTitle(memberTitle.getTitle());
+            log.info("Member {} - updated mainTitle", member.getEmail());
+        }
     }
 }

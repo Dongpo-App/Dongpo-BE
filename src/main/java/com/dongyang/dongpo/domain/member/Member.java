@@ -12,7 +12,6 @@ import java.util.*;
 
 @Entity
 @Getter
-@Setter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -64,6 +63,18 @@ public class Member implements UserDetails {
     @Column(columnDefinition = "VARCHAR(255)")
     @Enumerated(EnumType.STRING)
     private Status status;
+
+    public void updateMemberNickname(String newNickname) {
+        this.nickname = newNickname;
+    }
+
+    public void updateMemberProfilePic(String newProfilePic) {
+        this.profilePic = newProfilePic;
+    }
+
+    public void updateMemberMainTitle(Title newMainTitle) {
+        this.mainTitle = newMainTitle;
+    }
 
     public static Member toEntity(UserInfo userInfo){
         return Member.builder()

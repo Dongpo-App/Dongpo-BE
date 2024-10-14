@@ -89,8 +89,8 @@ class MemberServiceTest {
         memberService.updateMemberInfo(member.getEmail(), myPageUpdateDto);
 
         // then
-        verify(member).setProfilePic("https://test.com/new-profile.jpg");
-        verify(member).setNickname("테스터2");
-        verify(member).setMainTitle(Title.REGULAR_CUSTOMER);
+        verify(member).updateMemberProfilePic("https://test.com/new-profile.jpg");
+        verify(member).updateMemberNickname("테스터2");
+        verify(member).updateMemberMainTitle(Title.REGULAR_CUSTOMER);
     }
 }
