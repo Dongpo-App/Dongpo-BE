@@ -56,16 +56,6 @@ public class StoreReview {
         this.status = ReviewStatus.DELETED;
     }
 
-    public void update(ReviewDto reviewDto, List<StoreReviewPic> reviewPics) {
-        this.text = reviewDto.getText() == null ? this.text : reviewDto.getText();
-        this.status = reviewDto.getStatus() == null ? this.status : reviewDto.getStatus();
-        this.reviewPics = reviewPics == null ? this.reviewPics : reviewPics;
-    }
-
-    public void clearReviewPics() {
-        this.reviewPics.clear();
-    }
-
     public enum ReviewStatus {
         VISIBLE, HIDDEN, DELETED
     }

@@ -73,32 +73,6 @@ public class StoreReviewService {
     }
 
     @Transactional
-	public void updateReview(Member member, Long reviewId, ReviewDto reviewDto) {
-        StoreReview review = reviewRepository.findById(reviewId)
-            .orElseThrow(() -> new CustomException(ErrorCode.REVIEW_NOT_FOUND));
-
-        if (!review.getMember().equals(member))
-            throw new CustomException(ErrorCode.UNAUTHORIZED);
-
-        List<StoreReviewPic> reviewPics = review.getReviewPics();
-
-        if (reviewPics != null && !reviewDto.getReviewPics().isEmpty()) {
-            review.clearReviewPics();
-
-            reviewDto.getReviewPics().forEach(picUrl -> {
-                StoreReviewPic pic = StoreReviewPic.builder()
-                    .picUrl(picUrl)
-                    .build();
-                review.addReviewPic(pic);
-            });
-        }
-
-        review.update(reviewDto, reviewPics);
-
-        log.info("Updated Review: {} by Member: {}", reviewId, member.getEmail());
-    }
-
-    @Transactional
     public void deleteReview(Member member, Long reviewId) {
         StoreReview review = reviewRepository.findById(reviewId)
             .orElseThrow(() -> new CustomException(ErrorCode.REVIEW_NOT_FOUND));
