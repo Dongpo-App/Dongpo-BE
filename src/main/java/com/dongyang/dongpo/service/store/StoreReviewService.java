@@ -103,7 +103,9 @@ public class StoreReviewService {
         StoreReview review = reviewRepository.findById(reviewId)
             .orElseThrow(() -> new CustomException(ErrorCode.REVIEW_NOT_FOUND));
 
-        if (!review.getMember().equals(member))
+        Member reviewMember = review.getMember();
+
+        if (!reviewMember.getId().equals(member.getId()))
             throw new CustomException(ErrorCode.UNAUTHORIZED);
 
         review.delete();
