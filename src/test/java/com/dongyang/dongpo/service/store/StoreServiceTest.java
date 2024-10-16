@@ -20,6 +20,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Optional;
@@ -162,5 +163,49 @@ class StoreServiceTest {
         // then
         assertThat(count).isEqualTo(2L);
         verify(storeRepository).countByMember(member);
+    }
+
+    @Test
+    @DisplayName("연령대별_추천_점포_조회")
+    void testRecommendStoreByAge() {
+        // given
+        Member member = mock(Member.class);
+        when(member.getAgeGroup()).thenReturn("20-29");
+
+        Store store1 = mock(Store.class);
+        Store store2 = mock(Store.class);
+        Store store3 = mock(Store.class);
+
+        when(storeRepository.findStoresByMemberAgeWithMostVisits(eq("20-29"), any(Pageable.class)))
+            .thenReturn(List.of(store1, store2, store3));
+
+        // when
+        List<StoreDto> result = storeService.recommendStoreByAge(member);
+
+        // then
+        assertThat(result).hasSize(3);
+        verify(storeRepository, times(1)).findStoresByMemberAgeWithMostVisits(eq("20-29"), any(Pageable.class));
+    }
+
+    @Test
+    @DisplayName("성별_추천_점포_조회")
+    void testRecommendStoreByGender() {
+        // given
+        Member member = mock(Member.class);
+        when(member.getGender()).thenReturn(Member.Gender.GEN_MALE);
+
+        Store store1 = mock(Store.class);
+        Store store2 = mock(Store.class);
+        Store store3 = mock(Store.class);
+
+        when(storeRepository.findStoresByMemberGenderWithMostVisits(eq(Member.Gender.GEN_MALE), any(Pageable.class)))
+            .thenReturn(List.of(store1, store2, store3));
+
+        // when
+        List<StoreDto> result = storeService.recommendStoreByGender(member);
+
+        // then
+        assertThat(result).hasSize(3);
+        verify(storeRepository, times(1)).findStoresByMemberGenderWithMostVisits(eq(Member.Gender.GEN_MALE), any(Pageable.class));
     }
 }
