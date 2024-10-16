@@ -110,7 +110,7 @@ class TokenServiceTest {
 
     @Test
     @DisplayName("소셜 로그인 - 이미 존재하는 회원일 경우 토큰 발급")
-    void social_AlreadyExistMemberTest() {
+    void createTokenForLoginMember() {
         JwtToken mockJwtToken = mock(JwtToken.class);
 
         when(member.getEmail()).thenReturn("test@test.com");
@@ -122,7 +122,7 @@ class TokenServiceTest {
         when(mockJwtToken.getAccessToken()).thenReturn("mockAccessToken");
         when(mockJwtToken.getRefreshToken()).thenReturn("mockRefreshToken");
 
-        JwtToken resultToken = tokenService.social_AlreadyExistMember(member);
+        JwtToken resultToken = tokenService.createTokenForLoginMember(member);
 
         assertNotNull(resultToken);
         assertEquals("mockAccessToken", resultToken.getAccessToken());

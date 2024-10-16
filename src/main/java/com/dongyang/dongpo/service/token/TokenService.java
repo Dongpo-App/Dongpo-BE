@@ -41,7 +41,7 @@ public class TokenService {
     }
 
     @Transactional
-    public JwtToken social_AlreadyExistMember(Member member){
+    public JwtToken createTokenForLoginMember(Member member){
         JwtToken jwtToken = jwtTokenProvider.createToken(member.getEmail(), member.getRole());
         RefreshToken refreshToken = refreshTokenRepository.findByEmail(member.getEmail()).orElse(null);
 
@@ -54,7 +54,7 @@ public class TokenService {
                     .build();
 
         refreshTokenRepository.save(refreshToken);
-        log.info("(Login) Refresh Token Reissued : {}", member.getEmail());
+        log.info("Member Login : {}", member.getEmail());
         return jwtToken;
     }
 }
