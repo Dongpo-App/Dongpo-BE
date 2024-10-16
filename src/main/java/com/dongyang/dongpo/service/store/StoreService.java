@@ -226,7 +226,7 @@ public class StoreService {
         List<Store> stores = storeRepository.findStoresByMemberAgeWithMostVisits(member.getAgeGroup(), pageable);
 
         return stores.stream()
-            .map(Store::toResponse)
+            .map(Store::toResponseFromRecommend)
             .toList();
     }
 
@@ -235,7 +235,7 @@ public class StoreService {
         List<Store> stores = storeRepository.findStoresByMemberGenderWithMostVisits(member.getGender(), pageable);
 
         return stores.stream()
-            .map(Store::toResponse)
+            .map(Store::toResponseFromRecommend)
             .toList();
     }
 }

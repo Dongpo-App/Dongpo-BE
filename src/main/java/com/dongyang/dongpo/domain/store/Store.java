@@ -83,6 +83,32 @@ public class Store {
         CASH, CARD, TRANSFER
     }
 
+    public StoreDto toResponseFromRecommend(){
+        List<ReviewDto> reviewDtos = this.reviews.stream()
+            .filter(review -> review.getStatus().equals(StoreReview.ReviewStatus.VISIBLE))
+            .map(StoreReview::toResponse)
+            .toList();
+
+        List<Store.PayMethod> payMethodValues = this.storePayMethods.stream()
+            .map(StorePayMethod::getPayMethod)
+            .toList();
+
+        return StoreDto.builder()
+                .id(id)
+                .name(name)
+                .address(address)
+                .latitude(latitude)
+                .payMethods(payMethodValues)
+                .reviews(reviewDtos)
+                .longitude(longitude)
+                .reportCount(reportCount)
+                .memberId(member.getId())
+                .openTime(openTime)
+                .closeTime(closeTime)
+                .isToiletValid(isToiletValid)
+                .status(status)
+                .build();
+    }
 
     public StoreDto toResponse() {
         List<Store.OperatingDay> operatingDayValues = this.storeOperatingDays.stream()

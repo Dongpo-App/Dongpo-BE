@@ -32,7 +32,8 @@ public interface StoreRepository extends JpaRepository<Store, Long> {
         "FROM StoreVisitCert svc " +
         "JOIN svc.member m " +
         "JOIN svc.store s " +
-        "WHERE m.ageGroup = :ageGroup " +
+        "WHERE s.status = Store.StoreStatus.ACTIVE " +
+        "AND m.ageGroup = :ageGroup " +
         "GROUP BY s.id, m.ageGroup " +
         "ORDER BY COUNT(svc) DESC")
     List<Store> findStoresByMemberAgeWithMostVisits(@Param("ageGroup") String ageGroup, Pageable pageable);
@@ -41,7 +42,8 @@ public interface StoreRepository extends JpaRepository<Store, Long> {
         "FROM StoreVisitCert svc " +
         "JOIN svc.member m " +
         "JOIN svc.store s " +
-        "WHERE m.gender = :gender " +
+        "WHERE s.status = Store.StoreStatus.ACTIVE " +
+        "AND m.gender = :gender " +
         "GROUP BY s.id, m.gender " +
         "ORDER BY COUNT(svc) DESC")
     List<Store> findStoresByMemberGenderWithMostVisits(@Param("gender") Member.Gender gender, Pageable pageable);
