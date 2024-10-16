@@ -75,7 +75,7 @@ public class StoreController {
         return ResponseEntity.ok(new ApiResponse<>(storeService.recommendStoreByAge(member)));
     }
 
-    @GetMapping("/recommend/sex")
+    @GetMapping("/recommend/gender")
     @Operation(summary = "성별 추천 점포 조회")
     public ResponseEntity<ApiResponse<List<StoreDto>>> recommendStoreBySex(@AuthenticationPrincipal Member member) {
         return ResponseEntity.ok(new ApiResponse<>(storeService.recommendStoreByGender(member)));
