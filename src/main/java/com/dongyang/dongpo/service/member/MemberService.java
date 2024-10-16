@@ -76,6 +76,10 @@ public class MemberService {
         return memberRepository.findById(id).orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
     }
 
+    public Member findByEmail(String email) {
+        return memberRepository.findByEmail(email).orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+    }
+
     public MyPageDto getMemberInfoIndex(Member member) {
         List<MemberTitle> memberTitles = memberTitleRepository.findByMember(member);
         Long storeRegisterCount = storeService.getMyRegisteredStoreCount(member);

@@ -1,6 +1,7 @@
 package com.dongyang.dongpo.controller.auth;
 
 import com.dongyang.dongpo.apiresponse.ApiResponse;
+import com.dongyang.dongpo.dto.auth.AppleLoginDto;
 import com.dongyang.dongpo.dto.auth.JwtToken;
 import com.dongyang.dongpo.dto.auth.JwtTokenReissueDto;
 import com.dongyang.dongpo.dto.auth.SocialTokenDto;
@@ -37,8 +38,8 @@ public class AuthController {
     }
 
     @PostMapping("/apple")
-    public ResponseEntity<ApiResponse<JwtToken>> apple(@RequestBody SocialTokenDto token) {
-        return ResponseEntity.ok(new ApiResponse<>(appleLoginService.getAppleUserInfo(token.getToken())));
+    public ResponseEntity<ApiResponse<JwtToken>> apple(@RequestBody AppleLoginDto appleLoginDto) {
+        return ResponseEntity.ok(new ApiResponse<>(appleLoginService.getAppleUserInfo(appleLoginDto)));
     }
 
     @PostMapping("/reissue")
