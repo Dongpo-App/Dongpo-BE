@@ -21,6 +21,8 @@ import com.dongyang.dongpo.service.title.TitleService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -217,5 +219,23 @@ public class StoreService {
                 .orElseThrow(() -> new CustomException(ErrorCode.STORE_NOT_FOUND));
 
         return store.toResponse();
+    }
+
+    public List<StoreDto> recommendStoreByAge(Member member) {
+        Pageable pageable = PageRequest.of(0, 3);
+        List<Store> stores = storeRepository.findStoresByMemberAgeWithMostVisits(member.getAgeGroup(), pageable);
+
+        return stores.stream()
+            .map(Store::toResponse)
+            .toList();
+    }
+
+    public List<StoreDto> recommendStoreByGender(Member member) {
+        Pageable pageable = PageRequest.of(0, 3);
+        List<Store> stores = storeRepository.findStoresByMemberGenderWithMostVisits(member.getGender(), pageable);
+
+        return stores.stream()
+            .map(Store::toResponse)
+            .toList();
     }
 }
