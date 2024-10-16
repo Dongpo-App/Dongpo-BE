@@ -160,4 +160,43 @@ public class AppleLoginService {
             appleRefreshTokenRepository.save(newToken);
         }
     }
+
+    // 애플 로그인 사용자 탈퇴 메소드
+    @Transactional
+    public void revokeToken(Member member) {
+        AppleRefreshToken refresh = appleRefreshTokenRepository.findByMember(member)
+                .orElseThrow(() -> new CustomException(ErrorCode.MALFORMED_TOKEN));
+
+        MultiValueMap<String, String> revokeTokenBody = getRevokeTokenBody(refresh.getRefreshToken());
+
+        WebClient webClient = WebClient.builder()
+                .baseUrl(appleAuthUrl)
+                .build();
+
+        // RefreshToken revoke 요청
+        webClient.post()
+                .uri("/auth/revoke")
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                .body(BodyInserters.fromFormData(revokeTokenBody))
+                .retrieve()
+                .bodyToMono(Void.class)
+                .block();
+
+        // DB 속 해당 사용자의 RefreshToken 삭제
+        appleRefreshTokenRepository.deleteByMember(member);
+
+        // 사용자 상태를 탈퇴로 변경
+        memberService.findByEmail(member.getEmail()).setMemberStatusLeave();
+
+        log.info("Member {} Account has been successfully revoked.", member.getEmail());
+    }
+
+    public MultiValueMap<String, String> getRevokeTokenBody(String refreshToken) {
+        MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
+        body.add("client_id", appleClientId);
+        body.add("client_secret", appleKeyGenerator.generateClientSecret());
+        body.add("token", refreshToken);
+        body.add("token_type_hint", "refresh_token");
+        return body;
+    }
 }

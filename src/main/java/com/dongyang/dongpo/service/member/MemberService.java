@@ -45,9 +45,18 @@ public class MemberService {
     public JwtToken socialSave(UserInfo userInfo){
         Member member = Member.toEntity(userInfo);
 
-        // 이미 가입된 회원인 경우 로그인 처리
-        if (memberRepository.existsBySocialId(member.getSocialId()))
-            return tokenService.createTokenForLoginMember(member);
+        // 이미 가입된 회원인 경우
+        if (memberRepository.existsBySocialId(member.getSocialId())) {
+            Member existingMember = memberRepository.findBySocialId(member.getSocialId())
+                    .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+
+            // 탈퇴한 회원인 경우
+            if (existingMember.getStatus() == Member.Status.LEAVE)
+                throw new CustomException(ErrorCode.MEMBER_ALREADY_LEFT);
+
+            // 로그인 처리
+            return tokenService.createTokenForLoginMember(existingMember);
+        }
 
         memberRepository.save(member);
         memberTitleRepository.save(MemberTitle.builder()

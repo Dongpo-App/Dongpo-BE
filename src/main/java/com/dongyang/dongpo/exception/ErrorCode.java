@@ -23,6 +23,7 @@ public enum ErrorCode {
 	REPORT_REASON_TEXT_REQUIRED(400, "기타 사유는 사유를 작성해야 합니다."),
 
     UNAUTHORIZED(403, "권한이 없습니다."),
+    MEMBER_ALREADY_LEFT(403, "탈퇴한 회원입니다."),
     ;
 
     private final int code;
