@@ -188,9 +188,6 @@ public class AppleLoginService {
         // 사용자 상태를 탈퇴로 변경
         memberService.findByEmail(member.getEmail()).setMemberStatusLeave();
 
-//        // 사용자 상태를 탈퇴로 변경
-//        member.setMemberStatusLeave();
-
         log.info("Member {} Account has been successfully revoked.", member.getEmail());
     }
 
