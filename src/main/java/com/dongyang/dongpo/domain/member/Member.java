@@ -80,6 +80,11 @@ public class Member implements UserDetails {
         this.mainTitle = newMainTitle;
     }
 
+    public void setMemberStatusLeave() {
+        this.status = Status.LEAVE;
+        this.leaveDate = LocalDateTime.now();
+    }
+
     public static Member toEntity(UserInfo userInfo){
         return Member.builder()
                 .email(userInfo.getEmail())
