@@ -83,6 +83,16 @@ public class Store {
         CASH, CARD, TRANSFER
     }
 
+    public StoreDto toResponseFromRecommend(){
+        return StoreDto.builder()
+                .id(id)
+                .name(name)
+                .address(address)
+                .memberId(member.getId())
+                .openTime(openTime)
+                .closeTime(closeTime)
+                .build();
+    }
 
     public StoreDto toResponse() {
         List<Store.OperatingDay> operatingDayValues = this.storeOperatingDays.stream()

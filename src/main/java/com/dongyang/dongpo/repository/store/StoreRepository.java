@@ -27,4 +27,24 @@ public interface StoreRepository extends JpaRepository<Store, Long> {
     List<Object[]> findTop10MembersByStoreCount(Pageable pageable);
 
     Long countByMember(Member member);
+
+    @Query("SELECT s " +
+        "FROM StoreVisitCert svc " +
+        "JOIN svc.member m " +
+        "JOIN svc.store s " +
+        "WHERE s.status = Store.StoreStatus.ACTIVE " +
+        "AND m.ageGroup = :ageGroup " +
+        "GROUP BY s.id, m.ageGroup " +
+        "ORDER BY COUNT(svc) DESC")
+    List<Store> findStoresByMemberAgeWithMostVisits(@Param("ageGroup") String ageGroup, Pageable pageable);
+
+    @Query("SELECT s " +
+        "FROM StoreVisitCert svc " +
+        "JOIN svc.member m " +
+        "JOIN svc.store s " +
+        "WHERE s.status = Store.StoreStatus.ACTIVE " +
+        "AND m.gender = :gender " +
+        "GROUP BY s.id, m.gender " +
+        "ORDER BY COUNT(svc) DESC")
+    List<Store> findStoresByMemberGenderWithMostVisits(@Param("gender") Member.Gender gender, Pageable pageable);
 }
