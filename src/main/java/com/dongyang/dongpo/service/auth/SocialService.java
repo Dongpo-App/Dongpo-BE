@@ -76,6 +76,8 @@ public class SocialService {
             String email = kakaoAccount.getString("email");
             String id = String.valueOf(jsonObject.getLong("id"));
             String age = kakaoAccount.getString("age_range");
+            String birthyear = kakaoAccount.getString("birthyear");
+            String birthday = kakaoAccount.getString("birthday").substring(0, 2) + "-" + kakaoAccount.getString("birthday").substring(2, 4);
             String name = kakaoAccount.getString("name");
             String nickname = profile.getString("nickname");
             Member.Gender gender;
@@ -94,6 +96,8 @@ public class SocialService {
                     .name(name)
                     .nickname(nickname)
                     .age(age)
+                    .birthyear(birthyear)
+                    .birthday(birthday)
                     .gender(gender)
                     .provider(SocialType.KAKAO)
                     .build());
@@ -124,6 +128,8 @@ public class SocialService {
 
             String email = response.getString("email");
             String age = response.getString("age");
+            String birthyear = response.getString("birthyear");
+            String birthday = response.getString("birthday");
             String id = response.getString("id");
             String name = response.getString("name");
             String nickname = response.getString("nickname");
@@ -143,6 +149,8 @@ public class SocialService {
                     .nickname(nickname)
                     .gender(gender)
                     .age(age)
+                    .birthyear(birthyear)
+                    .birthday(birthday)
                     .provider(SocialType.NAVER)
                     .build());
         } catch (WebClientResponseException e) {

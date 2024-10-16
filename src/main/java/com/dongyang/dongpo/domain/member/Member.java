@@ -48,6 +48,10 @@ public class Member implements UserDetails {
 
     private String ageGroup;
 
+    private String birthyear;
+
+    private String birthday;
+
     @Column(columnDefinition = "VARCHAR(255)")
     @Enumerated(EnumType.STRING)
     private SocialType socialType;
@@ -82,6 +86,8 @@ public class Member implements UserDetails {
                 .name(userInfo.getName())
                 .nickname(userInfo.getNickname())
                 .ageGroup(userInfo.getAge())
+                .birthyear(userInfo.getBirthyear())
+                .birthday(userInfo.getBirthday())
                 .gender(userInfo.getGender())
                 .socialId(userInfo.getId())
                 .socialType(userInfo.getProvider())
