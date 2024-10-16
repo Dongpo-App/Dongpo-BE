@@ -1,51 +1,57 @@
 package com.dongyang.dongpo.service.auth;
 
+import com.dongyang.dongpo.domain.auth.AppleRefreshToken;
 import com.dongyang.dongpo.domain.member.Member;
+import com.dongyang.dongpo.dto.auth.AppleLoginDto;
+import com.dongyang.dongpo.dto.auth.AppleRefreshTokenDto;
 import com.dongyang.dongpo.dto.auth.JwtToken;
 import com.dongyang.dongpo.dto.auth.UserInfo;
 import com.dongyang.dongpo.exception.CustomException;
 import com.dongyang.dongpo.exception.ErrorCode;
+import com.dongyang.dongpo.repository.auth.AppleRefreshTokenRepository;
 import com.dongyang.dongpo.service.member.MemberService;
+import com.dongyang.dongpo.util.auth.AppleKeyGenerator;
+import com.dongyang.dongpo.util.auth.ApplePublicKeyGenerator;
 import com.dongyang.dongpo.util.auth.ApplePublicKeyResponse;
 import com.dongyang.dongpo.util.auth.AppleTokenParser;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 
 import java.security.PublicKey;
 import java.util.Date;
 import java.util.Map;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class AppleLoginService {
 
     private final AppleTokenParser appleTokenParser;
+    private final AppleKeyGenerator appleKeyGenerator;
     private final ApplePublicKeyGenerator applePublicKeyGenerator;
+    private final AppleRefreshTokenRepository appleRefreshTokenRepository;
     private final MemberService memberService;
-
-    @Value("${apple.team.id}")
-    private String appleTeamId;
-
-    @Value("${apple.login.key}")
-    private String appleLoginKey;
 
     @Value("${apple.client.id}")
     private String appleClientId;
 
-    @Value("${apple.redirect.uri}")
-    private String appleRedirectUri;
-
-    @Value("${apple.key.path}")
-    private String appleKeyPath;
-
     private final static String appleAuthUrl = "https://appleid.apple.com";
 
-    public JwtToken getAppleUserInfo(String identityToken) {
+    @Transactional
+    public JwtToken getAppleUserInfo(AppleLoginDto appleLoginDto) {
         // identityToken 파싱 작업 수행
-        Map<String, String> header = appleTokenParser.parseHeader(identityToken);
+        Map<String, String> header = appleTokenParser.parseHeader(appleLoginDto.getIdentityToken());
 
         // Apple 인증 서버로부터 공개 키 불러옴
         ApplePublicKeyResponse publicKeys = getApplePublicKeys();
@@ -54,9 +60,11 @@ public class AppleLoginService {
         PublicKey publicKey = applePublicKeyGenerator.generate(header, publicKeys);
 
         // identityToken 검증 작업 수행 및 클레임 추출
-        Claims claims = validateIdentityToken(identityToken, publicKey);
+        Claims claims = validateIdentityToken(appleLoginDto.getIdentityToken(), publicKey);
 
-        return memberService.socialSave(UserInfo.builder()
+        String appleRefreshToken = getAppleRefreshToken(appleLoginDto.getAuthorizationCode());
+
+        JwtToken jwtToken = memberService.socialSave(UserInfo.builder()
                 .id(claims.get("sub", String.class))
                 .email(claims.get("email", String.class))
                 .name("TEMP_NAME") // 임시
@@ -65,6 +73,12 @@ public class AppleLoginService {
                 .gender(Member.Gender.GEN_MALE) // 임시
                 .provider(Member.SocialType.APPLE)
                 .build());
+
+        Member claimingMember = memberService.findByEmail(claims.get("email", String.class));
+
+        saveOrUpdateRefreshToken(claimingMember, appleRefreshToken);
+
+        return jwtToken;
     }
 
     private Claims validateIdentityToken(String identityToken, PublicKey publicKey) {
@@ -96,5 +110,54 @@ public class AppleLoginService {
                 .retrieve()
                 .bodyToMono(ApplePublicKeyResponse.class)
                 .block();
+    }
+
+    // Apple 인증 서버에 RefreshToken 요청
+    private String getAppleRefreshToken(String authorizationCode) {
+        MultiValueMap<String, String> body = getCreateTokenBody(authorizationCode);
+
+        WebClient webClient = WebClient.builder()
+                .baseUrl(appleAuthUrl)
+                .build();
+
+        try {
+            AppleRefreshTokenDto appleTokenResponse = webClient.post()
+                    .uri("/auth/token")
+                    .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                    .body(BodyInserters.fromFormData(body))
+                    .retrieve()
+                    .bodyToMono(AppleRefreshTokenDto.class)
+                    .block();
+
+            return Objects.requireNonNull(appleTokenResponse).getRefresh_token();
+        } catch (WebClientResponseException e) {
+            throw new CustomException(ErrorCode.SOCIAL_TOKEN_NOT_VALID);
+
+        }
+    }
+
+    private MultiValueMap<String, String> getCreateTokenBody(String authorizationCode) {
+        MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
+        body.add("code", authorizationCode);
+        body.add("client_id", appleClientId);
+        body.add("client_secret", appleKeyGenerator.generateClientSecret());
+        body.add("grant_type", "authorization_code");
+        return body;
+    }
+
+    @Transactional
+    public void saveOrUpdateRefreshToken(Member member, String newRefreshToken) {
+        AppleRefreshToken existingToken = appleRefreshTokenRepository.findByMember(member).orElse(null);
+
+        // 이미 해당 사용자에 대한 RefreshToken이 존재하는 경우 업데이트
+        if (existingToken != null) {
+            existingToken.updateRefreshToken(newRefreshToken);
+        } else { // 혹은 새로운 RefreshToken 저장
+            AppleRefreshToken newToken = AppleRefreshToken.builder()
+                    .member(member)
+                    .refreshToken(newRefreshToken)
+                    .build();
+            appleRefreshTokenRepository.save(newToken);
+        }
     }
 }

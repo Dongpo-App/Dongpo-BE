@@ -1,9 +1,8 @@
-package com.dongyang.dongpo.service.auth;
+package com.dongyang.dongpo.util.auth;
 
 import com.dongyang.dongpo.dto.auth.ApplePublicKeyDto;
 import com.dongyang.dongpo.exception.CustomException;
 import com.dongyang.dongpo.exception.ErrorCode;
-import com.dongyang.dongpo.util.auth.ApplePublicKeyResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
