@@ -32,7 +32,7 @@ public interface StoreRepository extends JpaRepository<Store, Long> {
         "FROM StoreVisitCert svc " +
         "JOIN svc.member m " +
         "JOIN svc.store s " +
-        "WHERE s.status = Store.StoreStatus.ACTIVE " +
+        "WHERE s.status = 'ACTIVE' " +
         "AND m.ageGroup = :ageGroup " +
         "GROUP BY s.id, m.ageGroup " +
         "ORDER BY COUNT(svc) DESC")
@@ -42,7 +42,7 @@ public interface StoreRepository extends JpaRepository<Store, Long> {
         "FROM StoreVisitCert svc " +
         "JOIN svc.member m " +
         "JOIN svc.store s " +
-        "WHERE s.status = Store.StoreStatus.ACTIVE " +
+        "WHERE s.status = 'ACTIVE' " +
         "AND m.gender = :gender " +
         "GROUP BY s.id, m.gender " +
         "ORDER BY COUNT(svc) DESC")
