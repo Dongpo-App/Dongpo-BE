@@ -151,7 +151,6 @@ public class AppleLoginService {
 
         // 이미 해당 사용자에 대한 RefreshToken이 존재하는 경우 업데이트
         if (existingToken != null) {
-            System.out.println("AppleRefreshToken.updateRefreshToken <<");
             existingToken.updateRefreshToken(newRefreshToken);
         } else { // 혹은 새로운 RefreshToken 저장
             AppleRefreshToken newToken = AppleRefreshToken.builder()

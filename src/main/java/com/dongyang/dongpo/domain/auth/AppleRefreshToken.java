@@ -29,7 +29,6 @@ public class AppleRefreshToken {
     private LocalDateTime updateDate = LocalDateTime.now();
 
     public void updateRefreshToken(String newRefreshToken) {
-        System.out.println("AppleRefreshToken.updateRefreshToken <<");
         this.refreshToken = newRefreshToken;
         this.updateDate = LocalDateTime.now();
     }
