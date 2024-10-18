@@ -24,6 +24,8 @@ public enum ErrorCode {
 
     UNAUTHORIZED(403, "권한이 없습니다."),
     MEMBER_ALREADY_LEFT(403, "탈퇴한 회원입니다."),
+
+    MEMBER_EMAIL_DUPLICATED(409, "이미 사용중인 이메일입니다."),
     ;
 
     private final int code;

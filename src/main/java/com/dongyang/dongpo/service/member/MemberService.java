@@ -58,6 +58,10 @@ public class MemberService {
             return tokenService.createTokenForLoginMember(existingMember);
         }
 
+        // 신규 가입 회원의 이메일이 중복될 경우 예외 발생
+        if (memberRepository.existsByEmail(member.getEmail()))
+            throw new CustomException(ErrorCode.MEMBER_EMAIL_DUPLICATED);
+
         memberRepository.save(member);
         memberTitleRepository.save(MemberTitle.builder()
                 .member(member)
@@ -73,7 +77,7 @@ public class MemberService {
 
         refreshTokenRepository.save(refreshToken);
 
-        log.info("Registered Member {} success", member.getId());
+        log.info("Registered Member {} successfully / id: {}", member.getEmail(), member.getId());
         return jwtToken;
     }
 
