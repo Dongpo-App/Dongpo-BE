@@ -3,6 +3,7 @@ package com.dongyang.dongpo.util.auth;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.asn1.pkcs.PrivateKeyInfo;
 import org.bouncycastle.openssl.PEMParser;
 import org.bouncycastle.openssl.jcajce.JcaPEMKeyConverter;
@@ -19,6 +20,7 @@ import java.util.Date;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class AppleKeyGenerator {
 
     @Value("${apple.team.id}")
@@ -60,8 +62,7 @@ public class AppleKeyGenerator {
             PrivateKeyInfo object = (PrivateKeyInfo)pemParser.readObject();
             return converter.getPrivateKey(object);
         } catch (IOException e) {
-            throw new RuntimeException("Failed to read key: " + appleKeyContent, e);
-        } catch (Exception e) {
+            log.error("Error loading Private Key: {}", appleKeyContent);
             throw new RuntimeException("Failed to load private key", e);
         }
     }
