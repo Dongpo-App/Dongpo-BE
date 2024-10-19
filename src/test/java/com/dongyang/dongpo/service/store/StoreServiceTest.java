@@ -5,6 +5,7 @@ import com.dongyang.dongpo.domain.store.Store;
 import com.dongyang.dongpo.domain.store.StoreOperatingDay;
 import com.dongyang.dongpo.domain.store.StorePayMethod;
 import com.dongyang.dongpo.dto.store.OpenPossibility;
+import com.dongyang.dongpo.dto.store.RecommendResponse;
 import com.dongyang.dongpo.dto.store.StoreDto;
 import com.dongyang.dongpo.dto.store.StoreIndexDto;
 import com.dongyang.dongpo.dto.store.StoreRegisterDto;
@@ -180,7 +181,7 @@ class StoreServiceTest {
             .thenReturn(List.of(store1, store2, store3));
 
         // when
-        List<StoreDto> result = storeService.recommendStoreByAge(member);
+        List<RecommendResponse> result = storeService.recommendStoreByAge(member);
 
         // then
         assertThat(result).hasSize(3);
@@ -202,7 +203,7 @@ class StoreServiceTest {
             .thenReturn(List.of(store1, store2, store3));
 
         // when
-        List<StoreDto> result = storeService.recommendStoreByGender(member);
+        List<RecommendResponse> result = storeService.recommendStoreByGender(member);
 
         // then
         assertThat(result).hasSize(3);

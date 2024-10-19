@@ -1,5 +1,7 @@
 package com.dongyang.dongpo.service.store;
 
+import static java.util.stream.Collectors.*;
+
 import com.dongyang.dongpo.domain.member.Member;
 import com.dongyang.dongpo.domain.member.Title;
 import com.dongyang.dongpo.domain.store.Store;
@@ -101,7 +103,7 @@ public class StoreService {
 
                     return store.toIndexResponse(isBookmarked, openPossibilityService.getOpenPossibility(store));
                 })
-                .collect(Collectors.toList());
+                .collect(toList());
     }
 
     public StoreIndexDto getStoreSummary(Long id, Member member) {
@@ -221,21 +223,21 @@ public class StoreService {
         return store.toResponse();
     }
 
-    public List<StoreDto> recommendStoreByAge(Member member) {
+    public List<RecommendResponse> recommendStoreByAge(Member member) {
         Pageable pageable = PageRequest.of(0, 3);
         List<Store> stores = storeRepository.findStoresByMemberAgeWithMostVisits(member.getAgeGroup(), pageable);
 
         return stores.stream()
-            .map(Store::toResponseFromRecommend)
+            .map(store -> RecommendResponse.fromAge(store, member.getAgeGroup()))
             .toList();
     }
 
-    public List<StoreDto> recommendStoreByGender(Member member) {
+    public List<RecommendResponse> recommendStoreByGender(Member member) {
         Pageable pageable = PageRequest.of(0, 3);
         List<Store> stores = storeRepository.findStoresByMemberGenderWithMostVisits(member.getGender(), pageable);
 
         return stores.stream()
-            .map(Store::toResponseFromRecommend)
+            .map(store -> RecommendResponse.fromGender(store, member.getGender()))
             .toList();
     }
 }
