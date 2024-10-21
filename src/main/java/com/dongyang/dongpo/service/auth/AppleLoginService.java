@@ -67,9 +67,9 @@ public class AppleLoginService {
         JwtToken jwtToken = memberService.socialSave(UserInfo.builder()
                 .id(claims.get("sub", String.class))
                 .email(claims.get("email", String.class))
-                .name("TEMP_NAME") // 임시
                 .nickname("TEMP_NICKNAME") // 임시
-                .age("20~29") // 임시
+                .birthyear("2000") // 임시
+                .birthday("01-01") // 임시
                 .gender(Member.Gender.GEN_MALE) // 임시
                 .provider(Member.SocialType.APPLE)
                 .build());
