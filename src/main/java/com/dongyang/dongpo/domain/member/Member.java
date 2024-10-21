@@ -25,9 +25,6 @@ public class Member implements UserDetails {
     private String email;
 
     @Column(length = 32)
-    private String name;
-
-    @Column(length = 32)
     private String nickname;
 
     @Column(length = 128)
@@ -45,8 +42,6 @@ public class Member implements UserDetails {
     @Column(columnDefinition = "VARCHAR(255)")
     @Enumerated(EnumType.STRING)
     private Gender gender;
-
-    private String ageGroup;
 
     private String birthyear;
 
@@ -88,9 +83,7 @@ public class Member implements UserDetails {
     public static Member toEntity(UserInfo userInfo){
         return Member.builder()
                 .email(userInfo.getEmail())
-                .name(userInfo.getName())
                 .nickname(userInfo.getNickname())
-                .ageGroup(userInfo.getAge())
                 .birthyear(userInfo.getBirthyear())
                 .birthday(userInfo.getBirthday())
                 .gender(userInfo.getGender())
