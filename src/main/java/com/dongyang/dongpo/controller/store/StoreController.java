@@ -72,13 +72,13 @@ public class StoreController {
     @GetMapping("/recommend/age")
     @Operation(summary = "연령대별 추천 점포 조회")
     public ResponseEntity<ApiResponse<List<RecommendResponse>>> recommendStoreByAge(@AuthenticationPrincipal Member member) {
-        return ResponseEntity.ok(new ApiResponse<>(storeService.recommendStoreByAge(member)));
+        return ResponseEntity.ok(storeService.recommendStoreByAge(member));
     }
 
     @GetMapping("/recommend/gender")
     @Operation(summary = "성별 추천 점포 조회")
     public ResponseEntity<ApiResponse<List<RecommendResponse>>> recommendStoreBySex(@AuthenticationPrincipal Member member) {
-        return ResponseEntity.ok(new ApiResponse<>(storeService.recommendStoreByGender(member)));
+        return ResponseEntity.ok(storeService.recommendStoreByGender(member));
     }
 }
 

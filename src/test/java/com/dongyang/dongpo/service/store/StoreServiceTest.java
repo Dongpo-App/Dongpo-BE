@@ -181,7 +181,7 @@ class StoreServiceTest {
             .thenReturn(List.of(store1, store2, store3));
 
         // when
-        List<RecommendResponse> result = storeService.recommendStoreByAge(member);
+        List<RecommendResponse> result = storeService.recommendStoreByAge(member).getData();
 
         // then
         assertThat(result).hasSize(3);
@@ -203,7 +203,7 @@ class StoreServiceTest {
             .thenReturn(List.of(store1, store2, store3));
 
         // when
-        List<RecommendResponse> result = storeService.recommendStoreByGender(member);
+        List<RecommendResponse> result = storeService.recommendStoreByGender(member).getData();
 
         // then
         assertThat(result).hasSize(3);

@@ -2,6 +2,7 @@ package com.dongyang.dongpo.service.store;
 
 import static java.util.stream.Collectors.*;
 
+import com.dongyang.dongpo.apiresponse.ApiResponse;
 import com.dongyang.dongpo.domain.member.Member;
 import com.dongyang.dongpo.domain.member.Title;
 import com.dongyang.dongpo.domain.store.Store;
@@ -30,7 +31,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -223,21 +223,25 @@ public class StoreService {
         return store.toResponse();
     }
 
-    public List<RecommendResponse> recommendStoreByAge(Member member) {
+    public ApiResponse<List<RecommendResponse>> recommendStoreByAge(Member member) {
         Pageable pageable = PageRequest.of(0, 3);
         List<Store> stores = storeRepository.findStoresByMemberAgeWithMostVisits(member.getAgeGroup(), pageable);
 
-        return stores.stream()
-            .map(store -> RecommendResponse.fromAge(store, member.getAgeGroup()))
+        List<RecommendResponse> list = stores.stream()
+            .map(RecommendResponse::fromAge)
             .toList();
+
+        return new ApiResponse<>(list, member.getAgeGroup().substring(0,2));
     }
 
-    public List<RecommendResponse> recommendStoreByGender(Member member) {
+    public ApiResponse<List<RecommendResponse>> recommendStoreByGender(Member member) {
         Pageable pageable = PageRequest.of(0, 3);
         List<Store> stores = storeRepository.findStoresByMemberGenderWithMostVisits(member.getGender(), pageable);
 
-        return stores.stream()
-            .map(store -> RecommendResponse.fromGender(store, member.getGender()))
+        List<RecommendResponse> list = stores.stream()
+            .map(RecommendResponse::fromGender)
             .toList();
+
+        return new ApiResponse<>(list, member.getGender().toString());
     }
 }
