@@ -19,25 +19,21 @@ public class RecommendResponse {
 
 	private Long id;
 	private String name;
-	private Member.Gender gender;
-	private String ageGroup;
 	private String address;
 
-	public static RecommendResponse fromAge(Store store, String ageGroup) {
+	public static RecommendResponse fromAge(Store store) {
 		return RecommendResponse.builder()
 			.id(store.getId())
 			.name(store.getName())
 			.address(store.getAddress())
-			.ageGroup(ageGroup)
 			.build();
 	}
 
-	public static RecommendResponse fromGender(Store store, Member.Gender gender) {
+	public static RecommendResponse fromGender(Store store) {
 		return RecommendResponse.builder()
 			.id(store.getId())
 			.name(store.getName())
 			.address(store.getAddress())
-			.gender(gender)
 			.build();
 	}
 }

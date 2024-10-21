@@ -33,10 +33,11 @@ public interface StoreRepository extends JpaRepository<Store, Long> {
         "JOIN svc.member m " +
         "JOIN svc.store s " +
         "WHERE s.status = 'ACTIVE' " +
-        "AND m.ageGroup = :ageGroup " +
-        "GROUP BY s.id, m.ageGroup " +
+        "AND (YEAR(CURRENT_DATE) - :birthYear) BETWEEN :ageGroup AND (:ageGroup + 9) " +
+        "GROUP BY s.id " +
         "ORDER BY COUNT(svc) DESC")
-    List<Store> findStoresByMemberAgeWithMostVisits(@Param("ageGroup") String ageGroup, Pageable pageable);
+    List<Store> findStoresByMemberAgeWithMostVisits(@Param("ageGroup") int ageGroup, @Param("birthYear") int birthYear, Pageable pageable);
+
 
     @Query("SELECT s " +
         "FROM StoreVisitCert svc " +

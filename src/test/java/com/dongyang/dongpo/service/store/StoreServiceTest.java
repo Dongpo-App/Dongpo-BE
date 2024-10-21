@@ -171,21 +171,22 @@ class StoreServiceTest {
     void testRecommendStoreByAge() {
         // given
         Member member = mock(Member.class);
-        when(member.getAgeGroup()).thenReturn("20-29");
+        when(member.getBirthyear()).thenReturn("2000");
 
         Store store1 = mock(Store.class);
         Store store2 = mock(Store.class);
         Store store3 = mock(Store.class);
 
-        when(storeRepository.findStoresByMemberAgeWithMostVisits(eq("20-29"), any(Pageable.class)))
+        when(storeRepository.findStoresByMemberAgeWithMostVisits(anyInt(), anyInt(), any(Pageable.class)))
             .thenReturn(List.of(store1, store2, store3));
 
         // when
-        List<RecommendResponse> result = storeService.recommendStoreByAge(member);
+        List<RecommendResponse> result = storeService.recommendStoreByAge(member).getData();
 
         // then
         assertThat(result).hasSize(3);
-        verify(storeRepository, times(1)).findStoresByMemberAgeWithMostVisits(eq("20-29"), any(Pageable.class));
+        verify(storeRepository, times(1)).findStoresByMemberAgeWithMostVisits(anyInt(),
+			anyInt() ,any(Pageable.class));
     }
 
     @Test
@@ -203,7 +204,7 @@ class StoreServiceTest {
             .thenReturn(List.of(store1, store2, store3));
 
         // when
-        List<RecommendResponse> result = storeService.recommendStoreByGender(member);
+        List<RecommendResponse> result = storeService.recommendStoreByGender(member).getData();
 
         // then
         assertThat(result).hasSize(3);
