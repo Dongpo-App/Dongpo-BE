@@ -23,6 +23,8 @@ import com.dongyang.dongpo.service.open.OpenPossibilityService;
 import com.dongyang.dongpo.service.title.TitleService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
+import org.joda.time.LocalDate;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -206,9 +208,7 @@ public class StoreService {
 
     public List<StoreIndexDto> getMyRegisteredStores(Member member) {
         List<StoreIndexDto> storeIndexDtos = new ArrayList<>();
-        storeRepository.findByMember(member).forEach(store -> {
-            storeIndexDtos.add(store.toIndexResponse());
-        });
+        storeRepository.findByMember(member).forEach(store -> storeIndexDtos.add(store.toIndexResponse()));
         return storeIndexDtos;
     }
 
@@ -225,13 +225,15 @@ public class StoreService {
 
     public ApiResponse<List<RecommendResponse>> recommendStoreByAge(Member member) {
         Pageable pageable = PageRequest.of(0, 3);
-        List<Store> stores = storeRepository.findStoresByMemberAgeWithMostVisits(member.getAgeGroup(), pageable);
+        String ageGroup = getAgeGroup(member.getBirthyear());
+        List<Store> stores = storeRepository.findStoresByMemberAgeWithMostVisits(Integer.parseInt(ageGroup),
+			Integer.parseInt(member.getBirthyear()), pageable);
 
         List<RecommendResponse> list = stores.stream()
             .map(RecommendResponse::fromAge)
             .toList();
 
-        return new ApiResponse<>(list, member.getAgeGroup().substring(0,2));
+        return new ApiResponse<>(list, ageGroup);
     }
 
     public ApiResponse<List<RecommendResponse>> recommendStoreByGender(Member member) {
@@ -243,5 +245,15 @@ public class StoreService {
             .toList();
 
         return new ApiResponse<>(list, member.getGender().toString());
+    }
+
+    private String getAgeGroup(String birthyear){
+        int age = LocalDate.now().getYear() - Integer.parseInt(birthyear);
+        if(age < 20) return "10";
+        else if(age < 30) return "20";
+        else if(age < 40) return "30";
+        else if(age < 50) return "40";
+        else if(age < 60) return "50";
+        else return "60";
     }
 }
