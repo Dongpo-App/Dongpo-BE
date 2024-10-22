@@ -39,7 +39,7 @@ public class ApplePublicKeyGenerator {
             KeyFactory keyFactory = KeyFactory.getInstance(applePublicKey.getKty());
             return keyFactory.generatePublic(rsaPublicKeySpec);
         } catch (NoSuchAlgorithmException | InvalidKeySpecException exception) {
-            throw new CustomException(ErrorCode.SOCIAL_TOKEN_NOT_VALID);
+            throw new CustomException(ErrorCode.APPLE_PUBLIC_KEY_GENERATION_FAILED);
         }
     }
 

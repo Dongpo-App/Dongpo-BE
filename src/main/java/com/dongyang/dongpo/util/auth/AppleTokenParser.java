@@ -30,9 +30,9 @@ public class AppleTokenParser {
             final String decodedHeader = new String(Base64.getUrlDecoder().decode(encodedHeader), StandardCharsets.UTF_8);
             return objectMapper.readValue(decodedHeader, Map.class);
         } catch (JsonMappingException e) {
-            throw new CustomException(ErrorCode.UNSUPPORTED_TOKEN);
+            throw new CustomException(ErrorCode.HEADER_PARSING_FAILED);
         } catch (JsonProcessingException e) {
-            throw new CustomException(ErrorCode.MALFORMED_TOKEN);
+            throw new CustomException(ErrorCode.HEADER_PARSING_FAILED);
         }
     }
 
@@ -44,9 +44,9 @@ public class AppleTokenParser {
                     .parseClaimsJws(identityToken)
                     .getBody();
         } catch (IllegalArgumentException e) {
-            throw new CustomException(ErrorCode.MALFORMED_TOKEN);
+            throw new CustomException(ErrorCode.CLAIMS_EXTRACTION_FAILED);
         } catch (JwtException e) {
-            throw new CustomException(ErrorCode.CLAIMS_NOT_FOUND);
+            throw new CustomException(ErrorCode.MALFORMED_TOKEN);
         }
     }
 }
