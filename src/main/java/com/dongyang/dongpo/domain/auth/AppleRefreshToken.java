@@ -19,9 +19,8 @@ public class AppleRefreshToken {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id")
-    private Member member;
+    @Column(unique = true)
+    private String socialId; // 애플 유저 식별자
 
     private String refreshToken;
 

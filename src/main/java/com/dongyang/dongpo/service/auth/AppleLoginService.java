@@ -2,10 +2,7 @@ package com.dongyang.dongpo.service.auth;
 
 import com.dongyang.dongpo.domain.auth.AppleRefreshToken;
 import com.dongyang.dongpo.domain.member.Member;
-import com.dongyang.dongpo.dto.auth.AppleLoginDto;
-import com.dongyang.dongpo.dto.auth.AppleRefreshTokenDto;
-import com.dongyang.dongpo.dto.auth.JwtToken;
-import com.dongyang.dongpo.dto.auth.UserInfo;
+import com.dongyang.dongpo.dto.auth.*;
 import com.dongyang.dongpo.exception.CustomException;
 import com.dongyang.dongpo.exception.ErrorCode;
 import com.dongyang.dongpo.repository.auth.AppleRefreshTokenRepository;
@@ -49,7 +46,7 @@ public class AppleLoginService {
     private final static String appleAuthUrl = "https://appleid.apple.com";
 
     @Transactional
-    public JwtToken getAppleUserInfo(AppleLoginDto appleLoginDto) {
+    public AppleLoginResponse getAppleUserInfo(AppleLoginDto appleLoginDto) {
         // identityToken 파싱 작업 수행
         Map<String, String> header = appleTokenParser.parseHeader(appleLoginDto.getIdentityToken());
 
@@ -62,23 +59,21 @@ public class AppleLoginService {
         // identityToken 검증 작업 수행 및 클레임 추출
         Claims claims = validateIdentityToken(appleLoginDto.getIdentityToken(), publicKey);
 
+        // Apple RefreshToken 요청
         String appleRefreshToken = getAppleRefreshToken(appleLoginDto.getAuthorizationCode());
 
-        JwtToken jwtToken = memberService.socialSave(UserInfo.builder()
-                .id(claims.get("sub", String.class))
-                .email(claims.get("email", String.class))
-                .nickname("TEMP_NICKNAME") // 임시
-                .birthyear("2000") // 임시
-                .birthday("01-01") // 임시
-                .gender(Member.Gender.GEN_MALE) // 임시
-                .provider(Member.SocialType.APPLE)
-                .build());
+        // 로그인 프로세스 수행 ? 이미 가입된 회원일 경우 JWT 토큰 반환 : 초기 가입 회원일 경우 추가 정보 요청
+        AppleLoginResponse appleLoginResponse = memberService.handleAppleLogin(claims);
 
-        Member claimingMember = memberService.findByEmail(claims.get("email", String.class));
+        // Apple RefreshToken 저장
+        saveOrUpdateRefreshToken(claims.get("sub", String.class), appleRefreshToken);
 
-        saveOrUpdateRefreshToken(claimingMember, appleRefreshToken);
+        // JWT 토큰 반환
+        return appleLoginResponse;
+    }
 
-        return jwtToken;
+    public JwtToken continueSignup(AppleSignupContinueDto appleSignupContinueDto) {
+        return memberService.continueAppleSignup(appleSignupContinueDto);
     }
 
     private Claims validateIdentityToken(String identityToken, PublicKey publicKey) {
@@ -87,11 +82,11 @@ public class AppleLoginService {
 
         // iss : 토큰 발행자 검증
         if (!appleAuthUrl.equals(claims.getIssuer()))
-            throw new CustomException(ErrorCode.MALFORMED_TOKEN);
+            throw new CustomException(ErrorCode.TOKEN_ISSUER_MISMATCH);
 
         // aud : 토큰 수신자 검증
         if (!appleClientId.equals(claims.getAudience()))
-            throw new CustomException(ErrorCode.MALFORMED_TOKEN);
+            throw new CustomException(ErrorCode.TOKEN_AUDIENCE_MISMATCH);
 
         // exp : 토큰 만료 여부 검증
         if (claims.getExpiration().before(new Date()))
@@ -121,18 +116,17 @@ public class AppleLoginService {
                 .build();
 
         try {
-            AppleRefreshTokenDto appleTokenResponse = webClient.post()
+            AppleTokenResponseDto appleTokenResponse = webClient.post()
                     .uri("/auth/token")
                     .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                     .body(BodyInserters.fromFormData(body))
                     .retrieve()
-                    .bodyToMono(AppleRefreshTokenDto.class)
+                    .bodyToMono(AppleTokenResponseDto.class)
                     .block();
 
             return Objects.requireNonNull(appleTokenResponse).getRefresh_token();
         } catch (WebClientResponseException e) {
-            throw new CustomException(ErrorCode.SOCIAL_TOKEN_NOT_VALID);
-
+            throw new CustomException(ErrorCode.APPLE_AUTHORIZATION_CODE_EXPIRED);
         }
     }
 
@@ -146,15 +140,15 @@ public class AppleLoginService {
     }
 
     @Transactional
-    public void saveOrUpdateRefreshToken(Member member, String newRefreshToken) {
-        AppleRefreshToken existingToken = appleRefreshTokenRepository.findByMember(member).orElse(null);
+    public void saveOrUpdateRefreshToken(String socialId, String newRefreshToken) {
+        AppleRefreshToken existingToken = appleRefreshTokenRepository.findBySocialId(socialId).orElse(null);
 
         // 이미 해당 사용자에 대한 RefreshToken이 존재하는 경우 업데이트
         if (existingToken != null) {
             existingToken.updateRefreshToken(newRefreshToken);
         } else { // 혹은 새로운 RefreshToken 저장
             AppleRefreshToken newToken = AppleRefreshToken.builder()
-                    .member(member)
+                    .socialId(socialId)
                     .refreshToken(newRefreshToken)
                     .build();
             appleRefreshTokenRepository.save(newToken);
@@ -164,7 +158,7 @@ public class AppleLoginService {
     // 애플 로그인 사용자 탈퇴 메소드
     @Transactional
     public void revokeToken(Member member) {
-        AppleRefreshToken refresh = appleRefreshTokenRepository.findByMember(member)
+        AppleRefreshToken refresh = appleRefreshTokenRepository.findBySocialId(member.getSocialId())
                 .orElseThrow(() -> new CustomException(ErrorCode.MALFORMED_TOKEN));
 
         MultiValueMap<String, String> revokeTokenBody = getRevokeTokenBody(refresh.getRefreshToken());
@@ -183,7 +177,7 @@ public class AppleLoginService {
                 .block();
 
         // DB 속 해당 사용자의 RefreshToken 삭제
-        appleRefreshTokenRepository.deleteByMember(member);
+        appleRefreshTokenRepository.deleteBySocialId(member.getSocialId());
 
         // 사용자 상태를 탈퇴로 변경
         memberService.findByEmail(member.getEmail()).setMemberStatusLeave();

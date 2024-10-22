@@ -2,15 +2,14 @@ package com.dongyang.dongpo.controller.auth;
 
 import com.dongyang.dongpo.apiresponse.ApiResponse;
 import com.dongyang.dongpo.domain.member.Member;
-import com.dongyang.dongpo.dto.auth.AppleLoginDto;
-import com.dongyang.dongpo.dto.auth.JwtToken;
-import com.dongyang.dongpo.dto.auth.JwtTokenReissueDto;
-import com.dongyang.dongpo.dto.auth.SocialTokenDto;
+import com.dongyang.dongpo.dto.auth.*;
+import com.dongyang.dongpo.exception.ErrorCode;
 import com.dongyang.dongpo.service.auth.AppleLoginService;
 import com.dongyang.dongpo.service.auth.SocialService;
 import com.dongyang.dongpo.service.token.TokenService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -40,8 +39,17 @@ public class AuthController {
     }
 
     @PostMapping("/apple")
-    public ResponseEntity<ApiResponse<JwtToken>> apple(@RequestBody AppleLoginDto appleLoginDto) {
-        return ResponseEntity.ok(new ApiResponse<>(appleLoginService.getAppleUserInfo(appleLoginDto)));
+    public ResponseEntity<ApiResponse<?>> apple(@RequestBody AppleLoginDto appleLoginDto) {
+        AppleLoginResponse response = appleLoginService.getAppleUserInfo(appleLoginDto);
+
+        return response.getJwtToken() == null
+                ? ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ApiResponse<>(response.getClaims(), ErrorCode.ADDITIONAL_INFO_REQUIRED_FOR_SIGNUP.toString()))
+                : ResponseEntity.ok(new ApiResponse<>(response.getJwtToken()));
+    }
+
+    @PostMapping("/apple/continue")
+    public ResponseEntity<ApiResponse<JwtToken>> appleSignupContinue(@RequestBody AppleSignupContinueDto appleSignupContinueDto) {
+        return ResponseEntity.ok(new ApiResponse<>(appleLoginService.continueSignup(appleSignupContinueDto)));
     }
 
     @PostMapping("/apple/leave")
