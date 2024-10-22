@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class AppleRefreshTokenDto {
+public class AppleTokenResponseDto {
     private String access_token;
     private String expires_in;
     private String id_token;
