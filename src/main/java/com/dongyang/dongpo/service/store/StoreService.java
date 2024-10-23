@@ -57,7 +57,7 @@ public class StoreService {
     public void addStore(StoreRegisterDto registerDto, Member member) {
         // 사용자의 현재 위치와 점포 등록 위치가 범위 내에 있는지 검증
         if (!locationUtil.verifyStoreRegistration(registerDto))
-            throw new CustomException(ErrorCode.STORE_REGISTRATION_NOT_VALID);
+            throw new CustomException(ErrorCode.DISTANCE_OUT_OF_RANGE);
 
         Store savedStore = storeRepository.save(registerDto.toStore(member));
 
@@ -268,13 +268,15 @@ public class StoreService {
                 .longitude(storeVisitCertDto.getLongitude())
                 .build();
 
-        // 방문 인증 거리 검증 (100m 이내)
-        boolean isValid = locationUtil.calcDistance(newCoordinate, getStoreCoordinates(storeVisitCertDto.getStoreId())) <= 100;
+        // 방문 인증 거리 검증 (100m 초과 시 예외 발생)
+        if (locationUtil.calcDistance(newCoordinate, getStoreCoordinates(storeVisitCertDto.getStoreId())) >= 100)
+            throw new CustomException(ErrorCode.DISTANCE_OUT_OF_RANGE);
+
         Store store = storeRepository.findById(storeVisitCertDto.getStoreId()).orElseThrow(() -> new CustomException(ErrorCode.STORE_NOT_FOUND));
 
         LocalDateTime now = LocalDateTime.now();
         OpenTime openTime = storeUtil.getOpenTime(now);
-        if (isValid && storeVisitCertDto.isVisitSuccessful()){ // 방문 인증 성공
+        if (storeVisitCertDto.isVisitSuccessful()){ // 방문 인증 성공
             storeVisitCertRepository.save(StoreVisitCert.builder()
                     .store(store)
                     .member(member)
