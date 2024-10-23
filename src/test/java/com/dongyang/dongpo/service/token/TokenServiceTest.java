@@ -45,7 +45,7 @@ class TokenServiceTest {
     @DisplayName("토큰 재발급")
     void reissueAccessToken() {
         JwtToken mockJwtToken = mock(JwtToken.class);
-        JwtTokenReissueDto jwtTokenReissueDto = new JwtTokenReissueDto();
+        JwtTokenReissueDto jwtTokenReissueDto = mock(JwtTokenReissueDto.class);
         when(mockJwtToken.getAccessToken()).thenReturn("AccessToken");
         when(mockJwtToken.getRefreshToken()).thenReturn("RefreshToken");
 
@@ -53,7 +53,7 @@ class TokenServiceTest {
         claims.setSubject("test@email");
 
         when(jwtTokenProvider.parseClaims(any())).thenReturn(claims);
-        when(refreshTokenRepository.findByEmail(member.getEmail())).thenReturn(Optional.of(refreshToken));
+        when(refreshTokenRepository.findByRefreshToken(any())).thenReturn(Optional.of(refreshToken));
         when(memberRepository.findByEmail(any())).thenReturn(Optional.of(member));
         when(jwtTokenProvider.createToken(any(), any())).thenReturn(mockJwtToken);
 
@@ -63,7 +63,7 @@ class TokenServiceTest {
         assertNotNull(jwtToken.getAccessToken());
         assertNotNull(jwtToken.getRefreshToken());
 
-        verify(refreshTokenRepository).findByEmail(member.getEmail());
+        verify(refreshTokenRepository).findByRefreshToken(jwtTokenReissueDto.getRefreshToken());
         verify(refreshTokenRepository).save(any(RefreshToken.class));
         verify(jwtTokenProvider).createToken(member.getEmail(), member.getRole());
     }
@@ -76,16 +76,14 @@ class TokenServiceTest {
         claims.setSubject("test@email");
         JwtTokenReissueDto jwtTokenReissueDto = new JwtTokenReissueDto();
 
-        when(jwtTokenProvider.parseClaims(any())).thenReturn(claims);
-
         // Exception
-        when(refreshTokenRepository.findByEmail(member.getEmail())).thenReturn(Optional.empty());
+        when(refreshTokenRepository.findByRefreshToken(any())).thenReturn(Optional.empty());
 
         Exception exception = assertThrows(Exception.class, () -> tokenService.reissueAccessToken(jwtTokenReissueDto));
 
         assertInstanceOf(CustomException.class, exception);
         assertEquals(ErrorCode.EXPIRED_TOKEN.getMessage(), exception.getMessage());
-        verify(refreshTokenRepository).findByEmail(member.getEmail());
+        verify(refreshTokenRepository).findByRefreshToken(jwtTokenReissueDto.getRefreshToken());
     }
 
     @Test
@@ -95,8 +93,8 @@ class TokenServiceTest {
         claims.setSubject("test@email");
         JwtTokenReissueDto jwtTokenReissueDto = new JwtTokenReissueDto();
 
+        when(refreshTokenRepository.findByRefreshToken(any())).thenReturn(Optional.of(refreshToken));
         when(jwtTokenProvider.parseClaims(any())).thenReturn(claims);
-        when(refreshTokenRepository.findByEmail(any())).thenReturn(Optional.of(refreshToken));
 
         // Exception
         when(memberRepository.findByEmail(any())).thenReturn(Optional.empty());
