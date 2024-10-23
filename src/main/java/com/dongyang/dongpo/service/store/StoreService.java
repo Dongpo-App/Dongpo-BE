@@ -17,6 +17,7 @@ import com.dongyang.dongpo.exception.ErrorCode;
 import com.dongyang.dongpo.repository.store.StoreOperatingDayRepository;
 import com.dongyang.dongpo.repository.store.StorePayMethodRepository;
 import com.dongyang.dongpo.repository.store.StoreRepository;
+import com.dongyang.dongpo.repository.store.StoreVisitCertRepository;
 import com.dongyang.dongpo.service.bookmark.BookmarkService;
 import com.dongyang.dongpo.service.location.LocationService;
 import com.dongyang.dongpo.service.open.OpenPossibilityService;
@@ -33,6 +34,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -43,6 +45,7 @@ public class StoreService {
     private final StoreRepository storeRepository;
     private final StorePayMethodRepository storePayMethodRepository;
     private final StoreOperatingDayRepository storeOperatingDayRepository;
+    private final StoreVisitCertRepository visitCertRepository;
     private final LocationService locationService;
     private final TitleService titleService;
     private final OpenPossibilityService openPossibilityService;
@@ -121,8 +124,16 @@ public class StoreService {
         Store store = storeRepository.findById(id)
                 .orElseThrow(() -> new CustomException(ErrorCode.STORE_NOT_FOUND));
 
-        return store.toResponse(openPossibilityService.getOpenPossibility(store),
-                                bookmarkService.isStoreBookmarkedByMember(store, member));
+        List<Member> mostVisitMembers = visitCertRepository.findTopVisitorsByStore(store);
+
+        StoreDto response = store.toResponse(openPossibilityService.getOpenPossibility(store),
+            bookmarkService.isStoreBookmarkedByMember(store, member));
+
+        response.setMostVisitMembers(mostVisitMembers.stream()
+            .map(m -> MostVisitMemberResponse.of(m.getNickname(), m.getMainTitle(), m.getProfilePic()))
+            .toList());
+
+        return response;
     }
 
     @Transactional
