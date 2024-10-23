@@ -127,7 +127,6 @@ class StoreServiceTest {
         when(storeRepository.findById(any())).thenReturn(optionalStore);
         when(openPossibilityService.getOpenPossibility(any())).thenReturn(openPossibility);
         when(bookmarkService.isStoreBookmarkedByMember(any(), any())).thenReturn(true);
-        when(visitCertRepository.findTopVisitorsByStore(any())).thenReturn(List.of());
         when(store.toResponse(any(), anyBoolean())).thenReturn(storeDto);
 
         // when
