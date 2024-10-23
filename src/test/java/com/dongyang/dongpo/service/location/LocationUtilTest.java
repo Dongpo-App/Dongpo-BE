@@ -2,6 +2,7 @@ package com.dongyang.dongpo.service.location;
 
 import com.dongyang.dongpo.dto.store.StoreRegisterDto;
 import com.dongyang.dongpo.repository.store.StoreRepository;
+import com.dongyang.dongpo.util.location.LocationUtil;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -11,10 +12,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(MockitoExtension.class)
-class LocationServiceTest {
+class LocationUtilTest {
 
     @InjectMocks
-    private LocationService locationService;
+    private LocationUtil locationUtil;
 
     @Mock
     private StoreRepository storeRepository;
@@ -48,7 +49,7 @@ class LocationServiceTest {
                 .build();
 
         // when
-        Boolean result = locationService.verifyStoreRegistration(storeDto);
+        Boolean result = locationUtil.verifyStoreRegistration(storeDto);
 
         // then
         assertFalse(result); // 100m 초과
@@ -67,7 +68,7 @@ class LocationServiceTest {
                 .build();
 
         // when
-        Boolean result = locationService.verifyStoreRegistration(storeDto);
+        Boolean result = locationUtil.verifyStoreRegistration(storeDto);
 
         // then
         assertTrue(result); // 100m 이내

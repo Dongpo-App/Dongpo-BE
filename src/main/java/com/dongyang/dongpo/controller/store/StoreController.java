@@ -20,12 +20,6 @@ public class StoreController {
 
     private final StoreService storeService;
 
-//    @GetMapping("")
-//    @Operation(summary = "전체 점포 조회")
-//    public ResponseEntity<ApiResponse<List<StoreDto>>> allStore(){
-//        return ResponseEntity.ok(new ApiResponse<>(storeService.findAll()));
-//    }
-
     @GetMapping("")
     @Operation(summary = "현재 위치 기준 주변 점포 조회")
     public ResponseEntity<ApiResponse<List<StoreIndexDto>>> getStoresByCurrentLocation(@ModelAttribute LatLong latLong,
@@ -71,14 +65,21 @@ public class StoreController {
 
     @GetMapping("/recommend/age")
     @Operation(summary = "연령대별 추천 점포 조회")
-    public ResponseEntity<ApiResponse<List<RecommendResponse>>> recommendStoreByAge(@AuthenticationPrincipal Member member) {
-        return ResponseEntity.ok(storeService.recommendStoreByAge(member));
+    public ResponseEntity<ApiResponse<RecommendResponse>> recommendStoreByAge(@AuthenticationPrincipal Member member) {
+        return ResponseEntity.ok(new ApiResponse<>(storeService.recommendStoreByAge(member)));
     }
 
     @GetMapping("/recommend/gender")
     @Operation(summary = "성별 추천 점포 조회")
-    public ResponseEntity<ApiResponse<List<RecommendResponse>>> recommendStoreBySex(@AuthenticationPrincipal Member member) {
-        return ResponseEntity.ok(storeService.recommendStoreByGender(member));
+    public ResponseEntity<ApiResponse<RecommendResponse>> recommendStoreBySex(@AuthenticationPrincipal Member member) {
+        return ResponseEntity.ok(new ApiResponse<>(storeService.recommendStoreByGender(member)));
+    }
+
+    @PostMapping("/visit-cert")
+    @Operation(summary = "점포 방문 인증")
+    public ResponseEntity<ApiResponse<String>> visitCert(@RequestBody StoreVisitCertDto storeVisitCertDto,
+                                                         @AuthenticationPrincipal Member member) {
+        storeService.visitCert(storeVisitCertDto, member);
+        return ResponseEntity.ok(new ApiResponse<>("success"));
     }
 }
-
