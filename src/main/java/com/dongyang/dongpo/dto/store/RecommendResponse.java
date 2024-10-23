@@ -2,13 +2,13 @@ package com.dongyang.dongpo.dto.store;
 
 import com.dongyang.dongpo.domain.member.Member;
 import com.dongyang.dongpo.domain.store.Store;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import lombok.*;
+
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -16,24 +16,42 @@ import lombok.NoArgsConstructor;
 @Builder
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class RecommendResponse {
+	private String recommendationCategory;
+	private List<RecommendStoresResponse> recommendStores;
 
-	private Long id;
-	private String name;
-	private String address;
+	@Getter
+	@Builder
+	@JsonSerialize
+	@JsonDeserialize
+	public static class RecommendStoresResponse {
+		private Long id;
+		private String name;
+		private String address;
+	}
 
-	public static RecommendResponse fromAge(Store store) {
+	public static RecommendResponse fromAge(List<Store> stores, String ageGroup) {
 		return RecommendResponse.builder()
-			.id(store.getId())
-			.name(store.getName())
-			.address(store.getAddress())
+			.recommendationCategory(ageGroup)
+				.recommendStores(stores.stream()
+					.map(store -> RecommendStoresResponse.builder()
+						.id(store.getId())
+						.name(store.getName())
+						.address(store.getAddress())
+						.build())
+					.toList())
 			.build();
 	}
 
-	public static RecommendResponse fromGender(Store store) {
+	public static RecommendResponse fromGender(List<Store> stores, Member.Gender gender) {
 		return RecommendResponse.builder()
-			.id(store.getId())
-			.name(store.getName())
-			.address(store.getAddress())
+			.recommendationCategory(gender.toString())
+			.recommendStores(stores.stream()
+				.map(store -> RecommendStoresResponse.builder()
+					.id(store.getId())
+					.name(store.getName())
+					.address(store.getAddress())
+					.build())
+				.toList())
 			.build();
 	}
 }

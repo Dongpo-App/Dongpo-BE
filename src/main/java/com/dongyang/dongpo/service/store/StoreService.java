@@ -2,12 +2,9 @@ package com.dongyang.dongpo.service.store;
 
 import static java.util.stream.Collectors.*;
 
-import com.dongyang.dongpo.apiresponse.ApiResponse;
 import com.dongyang.dongpo.domain.member.Member;
 import com.dongyang.dongpo.domain.member.Title;
-import com.dongyang.dongpo.domain.store.Store;
-import com.dongyang.dongpo.domain.store.StoreOperatingDay;
-import com.dongyang.dongpo.domain.store.StorePayMethod;
+import com.dongyang.dongpo.domain.store.*;
 import com.dongyang.dongpo.dto.bookmark.BookmarkDto;
 import com.dongyang.dongpo.dto.location.CoordinateRange;
 import com.dongyang.dongpo.dto.location.LatLong;
@@ -17,20 +14,23 @@ import com.dongyang.dongpo.exception.ErrorCode;
 import com.dongyang.dongpo.repository.store.StoreOperatingDayRepository;
 import com.dongyang.dongpo.repository.store.StorePayMethodRepository;
 import com.dongyang.dongpo.repository.store.StoreRepository;
+import com.dongyang.dongpo.repository.store.StoreVisitCertRepository;
 import com.dongyang.dongpo.service.bookmark.BookmarkService;
-import com.dongyang.dongpo.service.location.LocationService;
 import com.dongyang.dongpo.service.open.OpenPossibilityService;
 import com.dongyang.dongpo.service.title.TitleService;
+import com.dongyang.dongpo.util.location.LocationUtil;
+import com.dongyang.dongpo.util.member.MemberUtil;
+import com.dongyang.dongpo.util.store.StoreUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import org.joda.time.LocalDate;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,19 +41,21 @@ import java.util.List;
 public class StoreService {
 
     private final StoreRepository storeRepository;
+    private final StoreVisitCertRepository storeVisitCertRepository;
     private final StorePayMethodRepository storePayMethodRepository;
     private final StoreOperatingDayRepository storeOperatingDayRepository;
-    private final LocationService locationService;
     private final TitleService titleService;
     private final OpenPossibilityService openPossibilityService;
     private final BookmarkService bookmarkService;
     private final StoreReviewService storeReviewService;
-
+    private final LocationUtil locationUtil;
+    private final StoreUtil storeUtil;
+    private final MemberUtil memberUtil;
 
     @Transactional
     public void addStore(StoreRegisterDto registerDto, Member member) {
         // 사용자의 현재 위치와 점포 등록 위치가 범위 내에 있는지 검증
-        if (!locationService.verifyStoreRegistration(registerDto))
+        if (!locationUtil.verifyStoreRegistration(registerDto))
             throw new CustomException(ErrorCode.STORE_REGISTRATION_NOT_VALID);
 
         Store savedStore = storeRepository.save(registerDto.toStore(member));
@@ -92,7 +94,7 @@ public class StoreService {
     }
 
     public List<StoreIndexDto> findStoresByCurrentLocation(LatLong latLong, Member member) {
-        CoordinateRange coordinateRange = locationService.calcCoordinateRangeByCurrentLocation(latLong);
+        CoordinateRange coordinateRange = locationUtil.calcCoordinateRangeByCurrentLocation(latLong);
 
         List<BookmarkDto> myBookmarks = bookmarkService.getMyBookmarks(member);
 
@@ -223,37 +225,76 @@ public class StoreService {
         return store.toResponse();
     }
 
-    public ApiResponse<List<RecommendResponse>> recommendStoreByAge(Member member) {
+    public RecommendResponse recommendStoreByAge(Member member) {
         Pageable pageable = PageRequest.of(0, 3);
-        String ageGroup = getAgeGroup(member.getBirthyear());
+        String ageGroup = memberUtil.getAgeGroup(member.getBirthyear());
         List<Store> stores = storeRepository.findStoresByMemberAgeWithMostVisits(Integer.parseInt(ageGroup),
 			Integer.parseInt(member.getBirthyear()), pageable);
 
-        List<RecommendResponse> list = stores.stream()
-            .map(RecommendResponse::fromAge)
-            .toList();
-
-        return new ApiResponse<>(list, ageGroup);
+        return RecommendResponse.fromAge(stores, ageGroup);
     }
 
-    public ApiResponse<List<RecommendResponse>> recommendStoreByGender(Member member) {
+    public RecommendResponse recommendStoreByGender(Member member) {
         Pageable pageable = PageRequest.of(0, 3);
         List<Store> stores = storeRepository.findStoresByMemberGenderWithMostVisits(member.getGender(), pageable);
 
-        List<RecommendResponse> list = stores.stream()
-            .map(RecommendResponse::fromGender)
-            .toList();
-
-        return new ApiResponse<>(list, member.getGender().toString());
+        return RecommendResponse.fromGender(stores, member.getGender());
     }
 
-    private String getAgeGroup(String birthyear){
-        int age = LocalDate.now().getYear() - Integer.parseInt(birthyear);
-        if(age < 20) return "10";
-        else if(age < 30) return "20";
-        else if(age < 40) return "30";
-        else if(age < 50) return "40";
-        else if(age < 60) return "50";
-        else return "60";
+    // 비교 대상 점포의 좌표 반환
+    public LatLong getStoreCoordinates(Long storeId) {
+        Store targetStore = storeRepository.findById(storeId)
+                .orElseThrow(() -> new CustomException(ErrorCode.STORE_NOT_FOUND));
+        return LatLong.builder()
+                .latitude(targetStore.getLatitude())
+                .longitude(targetStore.getLongitude())
+                .build();
+    }
+
+    // 신규 좌표가 기존 좌표의 오차범위 내에 위치하는지 검증 (방문 인증 검증)
+    @Transactional
+    public void visitCert(StoreVisitCertDto storeVisitCertDto, Member member) {
+        LatLong newCoordinate = LatLong.builder()
+                .latitude(storeVisitCertDto.getLatitude())
+                .longitude(storeVisitCertDto.getLongitude())
+                .build();
+
+        // 방문 인증 거리 검증 (100m 이내)
+        boolean isValid = locationUtil.calcDistance(newCoordinate, getStoreCoordinates(storeVisitCertDto.getStoreId())) <= 100;
+        Store store = storeRepository.findById(storeVisitCertDto.getStoreId()).orElseThrow(() -> new CustomException(ErrorCode.STORE_NOT_FOUND));
+
+        LocalDateTime now = LocalDateTime.now();
+        OpenTime openTime = storeUtil.getOpenTime(now);
+        if (isValid && storeVisitCertDto.isVisitSuccessful()){ // 방문 인증 성공
+            storeVisitCertRepository.save(StoreVisitCert.builder()
+                    .store(store)
+                    .member(member)
+                    .isVisitSuccessful(true)
+                    .certDate(now)
+                    .openDay(now.getDayOfWeek())
+                    .openTime(openTime)
+                    .build());
+
+            Long successCount = storeVisitCertRepository.countByMemberAndIsVisitSuccessfulIsTrue(member);
+            Long firstStoreVisitCount = storeVisitCertRepository.countByStoreAndIsVisitSuccessfulTrue(store);
+            if (firstStoreVisitCount.equals(1L))
+                titleService.addTitle(member, Title.FIRST_VISIT_CERT);
+            else if (successCount.equals(3L))
+                titleService.addTitle(member, Title.REGULAR_CUSTOMER);
+
+        }else {
+            storeVisitCertRepository.save(StoreVisitCert.builder()
+                    .store(store)
+                    .member(member)
+                    .isVisitSuccessful(false)
+                    .certDate(now)
+                    .openDay(now.getDayOfWeek())
+                    .openTime(openTime)
+                    .build());
+
+            Long failCount = storeVisitCertRepository.countByMemberAndIsVisitSuccessfulIsFalse(member);
+            if (failCount.equals(3L))
+                titleService.addTitle(member, Title.FAILED_TO_VISIT);
+        }
     }
 }

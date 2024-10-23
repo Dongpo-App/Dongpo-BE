@@ -12,9 +12,13 @@ import com.dongyang.dongpo.dto.store.StoreRegisterDto;
 import com.dongyang.dongpo.repository.store.StoreOperatingDayRepository;
 import com.dongyang.dongpo.repository.store.StorePayMethodRepository;
 import com.dongyang.dongpo.repository.store.StoreRepository;
+import com.dongyang.dongpo.repository.store.StoreVisitCertRepository;
 import com.dongyang.dongpo.service.bookmark.BookmarkService;
-import com.dongyang.dongpo.service.location.LocationService;
 import com.dongyang.dongpo.service.open.OpenPossibilityService;
+import com.dongyang.dongpo.service.title.TitleService;
+import com.dongyang.dongpo.util.location.LocationUtil;
+import com.dongyang.dongpo.util.member.MemberUtil;
+import com.dongyang.dongpo.util.store.StoreUtil;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -38,6 +42,9 @@ class StoreServiceTest {
     private StoreRepository storeRepository;
 
     @Mock
+    private StoreVisitCertRepository storeVisitCertRepository;
+
+    @Mock
     private StorePayMethodRepository storePayMethodRepository;
 
     @Mock
@@ -47,13 +54,22 @@ class StoreServiceTest {
     private StoreService storeService;
 
     @Mock
-    private LocationService locationService;
+    private LocationUtil locationUtil;
+
+    @Mock
+    private MemberUtil memberUtil;
+
+    @Mock
+    private StoreUtil storeUtil;
 
     @Mock
     private OpenPossibilityService openPossibilityService;
 
     @Mock
     private BookmarkService bookmarkService;
+
+    @Mock
+    private TitleService titleService;
 
 
     @Test
@@ -66,7 +82,7 @@ class StoreServiceTest {
         StorePayMethod storePayMethod = mock(StorePayMethod.class);
         StoreOperatingDay storeOperatingDay = mock(StoreOperatingDay.class);
 
-        when(locationService.verifyStoreRegistration(storeDto)).thenReturn(true);
+        when(locationUtil.verifyStoreRegistration(storeDto)).thenReturn(true);
         when(storeRepository.save(any())).thenReturn(store);
         when(storePayMethodRepository.save(any())).thenReturn(storePayMethod);
         when(storeOperatingDayRepository.save(any())).thenReturn(storeOperatingDay);
@@ -172,6 +188,7 @@ class StoreServiceTest {
         // given
         Member member = mock(Member.class);
         when(member.getBirthyear()).thenReturn("2000");
+        when(memberUtil.getAgeGroup(member.getBirthyear())).thenReturn("20");
 
         Store store1 = mock(Store.class);
         Store store2 = mock(Store.class);
@@ -181,10 +198,11 @@ class StoreServiceTest {
             .thenReturn(List.of(store1, store2, store3));
 
         // when
-        List<RecommendResponse> result = storeService.recommendStoreByAge(member).getData();
+        RecommendResponse result = storeService.recommendStoreByAge(member);
 
         // then
-        assertThat(result).hasSize(3);
+        assertThat(result.getRecommendStores()).hasSize(3);
+        assertThat(result.getRecommendationCategory()).isEqualTo("20");
         verify(storeRepository, times(1)).findStoresByMemberAgeWithMostVisits(anyInt(),
 			anyInt() ,any(Pageable.class));
     }
@@ -204,10 +222,10 @@ class StoreServiceTest {
             .thenReturn(List.of(store1, store2, store3));
 
         // when
-        List<RecommendResponse> result = storeService.recommendStoreByGender(member).getData();
+        RecommendResponse result = storeService.recommendStoreByGender(member);
 
         // then
-        assertThat(result).hasSize(3);
+        assertThat(result.getRecommendStores()).hasSize(3);
         verify(storeRepository, times(1)).findStoresByMemberGenderWithMostVisits(eq(Member.Gender.GEN_MALE), any(Pageable.class));
     }
 }
