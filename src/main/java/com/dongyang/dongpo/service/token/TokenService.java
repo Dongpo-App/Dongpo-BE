@@ -25,9 +25,10 @@ public class TokenService {
 
     @Transactional
     public JwtToken reissueAccessToken(JwtTokenReissueDto jwtTokenReissueDto) {
-        String email = jwtTokenProvider.parseClaims(jwtTokenReissueDto.getRefreshToken()).getSubject();
-        RefreshToken refreshToken = refreshTokenRepository.findByEmail(email)
+        RefreshToken refreshToken = refreshTokenRepository.findByRefreshToken(jwtTokenReissueDto.getRefreshToken())
                 .orElseThrow(() -> new CustomException(ErrorCode.EXPIRED_TOKEN));
+
+        String email = jwtTokenProvider.parseClaims(jwtTokenReissueDto.getRefreshToken()).getSubject();
 
         Member member = memberRepository.findByEmail(email)
                 .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
