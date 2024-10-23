@@ -124,7 +124,7 @@ public class StoreService {
         Store store = storeRepository.findById(id)
                 .orElseThrow(() -> new CustomException(ErrorCode.STORE_NOT_FOUND));
 
-        List<Member> mostVisitMembers = visitCertRepository.findTopVisitorsByStore(store);
+        List<Member> mostVisitMembers = storeVisitCertRepository.findTopVisitorsByStore(store);
 
         StoreDto response = store.toResponse(openPossibilityService.getOpenPossibility(store),
             bookmarkService.isStoreBookmarkedByMember(store, member));
