@@ -12,6 +12,7 @@ import com.dongyang.dongpo.dto.store.StoreRegisterDto;
 import com.dongyang.dongpo.repository.store.StoreOperatingDayRepository;
 import com.dongyang.dongpo.repository.store.StorePayMethodRepository;
 import com.dongyang.dongpo.repository.store.StoreRepository;
+import com.dongyang.dongpo.repository.store.StoreVisitCertRepository;
 import com.dongyang.dongpo.service.bookmark.BookmarkService;
 import com.dongyang.dongpo.service.location.LocationService;
 import com.dongyang.dongpo.service.open.OpenPossibilityService;
@@ -42,6 +43,9 @@ class StoreServiceTest {
 
     @Mock
     private StoreOperatingDayRepository storeOperatingDayRepository;
+
+    @Mock
+    private StoreVisitCertRepository visitCertRepository;
 
     @InjectMocks
     private StoreService storeService;
@@ -103,10 +107,13 @@ class StoreServiceTest {
         Member member = mock(Member.class);
         Optional<Store> optionalStore = Optional.of(store);
         OpenPossibility openPossibility = mock(OpenPossibility.class);
+        StoreDto storeDto = mock(StoreDto.class);
 
         when(storeRepository.findById(any())).thenReturn(optionalStore);
         when(openPossibilityService.getOpenPossibility(any())).thenReturn(openPossibility);
         when(bookmarkService.isStoreBookmarkedByMember(any(), any())).thenReturn(true);
+        when(visitCertRepository.findTopVisitorsByStore(any())).thenReturn(List.of());
+        when(store.toResponse(any(), anyBoolean())).thenReturn(storeDto);
 
         // when
         storeService.detailStore(store.getId(), member);
