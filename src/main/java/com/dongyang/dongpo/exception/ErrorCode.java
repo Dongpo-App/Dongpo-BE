@@ -19,7 +19,7 @@ public enum ErrorCode {
     TOKEN_ISSUER_MISMATCH(401, "토큰 발급자가 일치하지 않습니다."),
     TOKEN_AUDIENCE_MISMATCH(401, "토큰 수신 대상자가 일치하지 않습니다."),
 
-    STORE_REGISTRATION_NOT_VALID(400, "위치 정보가 오차를 벗어났습니다."),
+    DISTANCE_OUT_OF_RANGE(400, "위치 정보가 오차를 벗어났습니다."),
     ARGUMENT_NOT_SATISFIED(400, "요청이 잘못되었습니다."),
     BOOKMARK_ALREADY_EXISTS(400, "해당 점포의 북마크가 이미 존재합니다."),
 	REPORT_REASON_TEXT_REQUIRED(400, "기타 사유는 사유를 작성해야 합니다."),
