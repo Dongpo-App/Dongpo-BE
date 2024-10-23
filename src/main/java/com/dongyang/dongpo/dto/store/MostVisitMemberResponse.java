@@ -10,11 +10,12 @@ import lombok.Data;
 @AllArgsConstructor
 @Data
 public class MostVisitMemberResponse {
+	private Long id;
 	private String nickname;
 	private String profilePic;
 	private Title mainTitle;
 
-	public static MostVisitMemberResponse of(String nickname, Title title, String profilePic) {
+	public static MostVisitMemberResponse of(Long id, String nickname, Title title, String profilePic) {
 		return MostVisitMemberResponse.builder()
 			.nickname(nickname)
 			.profilePic(profilePic)

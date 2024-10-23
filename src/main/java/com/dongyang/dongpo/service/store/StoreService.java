@@ -130,7 +130,7 @@ public class StoreService {
             bookmarkService.isStoreBookmarkedByMember(store, member));
 
         response.setMostVisitMembers(mostVisitMembers.stream()
-            .map(m -> MostVisitMemberResponse.of(m.getNickname(), m.getMainTitle(), m.getProfilePic()))
+            .map(m -> MostVisitMemberResponse.of(m.getId(), m.getNickname(), m.getMainTitle(), m.getProfilePic()))
             .toList());
 
         return response;
