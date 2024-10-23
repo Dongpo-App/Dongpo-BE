@@ -50,6 +50,9 @@ class StoreServiceTest {
     @Mock
     private StoreOperatingDayRepository storeOperatingDayRepository;
 
+    @Mock
+    private StoreVisitCertRepository visitCertRepository;
+
     @InjectMocks
     private StoreService storeService;
 
@@ -119,10 +122,13 @@ class StoreServiceTest {
         Member member = mock(Member.class);
         Optional<Store> optionalStore = Optional.of(store);
         OpenPossibility openPossibility = mock(OpenPossibility.class);
+        StoreDto storeDto = mock(StoreDto.class);
 
         when(storeRepository.findById(any())).thenReturn(optionalStore);
         when(openPossibilityService.getOpenPossibility(any())).thenReturn(openPossibility);
         when(bookmarkService.isStoreBookmarkedByMember(any(), any())).thenReturn(true);
+        when(visitCertRepository.findTopVisitorsByStore(any())).thenReturn(List.of());
+        when(store.toResponse(any(), anyBoolean())).thenReturn(storeDto);
 
         // when
         storeService.detailStore(store.getId(), member);

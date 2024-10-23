@@ -33,6 +33,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -123,8 +124,16 @@ public class StoreService {
         Store store = storeRepository.findById(id)
                 .orElseThrow(() -> new CustomException(ErrorCode.STORE_NOT_FOUND));
 
-        return store.toResponse(openPossibilityService.getOpenPossibility(store),
-                                bookmarkService.isStoreBookmarkedByMember(store, member));
+        List<Member> mostVisitMembers = visitCertRepository.findTopVisitorsByStore(store);
+
+        StoreDto response = store.toResponse(openPossibilityService.getOpenPossibility(store),
+            bookmarkService.isStoreBookmarkedByMember(store, member));
+
+        response.setMostVisitMembers(mostVisitMembers.stream()
+            .map(m -> MostVisitMemberResponse.of(m.getId(), m.getNickname(), m.getMainTitle(), m.getProfilePic()))
+            .toList());
+
+        return response;
     }
 
     @Transactional

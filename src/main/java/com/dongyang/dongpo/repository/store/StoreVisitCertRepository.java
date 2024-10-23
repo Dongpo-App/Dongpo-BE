@@ -6,6 +6,7 @@ import com.dongyang.dongpo.domain.store.StoreVisitCert;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
@@ -17,6 +18,12 @@ public interface StoreVisitCertRepository extends JpaRepository<StoreVisitCert, 
             "GROUP BY s.member " +
             "ORDER BY visitCount DESC")
     List<Object[]> findTop10MembersBySuccessfulVisitCount(Pageable pageable);
+
+    @Query("SELECT svc.member FROM StoreVisitCert svc " +
+        "WHERE svc.store = :store AND svc.isVisitSuccessful = true " +
+        "GROUP BY svc.member " +
+        "ORDER BY COUNT(svc.member) DESC")
+    List<Member> findTopVisitorsByStore(@Param("store") Store store);
 
     List<StoreVisitCert> findByStoreAndAndIsVisitSuccessfulTrue(Store store);
 
