@@ -152,4 +152,9 @@ public class SocialService {
                 throw e;
         }
     }
+
+    public void doLogout(Member member, String authorization) {
+        memberService.handleLogout(member, authorization);
+
+    }
 }

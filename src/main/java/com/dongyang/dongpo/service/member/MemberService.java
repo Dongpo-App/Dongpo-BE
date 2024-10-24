@@ -1,6 +1,6 @@
 package com.dongyang.dongpo.service.member;
 
-import com.dongyang.dongpo.domain.RefreshToken;
+import com.dongyang.dongpo.domain.auth.RefreshToken;
 import com.dongyang.dongpo.domain.member.Member;
 import com.dongyang.dongpo.domain.member.MemberTitle;
 import com.dongyang.dongpo.dto.auth.AppleLoginResponse;
@@ -13,7 +13,7 @@ import com.dongyang.dongpo.exception.CustomException;
 import com.dongyang.dongpo.exception.ErrorCode;
 import com.dongyang.dongpo.jwt.JwtTokenProvider;
 import com.dongyang.dongpo.repository.member.MemberRepository;
-import com.dongyang.dongpo.repository.RefreshTokenRepository;
+import com.dongyang.dongpo.repository.auth.RefreshTokenRepository;
 import com.dongyang.dongpo.repository.member.MemberTitleRepository;
 import com.dongyang.dongpo.s3.S3Service;
 import com.dongyang.dongpo.service.store.StoreService;
@@ -175,5 +175,10 @@ public class MemberService {
             member.updateMemberMainTitle(memberTitle.getTitle());
             log.info("Member {} - updated mainTitle", member.getEmail());
         }
+    }
+
+    @Transactional
+    public void handleLogout(Member member, String authorization) {
+        tokenService.expireTokens(member.getEmail(), authorization);
     }
 }

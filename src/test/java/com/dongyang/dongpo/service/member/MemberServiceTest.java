@@ -5,7 +5,7 @@ import com.dongyang.dongpo.domain.member.MemberTitle;
 import com.dongyang.dongpo.domain.member.Title;
 import com.dongyang.dongpo.dto.mypage.MyPageUpdateDto;
 import com.dongyang.dongpo.jwt.JwtTokenProvider;
-import com.dongyang.dongpo.repository.RefreshTokenRepository;
+import com.dongyang.dongpo.repository.auth.RefreshTokenRepository;
 import com.dongyang.dongpo.repository.member.MemberRepository;
 import com.dongyang.dongpo.repository.member.MemberTitleRepository;
 import com.dongyang.dongpo.s3.S3Service;

@@ -63,4 +63,12 @@ public class AuthController {
     public ResponseEntity<ApiResponse<JwtToken>> reissue(@RequestBody JwtTokenReissueDto jwtTokenReissueDto) {
         return ResponseEntity.ok(new ApiResponse<>(tokenService.reissueAccessToken(jwtTokenReissueDto)));
     }
+
+    @PostMapping("/logout")
+    @Operation(summary = "로그아웃")
+    public ResponseEntity<ApiResponse<String>> logout(@AuthenticationPrincipal Member member,
+                                                      @RequestHeader("Authorization") String authorization) {
+        socialService.doLogout(member, authorization);
+        return ResponseEntity.ok(new ApiResponse<>("Logout success."));
+    }
 }
