@@ -26,7 +26,7 @@ public class ReviewDto {
     private String storeName;
     private Long memberId;
     private String memberNickname;
-    private Title memberMainTitle;
+    private String memberMainTitle;
     private String memberProfilePic;
     private Integer reviewStar;
     private String text;
