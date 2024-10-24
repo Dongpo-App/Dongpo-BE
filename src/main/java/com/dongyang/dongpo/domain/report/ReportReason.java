@@ -13,7 +13,7 @@ public enum ReportReason {
 	IRRELEVANT_CONTENT("가게에 무관한 내용입니다."),
 
 	// Store
-	WORNG_ADDRESS("주소가 잘못되었습니다."),
+	WRONG_ADDRESS("주소가 잘못되었습니다."),
 	NOT_EXIST_STORE("존재하지 않는 가게입니다."),
 
 
