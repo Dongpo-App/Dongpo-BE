@@ -75,7 +75,7 @@ public class StoreReview {
                 .text(this.text)
                 .memberId(this.member.getId())
                 .memberNickname(this.member.getNickname())
-                .memberMainTitle(this.member.getMainTitle())
+                .memberMainTitle(this.member.getMainTitle().getDescription())
                 .memberProfilePic(this.member.getProfilePic())
                 .storeId(this.store.getId())
                 .storeName(this.store.getName())
