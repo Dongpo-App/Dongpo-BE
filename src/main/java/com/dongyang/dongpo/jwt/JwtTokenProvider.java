@@ -1,10 +1,12 @@
 package com.dongyang.dongpo.jwt;
 
 import com.dongyang.dongpo.config.security.CustomUserDetailsService;
+import com.dongyang.dongpo.domain.auth.TokenBlacklist;
 import com.dongyang.dongpo.domain.member.Member.Role;
 import com.dongyang.dongpo.dto.auth.JwtToken;
 import com.dongyang.dongpo.exception.CustomException;
 import com.dongyang.dongpo.exception.ErrorCode;
+import com.dongyang.dongpo.repository.auth.TokenBlacklistRepository;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -16,6 +18,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.security.Key;
 import java.util.Arrays;
@@ -31,11 +34,13 @@ public class JwtTokenProvider {
     private final long REFRESHTOKEN_VALIDTIME = 7 * 24 * 60 * 60 * 1000L; // 7일
 
     private final CustomUserDetailsService customUserDetailsService;
+    private final TokenBlacklistRepository tokenBlacklistRepository;
 
-    public JwtTokenProvider(@Value("${jwt.secret}") String secretKey, CustomUserDetailsService CustomUserDetailsService) {
+    public JwtTokenProvider(@Value("${jwt.secret}") String secretKey, CustomUserDetailsService CustomUserDetailsService, TokenBlacklistRepository tokenBlacklistRepository) {
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         this.key = Keys.hmacShaKeyFor(keyBytes);
         this.customUserDetailsService = CustomUserDetailsService;
+        this.tokenBlacklistRepository = tokenBlacklistRepository;
     }
 
     public JwtToken createToken(String email, Role role){
@@ -117,6 +122,16 @@ public class JwtTokenProvider {
             log.error("Error parsing claims: ", e);
             throw new CustomException(ErrorCode.EXPIRED_TOKEN);
         }
+    }
+
+    @Transactional
+    public void blacklistToken(String authorization) {
+        tokenBlacklistRepository.save(TokenBlacklist.builder().accessToken(parseAccessToken(authorization)).build());
+    }
+
+    public void isBlacklisted(String accessToken) {
+        if (tokenBlacklistRepository.existsByAccessToken(accessToken))
+            throw new CustomException(ErrorCode.EXPIRED_TOKEN);
     }
 
     public String parseAccessToken(String authorization) {

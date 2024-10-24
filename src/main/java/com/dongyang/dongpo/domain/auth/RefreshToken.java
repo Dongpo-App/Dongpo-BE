@@ -1,4 +1,4 @@
-package com.dongyang.dongpo.domain;
+package com.dongyang.dongpo.domain.auth;
 
 import lombok.Builder;
 import lombok.Getter;

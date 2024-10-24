@@ -1,13 +1,13 @@
 package com.dongyang.dongpo.service.token;
 
-import com.dongyang.dongpo.domain.RefreshToken;
+import com.dongyang.dongpo.domain.auth.RefreshToken;
 import com.dongyang.dongpo.domain.member.Member;
 import com.dongyang.dongpo.dto.auth.JwtToken;
 import com.dongyang.dongpo.dto.auth.JwtTokenReissueDto;
 import com.dongyang.dongpo.exception.CustomException;
 import com.dongyang.dongpo.exception.ErrorCode;
 import com.dongyang.dongpo.jwt.JwtTokenProvider;
-import com.dongyang.dongpo.repository.RefreshTokenRepository;
+import com.dongyang.dongpo.repository.auth.RefreshTokenRepository;
 import com.dongyang.dongpo.repository.member.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -57,5 +57,12 @@ public class TokenService {
         refreshTokenRepository.save(refreshToken);
         log.info("Member Login : {}", member.getEmail());
         return jwtToken;
+    }
+
+    @Transactional
+    public void expireTokens(String email, String authorization) {
+        refreshTokenRepository.deleteById(email);
+
+        jwtTokenProvider.blacklistToken(authorization);
     }
 }

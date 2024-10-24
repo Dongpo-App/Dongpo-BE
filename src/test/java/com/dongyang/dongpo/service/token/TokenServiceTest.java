@@ -1,13 +1,13 @@
 package com.dongyang.dongpo.service.token;
 
-import com.dongyang.dongpo.domain.RefreshToken;
+import com.dongyang.dongpo.domain.auth.RefreshToken;
 import com.dongyang.dongpo.domain.member.Member;
 import com.dongyang.dongpo.dto.auth.JwtToken;
 import com.dongyang.dongpo.dto.auth.JwtTokenReissueDto;
 import com.dongyang.dongpo.exception.CustomException;
 import com.dongyang.dongpo.exception.ErrorCode;
 import com.dongyang.dongpo.jwt.JwtTokenProvider;
-import com.dongyang.dongpo.repository.RefreshTokenRepository;
+import com.dongyang.dongpo.repository.auth.RefreshTokenRepository;
 import com.dongyang.dongpo.repository.member.MemberRepository;
 import io.jsonwebtoken.Claims;
 import org.junit.jupiter.api.DisplayName;
