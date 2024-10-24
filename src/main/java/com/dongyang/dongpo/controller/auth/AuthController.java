@@ -52,12 +52,6 @@ public class AuthController {
         return ResponseEntity.ok(new ApiResponse<>(appleLoginService.continueSignup(appleSignupContinueDto)));
     }
 
-    @PostMapping("/apple/leave")
-    public ResponseEntity<ApiResponse<String>> appleLeaveTest(@AuthenticationPrincipal Member member) {
-        appleLoginService.revokeToken(member);
-        return ResponseEntity.ok(new ApiResponse<>("Leave success."));
-    }
-
     @PostMapping("/reissue")
     @Operation(summary = "JWT토큰 재발급")
     public ResponseEntity<ApiResponse<JwtToken>> reissue(@RequestBody JwtTokenReissueDto jwtTokenReissueDto) {
@@ -70,5 +64,13 @@ public class AuthController {
                                                       @RequestHeader("Authorization") String authorization) {
         socialService.doLogout(member, authorization);
         return ResponseEntity.ok(new ApiResponse<>("Logout success."));
+    }
+
+    @PostMapping("/leave")
+    @Operation(summary = "회원탈퇴")
+    public ResponseEntity<ApiResponse<String>> leave(@AuthenticationPrincipal Member member,
+                                                     @RequestHeader("Authorization") String authorization) {
+        socialService.doLeave(member, authorization);
+        return ResponseEntity.ok(new ApiResponse<>("Leave success."));
     }
 }

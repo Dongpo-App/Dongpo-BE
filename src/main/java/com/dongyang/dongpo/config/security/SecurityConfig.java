@@ -37,7 +37,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/admin/**").denyAll()
                         .requestMatchers("/api/**").authenticated()
-                        .requestMatchers("/auth/logout").authenticated()
+                        .requestMatchers("/auth/logout", "/auth/leave").authenticated()
                         .requestMatchers("/auth/**").permitAll()
                         .anyRequest().permitAll()
                 )

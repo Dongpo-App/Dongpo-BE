@@ -25,6 +25,7 @@ import org.springframework.web.util.UriBuilder;
 public class SocialService {
 
     private final MemberService memberService;
+    private final AppleLoginService appleLoginService;
 
     @Value("${kakao.client_id}")
     private String clientId;
@@ -155,6 +156,12 @@ public class SocialService {
 
     public void doLogout(Member member, String authorization) {
         memberService.handleLogout(member, authorization);
+    }
 
+    public void doLeave(Member member, String authorization) {
+        if (member.getSocialType() == SocialType.APPLE)
+            appleLoginService.revokeToken(member, authorization);
+        else
+            memberService.handleLeave(member, authorization);
     }
 }
