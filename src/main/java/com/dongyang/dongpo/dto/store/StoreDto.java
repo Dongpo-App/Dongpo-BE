@@ -34,5 +34,6 @@ public class StoreDto {
     private Boolean isBookmarked;
     private Long visitSuccessfulCount;
     private Long visitFailCount;
+    private Long bookmarkCount;
     private List<MostVisitMemberResponse> mostVisitMembers;
 }
