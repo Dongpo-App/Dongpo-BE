@@ -1,6 +1,6 @@
 package com.dongyang.dongpo.controller.fileupload;
 
-import com.dongyang.dongpo.apiresponse.ApiResponse;
+import com.dongyang.dongpo.dto.apiresponse.ApiResponse;
 import com.dongyang.dongpo.dto.fileupload.UrlResponseDto;
 import com.dongyang.dongpo.service.fileupload.FileUploadService;
 import lombok.RequiredArgsConstructor;

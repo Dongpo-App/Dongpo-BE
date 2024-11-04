@@ -1,6 +1,6 @@
 package com.dongyang.dongpo.domain.board;
 
-import com.dongyang.dongpo.dto.PicDto;
+import com.dongyang.dongpo.dto.notice.PicDto;
 import jakarta.persistence.*;
 import lombok.*;
 

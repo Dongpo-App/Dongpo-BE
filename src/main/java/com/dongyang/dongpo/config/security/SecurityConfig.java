@@ -1,11 +1,10 @@
 package com.dongyang.dongpo.config.security;
 
-import com.dongyang.dongpo.jwt.JwtAuthenticationFilter;
-import com.dongyang.dongpo.jwt.JwtTokenProvider;
+import com.dongyang.dongpo.util.jwt.JwtAuthenticationFilter;
+import com.dongyang.dongpo.util.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;

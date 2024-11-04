@@ -1,7 +1,7 @@
 package com.dongyang.dongpo.controller.auth;
 
-import com.dongyang.dongpo.apiresponse.ApiResponse;
 import com.dongyang.dongpo.domain.member.Member;
+import com.dongyang.dongpo.dto.apiresponse.ApiResponse;
 import com.dongyang.dongpo.dto.auth.*;
 import com.dongyang.dongpo.exception.ErrorCode;
 import com.dongyang.dongpo.service.auth.AppleLoginService;

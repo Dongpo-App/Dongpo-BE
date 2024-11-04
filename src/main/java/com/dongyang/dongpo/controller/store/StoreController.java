@@ -1,7 +1,7 @@
 package com.dongyang.dongpo.controller.store;
 
-import com.dongyang.dongpo.apiresponse.ApiResponse;
 import com.dongyang.dongpo.domain.member.Member;
+import com.dongyang.dongpo.dto.apiresponse.ApiResponse;
 import com.dongyang.dongpo.dto.location.LatLong;
 import com.dongyang.dongpo.dto.store.*;
 import com.dongyang.dongpo.service.store.StoreService;

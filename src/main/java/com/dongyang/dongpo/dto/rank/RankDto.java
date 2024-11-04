@@ -1,7 +1,6 @@
 package com.dongyang.dongpo.dto.rank;
 
 import com.dongyang.dongpo.domain.member.Member;
-import com.dongyang.dongpo.domain.member.Title;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

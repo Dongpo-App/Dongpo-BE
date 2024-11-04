@@ -1,6 +1,6 @@
 package com.dongyang.dongpo.controller.rank;
 
-import com.dongyang.dongpo.apiresponse.ApiResponse;
+import com.dongyang.dongpo.dto.apiresponse.ApiResponse;
 import com.dongyang.dongpo.dto.rank.RankDto;
 import com.dongyang.dongpo.service.rank.RankService;
 import io.swagger.v3.oas.annotations.Operation;

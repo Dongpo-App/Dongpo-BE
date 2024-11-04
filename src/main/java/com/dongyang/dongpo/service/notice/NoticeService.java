@@ -1,13 +1,13 @@
 package com.dongyang.dongpo.service.notice;
 
 import com.dongyang.dongpo.domain.admin.Admin;
-import com.dongyang.dongpo.domain.board.NoticePic;
-import com.dongyang.dongpo.dto.PicDto;
-import com.dongyang.dongpo.dto.notice.NoticeDto;
 import com.dongyang.dongpo.domain.board.Notice;
+import com.dongyang.dongpo.domain.board.NoticePic;
+import com.dongyang.dongpo.dto.notice.NoticeDto;
+import com.dongyang.dongpo.dto.notice.PicDto;
 import com.dongyang.dongpo.repository.notice.NoticePicRepository;
 import com.dongyang.dongpo.repository.notice.NoticeRepository;
-import com.dongyang.dongpo.s3.S3Service;
+import com.dongyang.dongpo.util.s3.S3Service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
