@@ -1,7 +1,6 @@
 package com.dongyang.dongpo.service.store;
 
 import com.dongyang.dongpo.domain.member.Member;
-import com.dongyang.dongpo.domain.store.Store;
 import com.dongyang.dongpo.domain.store.StoreReview;
 import com.dongyang.dongpo.dto.store.ReviewDto;
 import com.dongyang.dongpo.repository.store.StoreRepository;

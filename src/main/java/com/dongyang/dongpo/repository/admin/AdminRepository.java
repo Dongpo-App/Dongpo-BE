@@ -1,4 +1,4 @@
-package com.dongyang.dongpo.repository;
+package com.dongyang.dongpo.repository.admin;
 
 import com.dongyang.dongpo.domain.admin.Admin;
 import com.dongyang.dongpo.domain.admin.AdminRole;

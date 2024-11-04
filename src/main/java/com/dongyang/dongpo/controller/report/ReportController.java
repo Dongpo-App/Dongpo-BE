@@ -1,7 +1,7 @@
 package com.dongyang.dongpo.controller.report;
 
-import com.dongyang.dongpo.apiresponse.ApiResponse;
 import com.dongyang.dongpo.domain.member.Member;
+import com.dongyang.dongpo.dto.apiresponse.ApiResponse;
 import com.dongyang.dongpo.dto.report.ReportDto;
 import com.dongyang.dongpo.service.report.ReportService;
 import io.swagger.v3.oas.annotations.Operation;

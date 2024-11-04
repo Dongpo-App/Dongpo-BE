@@ -1,7 +1,5 @@
 package com.dongyang.dongpo.service.store;
 
-import static java.util.stream.Collectors.*;
-
 import com.dongyang.dongpo.domain.member.Member;
 import com.dongyang.dongpo.domain.member.Title;
 import com.dongyang.dongpo.domain.store.*;
@@ -23,7 +21,6 @@ import com.dongyang.dongpo.util.member.MemberUtil;
 import com.dongyang.dongpo.util.store.StoreUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -33,7 +30,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.toList;
 
 @Service
 @RequiredArgsConstructor

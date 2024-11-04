@@ -1,7 +1,6 @@
 package com.dongyang.dongpo.dto.store;
 
 import com.dongyang.dongpo.domain.member.Member;
-import com.dongyang.dongpo.domain.member.Title;
 import com.dongyang.dongpo.domain.store.Store;
 import com.dongyang.dongpo.domain.store.StoreReview;
 import com.dongyang.dongpo.domain.store.StoreReviewPic;
@@ -12,7 +11,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 @Data

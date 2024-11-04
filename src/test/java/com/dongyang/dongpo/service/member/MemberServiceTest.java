@@ -4,13 +4,13 @@ import com.dongyang.dongpo.domain.member.Member;
 import com.dongyang.dongpo.domain.member.MemberTitle;
 import com.dongyang.dongpo.domain.member.Title;
 import com.dongyang.dongpo.dto.mypage.MyPageUpdateDto;
-import com.dongyang.dongpo.jwt.JwtTokenProvider;
 import com.dongyang.dongpo.repository.auth.RefreshTokenRepository;
 import com.dongyang.dongpo.repository.member.MemberRepository;
 import com.dongyang.dongpo.repository.member.MemberTitleRepository;
-import com.dongyang.dongpo.s3.S3Service;
 import com.dongyang.dongpo.service.store.StoreService;
 import com.dongyang.dongpo.service.token.TokenService;
+import com.dongyang.dongpo.util.jwt.JwtTokenProvider;
+import com.dongyang.dongpo.util.s3.S3Service;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -21,7 +21,6 @@ import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
-import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 class MemberServiceTest {

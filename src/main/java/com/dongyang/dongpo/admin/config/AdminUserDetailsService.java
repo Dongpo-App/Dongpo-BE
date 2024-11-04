@@ -1,6 +1,6 @@
 package com.dongyang.dongpo.admin.config;
 
-import com.dongyang.dongpo.repository.AdminRepository;
+import com.dongyang.dongpo.repository.admin.AdminRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

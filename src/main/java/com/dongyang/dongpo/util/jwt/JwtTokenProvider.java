@@ -1,4 +1,4 @@
-package com.dongyang.dongpo.jwt;
+package com.dongyang.dongpo.util.jwt;
 
 import com.dongyang.dongpo.config.security.CustomUserDetailsService;
 import com.dongyang.dongpo.domain.auth.TokenBlacklist;

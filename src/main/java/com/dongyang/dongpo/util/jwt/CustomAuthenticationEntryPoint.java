@@ -1,4 +1,4 @@
-package com.dongyang.dongpo.jwt;
+package com.dongyang.dongpo.util.jwt;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

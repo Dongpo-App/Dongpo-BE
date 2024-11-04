@@ -1,6 +1,5 @@
 package com.dongyang.dongpo.domain.auth;
 
-import com.dongyang.dongpo.domain.member.Member;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

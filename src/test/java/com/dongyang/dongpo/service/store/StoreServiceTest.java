@@ -4,11 +4,7 @@ import com.dongyang.dongpo.domain.member.Member;
 import com.dongyang.dongpo.domain.store.Store;
 import com.dongyang.dongpo.domain.store.StoreOperatingDay;
 import com.dongyang.dongpo.domain.store.StorePayMethod;
-import com.dongyang.dongpo.dto.store.OpenPossibility;
-import com.dongyang.dongpo.dto.store.RecommendResponse;
-import com.dongyang.dongpo.dto.store.StoreDto;
-import com.dongyang.dongpo.dto.store.StoreIndexDto;
-import com.dongyang.dongpo.dto.store.StoreRegisterDto;
+import com.dongyang.dongpo.dto.store.*;
 import com.dongyang.dongpo.repository.store.StoreOperatingDayRepository;
 import com.dongyang.dongpo.repository.store.StorePayMethodRepository;
 import com.dongyang.dongpo.repository.store.StoreRepository;
@@ -31,7 +27,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 

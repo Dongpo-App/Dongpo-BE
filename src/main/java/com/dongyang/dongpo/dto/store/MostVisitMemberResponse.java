@@ -1,7 +1,6 @@
 package com.dongyang.dongpo.dto.store;
 
 import com.dongyang.dongpo.domain.member.Title;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

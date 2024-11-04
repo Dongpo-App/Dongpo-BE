@@ -4,7 +4,7 @@ import com.dongyang.dongpo.domain.admin.Admin;
 import com.dongyang.dongpo.domain.admin.AdminRole;
 import com.dongyang.dongpo.dto.admin.ConfrimDto;
 import com.dongyang.dongpo.dto.admin.SignUpDto;
-import com.dongyang.dongpo.repository.AdminRepository;
+import com.dongyang.dongpo.repository.admin.AdminRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;

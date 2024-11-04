@@ -1,4 +1,4 @@
-package com.dongyang.dongpo.apiresponse;
+package com.dongyang.dongpo.dto.apiresponse;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;

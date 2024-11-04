@@ -1,6 +1,6 @@
 package com.dongyang.dongpo.exception;
 
-import com.dongyang.dongpo.apiresponse.ApiResponse;
+import com.dongyang.dongpo.dto.apiresponse.ApiResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;

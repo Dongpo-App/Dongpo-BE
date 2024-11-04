@@ -3,7 +3,6 @@ package com.dongyang.dongpo.dto.store;
 import com.dongyang.dongpo.domain.member.Member;
 import com.dongyang.dongpo.domain.store.Store;
 import com.fasterxml.jackson.annotation.JsonInclude;
-
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.*;

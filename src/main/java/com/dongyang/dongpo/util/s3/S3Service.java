@@ -1,4 +1,4 @@
-package com.dongyang.dongpo.s3;
+package com.dongyang.dongpo.util.s3;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.DeleteObjectRequest;

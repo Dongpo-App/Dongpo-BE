@@ -1,7 +1,7 @@
 package com.dongyang.dongpo.service.fileupload;
 
 import com.dongyang.dongpo.dto.fileupload.UrlResponseDto;
-import com.dongyang.dongpo.s3.S3Service;
+import com.dongyang.dongpo.util.s3.S3Service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
