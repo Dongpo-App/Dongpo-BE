@@ -126,8 +126,11 @@ public class StoreService {
 
         List<Member> mostVisitMembers = storeVisitCertRepository.findTopVisitorsByStore(store);
 
-        StoreDto response = store.toResponse(openPossibilityService.getOpenPossibility(store),
-            bookmarkService.isStoreBookmarkedByMember(store, member));
+        StoreDto response = store.toResponse(
+                openPossibilityService.getOpenPossibility(store),
+                bookmarkService.isStoreBookmarkedByMember(store, member),
+                bookmarkService.getBookmarkCountByStore(store)
+        );
 
         response.setMostVisitMembers(mostVisitMembers.stream()
             .map(m -> MostVisitMemberResponse.of(m.getId(), m.getNickname(), m.getMainTitle(), m.getProfilePic()))

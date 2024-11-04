@@ -67,4 +67,8 @@ public class BookmarkService {
     public boolean isStoreBookmarkedByMember(Store store, Member member) {
         return bookmarkRepository.existsByStoreAndMember(store, member);
     }
+
+    public Long getBookmarkCountByStore(final Store store) {
+        return bookmarkRepository.countByStore(store);
+    }
 }

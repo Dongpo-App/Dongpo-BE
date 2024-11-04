@@ -150,7 +150,7 @@ public class Store {
                 .build();
     }
           
-    public StoreDto toResponse(OpenPossibility openPossibility, boolean isBookmarked) {
+    public StoreDto toResponse(OpenPossibility openPossibility, boolean isBookmarked, Long bookmarkCount) {
         List<Store.OperatingDay> operatingDayValues = this.storeOperatingDays.stream()
                 .map(StoreOperatingDay::getOperatingDay)
                 .collect(Collectors.toList());
@@ -192,6 +192,7 @@ public class Store {
                 .isBookmarked(isBookmarked)
                 .visitSuccessfulCount(visitSuccessfulCount)
                 .visitFailCount(visitFailCount)
+                .bookmarkCount(bookmarkCount)
                 .build();
     }
 
