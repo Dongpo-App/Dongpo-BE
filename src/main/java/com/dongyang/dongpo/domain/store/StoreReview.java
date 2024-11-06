@@ -28,7 +28,7 @@ public class StoreReview {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    private Integer reviewStar;
+    private Double reviewStar;
 
     @Column(columnDefinition = "TEXT")
     private String text;
