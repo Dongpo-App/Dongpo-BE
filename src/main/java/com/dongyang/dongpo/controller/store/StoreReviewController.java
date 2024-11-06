@@ -3,12 +3,15 @@ package com.dongyang.dongpo.controller.store;
 import com.dongyang.dongpo.domain.member.Member;
 import com.dongyang.dongpo.dto.apiresponse.ApiResponse;
 import com.dongyang.dongpo.dto.store.ReviewDto;
+import com.dongyang.dongpo.dto.store.StoreReviewResponseDto;
 import com.dongyang.dongpo.service.store.StoreReviewService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/store/review")
@@ -25,6 +28,12 @@ public class StoreReviewController {
 
         reviewService.addReview(member, storeId, reviewDto);
         return ResponseEntity.ok(new ApiResponse<>("success"));
+    }
+
+    @GetMapping("/{storeId}")
+    @Operation(summary = "점포 리뷰 전체 조회")
+    public ResponseEntity<ApiResponse<List<StoreReviewResponseDto>>> getReviewByStore(@PathVariable final Long storeId) {
+        return ResponseEntity.ok(new ApiResponse<>(reviewService.getReviewByStore(storeId)));
     }
 
     @DeleteMapping("/{reviewId}")

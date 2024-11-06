@@ -2,6 +2,7 @@ package com.dongyang.dongpo.domain.store;
 
 import com.dongyang.dongpo.domain.member.Member;
 import com.dongyang.dongpo.dto.store.ReviewDto;
+import com.dongyang.dongpo.dto.store.StoreReviewResponseDto;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -80,6 +81,22 @@ public class StoreReview {
                 .storeId(this.store.getId())
                 .storeName(this.store.getName())
                 .reviewPics(reviewOnlyPic)
+                .build();
+    }
+
+    public StoreReviewResponseDto toStoreReviewResponse() {
+        return StoreReviewResponseDto.builder()
+                .id(id)
+                .memberId(member.getId())
+                .memberNickname(member.getNickname())
+                .memberMainTitle(member.getMainTitle().getDescription())
+                .memberProfilePic(member.getProfilePic())
+                .reviewStar(reviewStar)
+                .reviewText(text)
+                .reviewPics(reviewPics.stream()
+                        .map(StoreReviewPic::getPicUrl)
+                        .toList())
+                .registerDate(registerDate)
                 .build();
     }
 

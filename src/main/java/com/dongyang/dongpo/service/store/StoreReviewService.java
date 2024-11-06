@@ -6,6 +6,7 @@ import com.dongyang.dongpo.domain.store.Store;
 import com.dongyang.dongpo.domain.store.StoreReview;
 import com.dongyang.dongpo.domain.store.StoreReviewPic;
 import com.dongyang.dongpo.dto.store.ReviewDto;
+import com.dongyang.dongpo.dto.store.StoreReviewResponseDto;
 import com.dongyang.dongpo.exception.CustomException;
 import com.dongyang.dongpo.exception.ErrorCode;
 import com.dongyang.dongpo.repository.store.StoreRepository;
@@ -62,6 +63,15 @@ public class StoreReviewService {
                 .orElseThrow(() -> new CustomException(ErrorCode.REVIEW_NOT_FOUND));
 
         return review.toResponse();
+    }
+
+    public List<StoreReviewResponseDto> getReviewByStore(final Long storeId) {
+        if (!storeRepository.existsById(storeId))
+            throw new CustomException(ErrorCode.STORE_NOT_FOUND); // 추후 의존성 수정
+
+        return reviewRepository.findReviewWithDetailsByStoreDesc(storeId).stream()
+                .map(StoreReview::toStoreReviewResponse)
+                .toList();
     }
 
     public List<String> getReviewPicsByStoreId(Long id) {

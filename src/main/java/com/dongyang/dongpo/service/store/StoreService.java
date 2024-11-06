@@ -82,6 +82,11 @@ public class StoreService {
             titleService.addTitle(member, Title.REGISTER_PRO);
     }
 
+    public void existsById(final Long storeId) {
+        if (!storeRepository.existsById(storeId))
+            throw new CustomException(ErrorCode.STORE_NOT_FOUND);
+    }
+
     public List<StoreDto> findAll() {
         List<Store> stores = storeRepository.findAll();
         List<StoreDto> storeResponse = new ArrayList<>();
