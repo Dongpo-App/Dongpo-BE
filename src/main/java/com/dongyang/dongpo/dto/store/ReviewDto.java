@@ -26,7 +26,7 @@ public class ReviewDto {
     private String memberNickname;
     private String memberMainTitle;
     private String memberProfilePic;
-    private Integer reviewStar;
+    private Double reviewStar;
     private String text;
     private List<String> reviewPics;
     private LocalDateTime registerDate;
@@ -40,6 +40,9 @@ public class ReviewDto {
             .text(text)
             .reviewStar(reviewStar)
             .build();
+
+        if (reviewPics == null || reviewPics.isEmpty()) // 리뷰 사진이 첨부 되지 않았을 경우
+            return storeReview;
 
         reviewPics.forEach(picUrl -> {
             StoreReviewPic pic = StoreReviewPic.builder()
