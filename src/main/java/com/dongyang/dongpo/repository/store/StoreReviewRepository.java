@@ -11,7 +11,15 @@ import java.util.List;
 
 public interface StoreReviewRepository extends JpaRepository<StoreReview, Long> {
 
-    List<StoreReview> findByStoreId(Long StoreId);
+    List<StoreReview> findByStoreId(Long storeId);
+
+    @Query("SELECT sr FROM StoreReview sr " +
+            "JOIN FETCH sr.member m " +
+            "LEFT JOIN FETCH sr.reviewPics rp " +
+            "WHERE sr.store.id = :storeId AND sr.status = 'VISIBLE'" +
+            "ORDER BY sr.id DESC")
+    List<StoreReview> findReviewWithDetailsByStoreDesc(@Param("storeId") Long storeId);
+
     List<StoreReview> findByMemberId(Long memberId);
 
     @Query("SELECT s.member, COUNT(s) as reviewCount " +
