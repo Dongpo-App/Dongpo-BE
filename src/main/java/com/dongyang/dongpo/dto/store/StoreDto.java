@@ -29,11 +29,4 @@ public class StoreDto {
     private Store.StoreStatus status;
     private List<Store.OperatingDay> operatingDays;
     private List<Store.PayMethod> payMethods;
-    private List<ReviewDto> reviews;
-    private OpenPossibility openPossibility;
-    private Boolean isBookmarked;
-    private Long visitSuccessfulCount;
-    private Long visitFailCount;
-    private Long bookmarkCount;
-    private List<MostVisitMemberResponse> mostVisitMembers;
 }
