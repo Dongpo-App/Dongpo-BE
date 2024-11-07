@@ -10,6 +10,7 @@ import com.dongyang.dongpo.dto.store.StoreReviewResponseDto;
 import com.dongyang.dongpo.exception.CustomException;
 import com.dongyang.dongpo.exception.ErrorCode;
 import com.dongyang.dongpo.repository.store.StoreRepository;
+import com.dongyang.dongpo.repository.store.StoreReviewPicRepository;
 import com.dongyang.dongpo.repository.store.StoreReviewRepository;
 import com.dongyang.dongpo.service.title.TitleService;
 import lombok.RequiredArgsConstructor;
@@ -18,8 +19,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
@@ -30,6 +29,7 @@ public class StoreReviewService {
     private final StoreReviewRepository reviewRepository;
     private final StoreRepository storeRepository;
     private final TitleService titleService;
+    private final StoreReviewPicRepository storeReviewPicRepository;
 
     @Transactional
     public void addReview(Member member, Long storeId, ReviewDto reviewDto){
@@ -38,6 +38,17 @@ public class StoreReviewService {
 
         StoreReview storeReview = reviewDto.toEntity(store, member);
         reviewRepository.save(storeReview);
+
+        if (reviewDto.getReviewPics() != null) { // 리뷰 사진이 첨부 되지 않았을 경우
+            reviewDto.getReviewPics().forEach(picUrl -> {
+                StoreReviewPic pic = StoreReviewPic.builder()
+                        .picUrl(picUrl)
+                        .reviewId(storeReview)
+                        .store(store)
+                        .build();
+                storeReviewPicRepository.save(pic);
+            });
+        }
 
         log.info("member {} add review store ID : {}", member.getId(), store.getId());
 
@@ -72,14 +83,6 @@ public class StoreReviewService {
         return reviewRepository.findReviewWithDetailsByStoreDesc(storeId).stream()
                 .map(StoreReview::toStoreReviewResponse)
                 .toList();
-    }
-
-    public List<String> getReviewPicsByStoreId(Long id) {
-        return reviewRepository.findByStoreId(id).stream()
-                .flatMap(storeReview -> storeReview.getReviewPics().stream())
-                .map(StoreReviewPic::getPicUrl)
-                .filter(Objects::nonNull)
-                .collect(Collectors.toList());
     }
 
     @Transactional
