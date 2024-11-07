@@ -6,7 +6,7 @@ import com.dongyang.dongpo.dto.bookmark.BookmarkDto;
 import com.dongyang.dongpo.dto.mypage.MyPageDto;
 import com.dongyang.dongpo.dto.mypage.MyPageUpdateDto;
 import com.dongyang.dongpo.dto.store.ReviewDto;
-import com.dongyang.dongpo.dto.store.StoreIndexDto;
+import com.dongyang.dongpo.dto.store.StoreSummaryResponseDto;
 import com.dongyang.dongpo.service.mypage.MyPageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -28,7 +28,7 @@ public class MyPageController {
     }
 
     @GetMapping("/stores")
-    public ResponseEntity<ApiResponse<List<StoreIndexDto>>> getMyRegisteredStores(@AuthenticationPrincipal Member member) {
+    public ResponseEntity<ApiResponse<List<StoreSummaryResponseDto>>> getMyRegisteredStores(@AuthenticationPrincipal Member member) {
         return ResponseEntity.ok(new ApiResponse<>(myPageService.getMyRegisteredStores(member)));
     }
 
