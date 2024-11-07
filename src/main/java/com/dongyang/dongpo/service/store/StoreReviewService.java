@@ -5,12 +5,14 @@ import com.dongyang.dongpo.domain.member.Title;
 import com.dongyang.dongpo.domain.store.Store;
 import com.dongyang.dongpo.domain.store.StoreReview;
 import com.dongyang.dongpo.domain.store.StoreReviewPic;
+import com.dongyang.dongpo.domain.store.StoreVisitCert;
 import com.dongyang.dongpo.dto.store.ReviewDto;
 import com.dongyang.dongpo.dto.store.StoreReviewResponseDto;
 import com.dongyang.dongpo.exception.CustomException;
 import com.dongyang.dongpo.exception.ErrorCode;
 import com.dongyang.dongpo.repository.store.StoreRepository;
 import com.dongyang.dongpo.repository.store.StoreReviewRepository;
+import com.dongyang.dongpo.repository.store.StoreVisitCertRepository;
 import com.dongyang.dongpo.service.title.TitleService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,6 +31,7 @@ public class StoreReviewService {
 
     private final StoreReviewRepository reviewRepository;
     private final StoreRepository storeRepository;
+    private final StoreVisitCertRepository storeVisitCertRepository;
     private final TitleService titleService;
 
     @Transactional
@@ -94,5 +97,16 @@ public class StoreReviewService {
 
         review.delete();
         log.info("Deleted Review: {} by Member: {}", reviewId, member.getEmail());
+    }
+
+	public Boolean checkPossibleAddReview(Member member, Long storeId) {
+        Store store = storeRepository.findById(storeId)
+            .orElseThrow(() -> new CustomException(ErrorCode.STORE_NOT_FOUND));
+
+        StoreVisitCert storeVisitCert = storeVisitCertRepository
+            .findTopByStoreAndMemberAndIsVisitSuccessfulTrueOrderByCertDateDesc(store, member)
+            .orElseThrow(() -> new CustomException(ErrorCode.VISIT_CERT_NOT_FOUND));
+
+        return storeVisitCert.isPossibleAddReview();
     }
 }
