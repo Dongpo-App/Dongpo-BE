@@ -5,7 +5,7 @@ import com.dongyang.dongpo.dto.bookmark.BookmarkDto;
 import com.dongyang.dongpo.dto.mypage.MyPageDto;
 import com.dongyang.dongpo.dto.mypage.MyPageUpdateDto;
 import com.dongyang.dongpo.dto.store.ReviewDto;
-import com.dongyang.dongpo.dto.store.StoreIndexDto;
+import com.dongyang.dongpo.dto.store.StoreSummaryResponseDto;
 import com.dongyang.dongpo.service.bookmark.BookmarkService;
 import com.dongyang.dongpo.service.member.MemberService;
 import com.dongyang.dongpo.service.store.StoreReviewService;
@@ -32,7 +32,7 @@ public class MyPageService {
         return memberService.getMemberInfoIndex(member);
     }
 
-    public List<StoreIndexDto> getMyRegisteredStores(Member member) {
+    public List<StoreSummaryResponseDto> getMyRegisteredStores(Member member) {
         return storeService.getMyRegisteredStores(member);
     }
 
