@@ -9,6 +9,7 @@ public enum ErrorCode {
     BOOKMARK_NOT_FOUND(404, "북마크를 찾지 못하였습니다."),
     STORE_NOT_FOUND(404, "점포를 찾지 못하였습니다."),
     REVIEW_NOT_FOUND(404, "리뷰를 찾기 못하였습니다."),
+    VISIT_CERT_NOT_FOUND(404, "방문인증내역을 찾지 못하였습니다."),
 
     SOCIAL_TOKEN_NOT_VALID(401, "소셜토큰이 유효하지 않습니다."),
     CLAIMS_NOT_VALID(401, "토큰 정보가 유효하지 않습니다."),

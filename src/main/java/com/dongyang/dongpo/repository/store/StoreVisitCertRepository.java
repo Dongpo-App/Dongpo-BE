@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface StoreVisitCertRepository extends JpaRepository<StoreVisitCert, Long> {
 
@@ -26,6 +27,9 @@ public interface StoreVisitCertRepository extends JpaRepository<StoreVisitCert, 
     List<Member> findTopVisitorsByStore(@Param("store") Store store);
 
     List<StoreVisitCert> findByStoreAndAndIsVisitSuccessfulTrue(Store store);
+
+    // 가장 최근 방문인증 성공 내역
+    Optional<StoreVisitCert> findTopByStoreAndMemberAndIsVisitSuccessfulTrueOrderByCertDateDesc(Store store, Member member);
 
     Long countByStoreAndIsVisitSuccessfulTrue(Store store); // 점포 방문인증 성공 카운트
     Long countByMemberAndIsVisitSuccessfulIsTrue(Member member); // 방문 인증 성공 카운트
