@@ -115,19 +115,15 @@ class StoreServiceTest {
     void detailStore() {
         // given
         Store store = mock(Store.class);
-        Member member = mock(Member.class);
         Optional<Store> optionalStore = Optional.of(store);
-        OpenPossibility openPossibility = mock(OpenPossibility.class);
-        StoreDto storeDto = mock(StoreDto.class);
+        StoreDetailsResponseDto storeDetailsResponseDto = mock(StoreDetailsResponseDto.class);
 
         when(storeRepository.findById(any())).thenReturn(optionalStore);
-        when(openPossibilityService.getOpenPossibility(any())).thenReturn(openPossibility);
-        when(bookmarkService.isStoreBookmarkedByMember(any(), any())).thenReturn(true);
         when(bookmarkService.getBookmarkCountByStore(any())).thenReturn(1L);
-        when(store.toResponse(any(), anyBoolean(), anyLong())).thenReturn(storeDto);
+        when(store.toDetailsResponse(anyLong())).thenReturn(storeDetailsResponseDto);
 
         // when
-        storeService.detailStore(store.getId(), member);
+        storeService.detailStore(store.getId());
 
         // then
         verify(storeRepository).findById(any());
@@ -151,22 +147,22 @@ class StoreServiceTest {
         Member member = mock(Member.class);
         Store store1 = mock(Store.class);
         Store store2 = mock(Store.class);
-        StoreIndexDto storeIndexDto1 = mock(StoreIndexDto.class);
-        StoreIndexDto storeIndexDto2 = mock(StoreIndexDto.class);
+        StoreSummaryResponseDto storeSummaryResponseDto1 = mock(StoreSummaryResponseDto.class);
+        StoreSummaryResponseDto storeSummaryResponseDto2 = mock(StoreSummaryResponseDto.class);
 
         when(storeRepository.findByMember(member)).thenReturn(List.of(store1, store2));
-        when(store1.toIndexResponse()).thenReturn(storeIndexDto1);
-        when(store2.toIndexResponse()).thenReturn(storeIndexDto2);
+        when(store1.toSummaryResponse()).thenReturn(storeSummaryResponseDto1);
+        when(store2.toSummaryResponse()).thenReturn(storeSummaryResponseDto2);
 
         // when
-        List<StoreIndexDto> storeIndexDtos = storeService.getMyRegisteredStores(member);
+        List<StoreSummaryResponseDto> storeSummaryResponseDtos = storeService.getMyRegisteredStores(member);
 
         // then
-        assertThat(storeIndexDtos).hasSize(2);
-        assertThat(storeIndexDtos).contains(storeIndexDto1, storeIndexDto2);
+        assertThat(storeSummaryResponseDtos).hasSize(2);
+        assertThat(storeSummaryResponseDtos).contains(storeSummaryResponseDto1, storeSummaryResponseDto2);
         verify(storeRepository).findByMember(member);
-        verify(store1).toIndexResponse();
-        verify(store2).toIndexResponse();
+        verify(store1).toSummaryResponse();
+        verify(store2).toSummaryResponse();
     }
 
     @Test

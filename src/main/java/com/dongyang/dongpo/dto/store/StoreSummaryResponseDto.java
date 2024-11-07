@@ -2,20 +2,17 @@ package com.dongyang.dongpo.dto.store;
 
 import com.dongyang.dongpo.domain.store.Store;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Data
+@Getter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class StoreIndexDto {
+public class StoreSummaryResponseDto {
     private Long id;
     private String name;
     private Double latitude;
