@@ -22,21 +22,27 @@ public class StoreController {
 
     @GetMapping("")
     @Operation(summary = "현재 위치 기준 주변 점포 조회")
-    public ResponseEntity<ApiResponse<List<StoreIndexDto>>> getStoresByCurrentLocation(@ModelAttribute LatLong latLong,
-                                                                                       @AuthenticationPrincipal Member member) {
+    public ResponseEntity<ApiResponse<List<StoreSummaryResponseDto>>> getStoresByCurrentLocation(@ModelAttribute LatLong latLong,
+                                                                                                 @AuthenticationPrincipal Member member) {
         return ResponseEntity.ok(new ApiResponse<>(storeService.findStoresByCurrentLocation(latLong, member)));
     }
 
     @GetMapping("/{id}/summary")
     @Operation(summary = "점포 간략 정보 조회")
-    public ResponseEntity<ApiResponse<StoreIndexDto>> getStoreSummary(@PathVariable Long id, @AuthenticationPrincipal Member member) {
-        return ResponseEntity.ok(new ApiResponse<>(storeService.getStoreSummary(id, member)));
+    public ResponseEntity<ApiResponse<StoreSummaryResponseDto>> getStoreSummary(@PathVariable Long id) {
+        return ResponseEntity.ok(new ApiResponse<>(storeService.getStoreSummary(id)));
     }
 
     @GetMapping("/{id}")
     @Operation(summary = "점포 상세 조회")
-    public ResponseEntity<ApiResponse<StoreDto>> detailStore(@PathVariable Long id, @AuthenticationPrincipal Member member) {
-        return ResponseEntity.ok(new ApiResponse<>(storeService.detailStore(id, member)));
+    public ResponseEntity<ApiResponse<StoreDetailsResponseDto>> detailStore(@PathVariable Long id) {
+        return ResponseEntity.ok(new ApiResponse<>(storeService.detailStore(id)));
+    }
+
+    @GetMapping("/{id}/most-visited")
+    @Operation(summary = "점포에 가장 많이 방문한 사람")
+    public ResponseEntity<ApiResponse<List<MostVisitMemberResponse>>> storeMostVisitMembers(@PathVariable Long id) {
+        return ResponseEntity.ok(new ApiResponse<>(storeService.getStoreMostVisitMembers(id)));
     }
 
     @PostMapping("")

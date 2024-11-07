@@ -4,6 +4,7 @@ import com.dongyang.dongpo.domain.member.Member;
 import com.dongyang.dongpo.domain.member.Title;
 import com.dongyang.dongpo.domain.store.*;
 import com.dongyang.dongpo.dto.bookmark.BookmarkDto;
+import com.dongyang.dongpo.dto.bookmark.StoreBookmarkResponseDto;
 import com.dongyang.dongpo.dto.location.CoordinateRange;
 import com.dongyang.dongpo.dto.location.LatLong;
 import com.dongyang.dongpo.dto.store.*;
@@ -46,7 +47,7 @@ public class StoreService {
     private final TitleService titleService;
     private final OpenPossibilityService openPossibilityService;
     private final BookmarkService bookmarkService;
-    private final StoreReviewService storeReviewService;
+    private final StoreReviewPicService storeReviewPicService;
     private final LocationUtil locationUtil;
     private final StoreUtil storeUtil;
     private final MemberUtil memberUtil;
@@ -88,16 +89,10 @@ public class StoreService {
     }
 
     public List<StoreDto> findAll() {
-        List<Store> stores = storeRepository.findAll();
-        List<StoreDto> storeResponse = new ArrayList<>();
-
-        for (Store store : stores)
-            storeResponse.add(store.toResponse());
-
-        return storeResponse;
+        return storeRepository.findAll().stream().map(Store::toResponse).toList();
     }
 
-    public List<StoreIndexDto> findStoresByCurrentLocation(LatLong latLong, Member member) {
+    public List<StoreSummaryResponseDto> findStoresByCurrentLocation(LatLong latLong, Member member) {
         CoordinateRange coordinateRange = locationUtil.calcCoordinateRangeByCurrentLocation(latLong);
 
         List<BookmarkDto> myBookmarks = bookmarkService.getMyBookmarks(member);
@@ -105,41 +100,43 @@ public class StoreService {
         return storeRepository.findStoresWithinRange(coordinateRange.getMinLat(), coordinateRange.getMaxLat(),
                                                      coordinateRange.getMinLong(), coordinateRange.getMaxLong())
                 .stream()
-                .map(store -> {
-                    boolean isBookmarked = myBookmarks.stream()
-                            .anyMatch(bookmark -> store.getId().equals(bookmark.getStoreId()));
-
-                    return store.toIndexResponse(isBookmarked, openPossibilityService.getOpenPossibility(store));
-                })
+                .map(store -> store.toSummaryResponse(
+                        openPossibilityService.getOpenPossibility(store),
+                        myBookmarks.stream().anyMatch(bookmark -> store.getId().equals(bookmark.getStoreId()))
+                ))
                 .collect(toList());
     }
 
-    public StoreIndexDto getStoreSummary(Long id, Member member) {
+    // 점포 간략 정보 조회
+    public StoreSummaryResponseDto getStoreSummary(Long id) {
         Store store = storeRepository.findById(id)
                 .orElseThrow(() -> new CustomException(ErrorCode.STORE_NOT_FOUND));
-
-        return store.toIndexResponse(openPossibilityService.getOpenPossibility(store),
-                                    bookmarkService.isStoreBookmarkedByMember(store, member),
-                                    storeReviewService.getReviewPicsByStoreId(id));
+        return store.toSummaryResponse(
+                openPossibilityService.getOpenPossibility(store),
+                storeReviewPicService.getReviewPicsByStore(store)
+        );
     }
 
-    public StoreDto detailStore(Long id, Member member) {
+    // 점포 상세 정보 조회
+    public StoreDetailsResponseDto detailStore(Long id) {
         Store store = storeRepository.findById(id)
                 .orElseThrow(() -> new CustomException(ErrorCode.STORE_NOT_FOUND));
+        return store.toDetailsResponse(bookmarkService.getBookmarkCountByStore(store));
+    }
 
-        List<Member> mostVisitMembers = storeVisitCertRepository.findTopVisitorsByStore(store);
+    // 점포에 가장 많이 방문한 사용자 조회
+    public List<MostVisitMemberResponse> getStoreMostVisitMembers(Long id) {
+        Store store = storeRepository.findById(id)
+                .orElseThrow(() -> new CustomException(ErrorCode.STORE_NOT_FOUND));
+        return storeVisitCertRepository.findTopVisitorsByStore(store).stream()
+                .map(m -> MostVisitMemberResponse.of(m.getId(), m.getNickname(), m.getMainTitle(), m.getProfilePic()))
+                .toList();
+    }
 
-        StoreDto response = store.toResponse(
-                openPossibilityService.getOpenPossibility(store),
-                bookmarkService.isStoreBookmarkedByMember(store, member),
-                bookmarkService.getBookmarkCountByStore(store)
-        );
-
-        response.setMostVisitMembers(mostVisitMembers.stream()
-            .map(m -> MostVisitMemberResponse.of(m.getId(), m.getNickname(), m.getMainTitle(), m.getProfilePic()))
-            .toList());
-
-        return response;
+    public StoreBookmarkResponseDto getStoreBookmarkInfo(Long id, Member member) {
+        Store store = storeRepository.findById(id)
+                .orElseThrow(() -> new CustomException(ErrorCode.STORE_NOT_FOUND));
+        return store.toBookmarkResponse(bookmarkService.getBookmarkCountByStore(store), bookmarkService.isStoreBookmarkedByMember(store, member));
     }
 
     @Transactional
@@ -223,10 +220,10 @@ public class StoreService {
         }
     }
 
-    public List<StoreIndexDto> getMyRegisteredStores(Member member) {
-        List<StoreIndexDto> storeIndexDtos = new ArrayList<>();
-        storeRepository.findByMember(member).forEach(store -> storeIndexDtos.add(store.toIndexResponse()));
-        return storeIndexDtos;
+    public List<StoreSummaryResponseDto> getMyRegisteredStores(Member member) {
+        List<StoreSummaryResponseDto> storeSummaryResponseDtos = new ArrayList<>();
+        storeRepository.findByMember(member).forEach(store -> storeSummaryResponseDtos.add(store.toSummaryResponse()));
+        return storeSummaryResponseDtos;
     }
 
     public Long getMyRegisteredStoreCount(Member member) {
