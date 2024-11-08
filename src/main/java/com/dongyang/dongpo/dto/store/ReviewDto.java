@@ -34,11 +34,39 @@ public class ReviewDto {
     private Integer reportCount;
 
     public StoreReview toEntity(Store store, Member member) {
-        return StoreReview.builder()
+        StoreReview storeReview = StoreReview.builder()
             .member(member)
             .store(store)
             .text(text)
             .reviewStar(reviewStar)
             .build();
+
+        if (reviewPics == null || reviewPics.isEmpty()) // 리뷰 사진이 첨부 되지 않았을 경우
+            return storeReview;
+
+        reviewPics.forEach(picUrl -> {
+            StoreReviewPic pic = StoreReviewPic.builder()
+                .picUrl(picUrl)
+                .build();
+            storeReview.addReviewPic(pic);
+        });
+
+        return storeReview;
+    }
+
+    public static ReviewDto toDto(StoreReview storeReview){
+        List<String> picUrlList = storeReview.getReviewPics().stream().map(StoreReviewPic::getPicUrl).toList();
+
+        return ReviewDto.builder()
+                .id(storeReview.getId())
+                .storeId(storeReview.getStore().getId())
+                .memberId(storeReview.getMember().getId())
+                .reviewStar(storeReview.getReviewStar())
+                .text(storeReview.getText())
+                .reviewPics(picUrlList)
+                .registerDate(storeReview.getRegisterDate())
+                .status(storeReview.getStatus())
+                .reportCount(storeReview.getReportCount())
+                .build();
     }
 }
