@@ -1,7 +1,6 @@
 package com.dongyang.dongpo.domain.store;
 
 import com.dongyang.dongpo.domain.member.Member;
-import com.dongyang.dongpo.dto.bookmark.StoreBookmarkResponseDto;
 import com.dongyang.dongpo.dto.store.*;
 import jakarta.persistence.*;
 import lombok.*;
@@ -9,6 +8,7 @@ import lombok.*;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -69,14 +69,6 @@ public class Store {
 
     @OneToMany(mappedBy = "store", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @Builder.Default
-    private List<StoreReviewPic> reviewPics = new ArrayList<>();
-
-    @OneToMany(mappedBy = "store", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @Builder.Default
-    private List<StoreBookmark> bookmarks = new ArrayList<>();
-
-    @OneToMany(mappedBy = "store", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @Builder.Default
     private List<StoreVisitCert> storeVisitCerts = new ArrayList<>();
 
     public enum StoreStatus {
@@ -91,8 +83,22 @@ public class Store {
         CASH, CARD, TRANSFER
     }
 
-    // 어드민 페이지 점포 조회 응답 용
+
+
     public StoreDto toResponse() {
+        List<Store.OperatingDay> operatingDayValues = this.storeOperatingDays.stream()
+                .map(StoreOperatingDay::getOperatingDay)
+                .collect(Collectors.toList());
+
+        List<Store.PayMethod> payMethodValues = this.storePayMethods.stream()
+                .map(StorePayMethod::getPayMethod)
+                .collect(Collectors.toList());
+
+        List<ReviewDto> reviewDtos = this.reviews.stream()
+                .filter(review -> review.getStatus().equals(StoreReview.ReviewStatus.VISIBLE))
+                .map(StoreReview::toResponse)
+                .toList();
+
         return StoreDto.builder()
                 .id(id)
                 .name(name)
@@ -104,19 +110,15 @@ public class Store {
                 .openTime(openTime)
                 .closeTime(closeTime)
                 .isToiletValid(isToiletValid)
-                .operatingDays(storeOperatingDays.stream()
-                        .map(StoreOperatingDay::getOperatingDay)
-                        .collect(Collectors.toList()))
-                .payMethods(storePayMethods.stream()
-                        .map(StorePayMethod::getPayMethod)
-                        .collect(Collectors.toList()))
+                .operatingDays(operatingDayValues)
+                .payMethods(payMethodValues)
                 .status(status)
+                .reviews(reviewDtos)
                 .build();
     }
 
-    // 마이페이지 내가 등록한 점포 조회 응답 용
-    public StoreSummaryResponseDto toSummaryResponse() {
-        return StoreSummaryResponseDto.builder()
+    public StoreIndexDto toIndexResponse() {
+        return StoreIndexDto.builder()
                 .id(id)
                 .name(name)
                 .address(address)
@@ -124,21 +126,20 @@ public class Store {
                 .build();
     }
 
-    // 점포 간략 정보 응답
-    public StoreSummaryResponseDto toSummaryResponse(OpenPossibility openPossibility, List<String> reviewPics) {
-        return StoreSummaryResponseDto.builder()
+    public StoreIndexDto toIndexResponse(OpenPossibility openPossibility, Boolean isBookmarked, List<String> reviewPics) {
+        return StoreIndexDto.builder()
                 .id(id)
                 .name(name)
                 .address(address)
                 .status(status)
                 .openPossibility(openPossibility)
+                .isBookmarked(isBookmarked)
                 .reviewPics(reviewPics)
                 .build();
     }
 
-    // 지도 내 주변 점포 조회 응답
-    public StoreSummaryResponseDto toSummaryResponse(OpenPossibility openPossibility, Boolean isBookmarked) {
-        return StoreSummaryResponseDto.builder()
+    public StoreIndexDto toIndexResponse(Boolean isBookmarked, OpenPossibility openPossibility) {
+        return StoreIndexDto.builder()
                 .id(id)
                 .name(name)
                 .latitude(latitude)
@@ -148,25 +149,50 @@ public class Store {
                 .isBookmarked(isBookmarked)
                 .build();
     }
+          
+    public StoreDto toResponse(OpenPossibility openPossibility, boolean isBookmarked, Long bookmarkCount) {
+        List<Store.OperatingDay> operatingDayValues = this.storeOperatingDays.stream()
+                .map(StoreOperatingDay::getOperatingDay)
+                .collect(Collectors.toList());
 
-    public StoreDetailsResponseDto toDetailsResponse(Long storeBookmarkCount) {
-        return StoreDetailsResponseDto.builder()
+        List<Store.PayMethod> payMethodValues = this.storePayMethods.stream()
+                .map(StorePayMethod::getPayMethod)
+                .collect(Collectors.toList());
+
+        List<ReviewDto> reviewDtos = this.reviews.stream()
+                .sorted(Comparator.comparingLong(StoreReview::getId).reversed())
+                .map(StoreReview::toResponse)
+                .limit(3)
+                .toList();
+
+        Long visitSuccessfulCount = storeVisitCerts.stream()
+                .filter(StoreVisitCert::getIsVisitSuccessful)
+                .count();
+
+        Long visitFailCount = storeVisitCerts.stream()
+                .filter(cert -> !cert.getIsVisitSuccessful())
+                .count();
+
+        return StoreDto.builder()
                 .id(id)
+                .name(name)
+                .address(address)
+                .latitude(latitude)
+                .longitude(longitude)
+                .reportCount(reportCount)
+                .memberId(member.getId())
                 .openTime(openTime)
                 .closeTime(closeTime)
                 .isToiletValid(isToiletValid)
-                .payMethods(storePayMethods.stream().map(StorePayMethod::getPayMethod).toList())
-                .operatingDays(storeOperatingDays.stream().map(StoreOperatingDay::getOperatingDay).toList())
-                .visitSuccessfulCount(storeVisitCerts.stream().filter(StoreVisitCert::getIsVisitSuccessful).count())
-                .visitFailCount(storeVisitCerts.stream().filter(cert -> !cert.getIsVisitSuccessful()).count())
-                .bookmarkCount(storeBookmarkCount)
-                .build();
-    }
-
-    public StoreBookmarkResponseDto toBookmarkResponse(Long bookmarkCount, Boolean isBookmarked) {
-        return StoreBookmarkResponseDto.builder()
-                .bookmarkCount((long) bookmarks.size())
-                .isMemberBookmarked(isBookmarked)
+                .operatingDays(operatingDayValues)
+                .payMethods(payMethodValues)
+                .status(status)
+                .reviews(reviewDtos)
+                .openPossibility(openPossibility)
+                .isBookmarked(isBookmarked)
+                .visitSuccessfulCount(visitSuccessfulCount)
+                .visitFailCount(visitFailCount)
+                .bookmarkCount(bookmarkCount)
                 .build();
     }
 

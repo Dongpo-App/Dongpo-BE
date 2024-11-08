@@ -20,10 +20,6 @@ public class StoreReviewPic {
     @JoinColumn(name = "review_id")
     private StoreReview reviewId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "store_id")
-    private Store store;
-
     @Column(length = 128)
     private String picUrl;
 
