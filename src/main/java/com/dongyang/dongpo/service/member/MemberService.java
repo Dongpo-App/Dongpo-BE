@@ -181,12 +181,14 @@ public class MemberService {
         tokenService.expireTokens(member.getEmail(), authorization);
     }
 
+    @Transactional
     public void handleLeave(Member member, String authorization) {
         Member existingMember = memberRepository.findById(member.getId())
                 .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 
-        existingMember.setMemberStatusLeave();
+        String leavingMemberEmail = existingMember.getEmail();
         handleLogout(existingMember, authorization);
-        log.info("Member {} - LEAVE", existingMember.getEmail());
+        existingMember.setMemberStatusLeave();
+        log.info("Member {} - LEAVE", leavingMemberEmail);
     }
 }
