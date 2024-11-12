@@ -67,7 +67,7 @@ public class StoreReviewService {
         return review.toResponse();
     }
 
-    public List<StoreReviewResponseDto> getReviewByStore(final Long storeId) {
+    public List<StoreReviewResponseDto> getReviewsByStore(final Long storeId) {
         if (!storeRepository.existsById(storeId))
             throw new CustomException(ErrorCode.STORE_NOT_FOUND); // 추후 의존성 수정
 

@@ -27,7 +27,7 @@ public class ReviewDto {
     private String memberMainTitle;
     private String memberProfilePic;
     private Double reviewStar;
-    private String text;
+    private String reviewText;
     private List<String> reviewPics;
     private LocalDateTime registerDate;
     private StoreReview.ReviewStatus status;
@@ -37,7 +37,7 @@ public class ReviewDto {
         StoreReview storeReview = StoreReview.builder()
             .member(member)
             .store(store)
-            .text(text)
+            .text(reviewText)
             .reviewStar(reviewStar)
             .build();
 
@@ -52,21 +52,5 @@ public class ReviewDto {
         });
 
         return storeReview;
-    }
-
-    public static ReviewDto toDto(StoreReview storeReview){
-        List<String> picUrlList = storeReview.getReviewPics().stream().map(StoreReviewPic::getPicUrl).toList();
-
-        return ReviewDto.builder()
-                .id(storeReview.getId())
-                .storeId(storeReview.getStore().getId())
-                .memberId(storeReview.getMember().getId())
-                .reviewStar(storeReview.getReviewStar())
-                .text(storeReview.getText())
-                .reviewPics(picUrlList)
-                .registerDate(storeReview.getRegisterDate())
-                .status(storeReview.getStatus())
-                .reportCount(storeReview.getReportCount())
-                .build();
     }
 }
