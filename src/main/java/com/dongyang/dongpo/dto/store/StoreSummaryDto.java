@@ -15,7 +15,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class StoreIndexDto {
+public class StoreSummaryDto {
     private Long id;
     private String name;
     private Double latitude;
