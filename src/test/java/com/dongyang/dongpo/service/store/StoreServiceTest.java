@@ -196,7 +196,7 @@ class StoreServiceTest {
         Store store2 = mock(Store.class);
         Store store3 = mock(Store.class);
 
-        when(storeRepository.findStoresByMemberAgeWithMostVisits(anyInt(), anyInt(), any(Pageable.class)))
+        when(storeRepository.findStoresByMemberAgeWithMostVisits(anyInt(), any(Pageable.class)))
             .thenReturn(List.of(store1, store2, store3));
 
         // when
@@ -205,8 +205,7 @@ class StoreServiceTest {
         // then
         assertThat(result.getRecommendStores()).hasSize(3);
         assertThat(result.getRecommendationCategory()).isEqualTo("20");
-        verify(storeRepository, times(1)).findStoresByMemberAgeWithMostVisits(anyInt(),
-			anyInt() ,any(Pageable.class));
+        verify(storeRepository, times(1)).findStoresByMemberAgeWithMostVisits(anyInt(), any(Pageable.class));
     }
 
     @Test

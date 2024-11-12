@@ -241,8 +241,7 @@ public class StoreService {
     public RecommendResponse recommendStoreByAge(Member member) {
         Pageable pageable = PageRequest.of(0, 3);
         String ageGroup = memberUtil.getAgeGroup(member.getBirthyear());
-        List<Store> stores = storeRepository.findStoresByMemberAgeWithMostVisits(Integer.parseInt(ageGroup),
-			Integer.parseInt(member.getBirthyear()), pageable);
+        List<Store> stores = storeRepository.findStoresByMemberAgeWithMostVisits(Integer.parseInt(ageGroup), pageable);
 
         return RecommendResponse.fromAge(stores, ageGroup);
     }
