@@ -29,7 +29,7 @@ public interface StoreVisitCertRepository extends JpaRepository<StoreVisitCert, 
     List<StoreVisitCert> findByStoreAndAndIsVisitSuccessfulTrue(Store store);
 
     // 가장 최근 방문인증 성공 내역
-    Optional<StoreVisitCert> findTopByStoreAndMemberAndIsVisitSuccessfulTrueOrderByCertDateDesc(Store store, Member member);
+    Optional<StoreVisitCert> findTopByStoreAndMemberOrderByCertDateDesc(Store store, Member member);
 
     Long countByStoreAndIsVisitSuccessfulTrue(Store store); // 점포 방문인증 성공 카운트
     Long countByMemberAndIsVisitSuccessfulIsTrue(Member member); // 방문 인증 성공 카운트

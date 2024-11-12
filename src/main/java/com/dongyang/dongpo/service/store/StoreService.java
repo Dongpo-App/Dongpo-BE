@@ -312,4 +312,15 @@ public class StoreService {
                 titleService.addTitle(member, Title.FAILED_TO_VISIT);
         }
     }
+
+    public Boolean checkVisitCertBy24Hours(Long storeId, Member member) {
+        Store store = storeRepository.findById(storeId)
+                .orElseThrow(() -> new CustomException(ErrorCode.STORE_NOT_FOUND));
+
+        StoreVisitCert storeVisitCert = storeVisitCertRepository
+                .findTopByStoreAndMemberOrderByCertDateDesc(store, member)
+                .orElseThrow(() -> new CustomException(ErrorCode.VISIT_CERT_NOT_FOUND));
+
+        return storeVisitCert.is24HoursCheck();
+    }
 }

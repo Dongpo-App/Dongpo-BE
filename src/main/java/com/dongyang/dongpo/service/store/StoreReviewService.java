@@ -5,7 +5,6 @@ import com.dongyang.dongpo.domain.member.Title;
 import com.dongyang.dongpo.domain.store.Store;
 import com.dongyang.dongpo.domain.store.StoreReview;
 import com.dongyang.dongpo.domain.store.StoreReviewPic;
-import com.dongyang.dongpo.domain.store.StoreVisitCert;
 import com.dongyang.dongpo.dto.store.ReviewDto;
 import com.dongyang.dongpo.dto.store.StoreReviewResponseDto;
 import com.dongyang.dongpo.exception.CustomException;
@@ -99,14 +98,4 @@ public class StoreReviewService {
         log.info("Deleted Review: {} by Member: {}", reviewId, member.getEmail());
     }
 
-	public Boolean checkPossibleAddReview(Member member, Long storeId) {
-        Store store = storeRepository.findById(storeId)
-            .orElseThrow(() -> new CustomException(ErrorCode.STORE_NOT_FOUND));
-
-        StoreVisitCert storeVisitCert = storeVisitCertRepository
-            .findTopByStoreAndMemberAndIsVisitSuccessfulTrueOrderByCertDateDesc(store, member)
-            .orElseThrow(() -> new CustomException(ErrorCode.VISIT_CERT_NOT_FOUND));
-
-        return storeVisitCert.isPossibleAddReview();
-    }
 }
