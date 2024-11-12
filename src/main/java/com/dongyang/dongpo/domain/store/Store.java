@@ -117,7 +117,7 @@ public class Store {
                 .build();
     }
 
-    public StoreSummaryDto toIndexResponse() {
+    public StoreSummaryDto toSummaryResponse() {
         return StoreSummaryDto.builder()
                 .id(id)
                 .name(name)
@@ -126,7 +126,7 @@ public class Store {
                 .build();
     }
 
-    public StoreSummaryDto toIndexResponse(OpenPossibility openPossibility, Boolean isBookmarked, List<String> reviewPics) {
+    public StoreSummaryDto toSummaryResponse(OpenPossibility openPossibility, Boolean isBookmarked, List<String> reviewPics) {
         return StoreSummaryDto.builder()
                 .id(id)
                 .name(name)
@@ -138,7 +138,7 @@ public class Store {
                 .build();
     }
 
-    public StoreSummaryDto toIndexResponse(Boolean isBookmarked, OpenPossibility openPossibility) {
+    public StoreSummaryDto toSummaryResponse(Boolean isBookmarked, OpenPossibility openPossibility) {
         return StoreSummaryDto.builder()
                 .id(id)
                 .name(name)

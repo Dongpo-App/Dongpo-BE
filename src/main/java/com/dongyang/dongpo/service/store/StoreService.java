@@ -109,7 +109,7 @@ public class StoreService {
                     boolean isBookmarked = myBookmarks.stream()
                             .anyMatch(bookmark -> store.getId().equals(bookmark.getStoreId()));
 
-                    return store.toIndexResponse(isBookmarked, openPossibilityService.getOpenPossibility(store));
+                    return store.toSummaryResponse(isBookmarked, openPossibilityService.getOpenPossibility(store));
                 })
                 .collect(toList());
     }
@@ -118,7 +118,7 @@ public class StoreService {
         Store store = storeRepository.findById(id)
                 .orElseThrow(() -> new CustomException(ErrorCode.STORE_NOT_FOUND));
 
-        return store.toIndexResponse(openPossibilityService.getOpenPossibility(store),
+        return store.toSummaryResponse(openPossibilityService.getOpenPossibility(store),
                                     bookmarkService.isStoreBookmarkedByMember(store, member),
                                     storeReviewService.getReviewPicsByStoreId(id));
     }
@@ -224,9 +224,7 @@ public class StoreService {
     }
 
     public List<StoreSummaryDto> getMyRegisteredStores(Member member) {
-        List<StoreSummaryDto> storeSummaryDtos = new ArrayList<>();
-        storeRepository.findByMember(member).forEach(store -> storeSummaryDtos.add(store.toIndexResponse()));
-        return storeSummaryDtos;
+        return storeRepository.findByMember(member).stream().map(Store::toSummaryResponse).toList();
     }
 
     public Long getMyRegisteredStoreCount(Member member) {
