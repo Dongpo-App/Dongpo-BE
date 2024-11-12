@@ -23,9 +23,8 @@ public class StoreReviewController {
     @PostMapping("/{storeId}")
     @Operation(summary = "리뷰 등록")
     public ResponseEntity<ApiResponse<String>> addReview(@AuthenticationPrincipal Member member,
-                                    @PathVariable Long storeId,
-                                    @RequestBody ReviewDto reviewDto) throws Exception {
-
+                                                         @PathVariable Long storeId,
+                                                         @RequestBody ReviewDto reviewDto) {
         reviewService.addReview(member, storeId, reviewDto);
         return ResponseEntity.ok(new ApiResponse<>("success"));
     }
@@ -33,7 +32,7 @@ public class StoreReviewController {
     @GetMapping("/{storeId}")
     @Operation(summary = "점포 리뷰 전체 조회")
     public ResponseEntity<ApiResponse<List<StoreReviewResponseDto>>> getReviewByStore(@PathVariable final Long storeId) {
-        return ResponseEntity.ok(new ApiResponse<>(reviewService.getReviewByStore(storeId)));
+        return ResponseEntity.ok(new ApiResponse<>(reviewService.getReviewsByStore(storeId)));
     }
 
     @DeleteMapping("/{reviewId}")
