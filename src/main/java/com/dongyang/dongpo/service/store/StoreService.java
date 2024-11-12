@@ -319,7 +319,10 @@ public class StoreService {
 
         StoreVisitCert storeVisitCert = storeVisitCertRepository
                 .findTopByStoreAndMemberOrderByCertDateDesc(store, member)
-                .orElseThrow(() -> new CustomException(ErrorCode.VISIT_CERT_NOT_FOUND));
+                .orElse(null);
+
+        if (storeVisitCert == null)
+            return false;
 
         return storeVisitCert.is24HoursCheck();
     }
