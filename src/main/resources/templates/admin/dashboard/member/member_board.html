@@ -20,7 +20,6 @@
                             <thead>
                             <tr>
                                 <th style="width: 10px">ID</th>
-                                <th>이름</th>
                                 <th>이메일</th>
                                 <th>닉네임</th>
                                 <th style="width: 100px"><input type="checkbox" id="selectAll" onclick="toggleCheckboxes(this)"></th>
@@ -29,7 +28,6 @@
                             <tbody>
                             <tr class="align-middle" th:each="member : ${members}">
                                 <td th:text="${member.id}"></td>
-                                <td th:text="${member.name}"></td>
                                 <td th:text="${member.email}"></td>
                                 <td th:text="${member.nickname}"></td>
                                 <td><input type="checkbox" name="selectedMembers" th:value="${member.id}"></td>

@@ -22,21 +22,12 @@ public class OpenPossibilityService {
         DayOfWeek dayOfWeek = now.getDayOfWeek(); // 현재 요일
         OpenTime openTime = getOpenTime(now); // 현재 시간대
 
-        // 해당 점포 방문인증 성공한 데이터만 조회
-        List<OpenPossibility> possibilities = storeVisitCertRepository.findByStoreAndAndIsVisitSuccessfulTrue(store)
+        // 현재 시간대, 요일에 방문인증 성공한 데이터만 필터링
+        boolean possibilities = storeVisitCertRepository.findByStoreAndAndIsVisitSuccessfulTrue(store)
                 .stream()
-                .map(s -> {
-                    if (s.getOpenTime().equals(openTime) && s.getOpenDay().equals(dayOfWeek))
-                        return OpenPossibility.HIGH; // 성공한 경우
-                    else
-                        return OpenPossibility.NONE; // 실패한 경우
-                })
-                .toList(); // 결과를 리스트로 수집
+                .anyMatch(s -> s.getOpenTime().equals(openTime) && s.getOpenDay().equals(dayOfWeek));
 
-        if (possibilities.contains(OpenPossibility.HIGH))
-            return OpenPossibility.HIGH; // 하나라도 HIGH가 있으면 HIGH 반환
-        else
-            return OpenPossibility.NONE; // 모두 NONE이면 NONE 반환
+        return possibilities ? OpenPossibility.HIGH : OpenPossibility.NONE;
 
     }
 
