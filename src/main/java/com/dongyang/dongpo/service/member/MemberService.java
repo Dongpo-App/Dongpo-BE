@@ -19,6 +19,7 @@ import com.dongyang.dongpo.service.token.TokenService;
 import com.dongyang.dongpo.util.jwt.JwtTokenProvider;
 import com.dongyang.dongpo.util.s3.S3Service;
 import io.jsonwebtoken.Claims;
+import io.micrometer.common.util.StringUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -57,6 +58,9 @@ public class MemberService {
     public AppleLoginResponse handleAppleLogin(Claims claims) {
         final String socialId = claims.get("sub", String.class);
         final String email = claims.get("email", String.class);
+
+        if (StringUtils.isBlank(email))
+            throw new CustomException(ErrorCode.MEMBER_ALREADY_LEFT);
 
         // 이미 존재하는 회원인지 검증
         if (validateMemberExistence(email, socialId)) {
@@ -99,7 +103,7 @@ public class MemberService {
             Member existingMember = memberRepository.findBySocialId(socialId)
                     .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 
-            // 탈퇴한 회원인 경우
+            // 탈퇴한 회원인 경우 (탈퇴 시 개인 정보를 모두 삭제하므로 이 검증 과정이 필수는 아님. 더블 체크를 위해 남겨둠.)
             if (existingMember.getStatus() == Member.Status.LEAVE)
                 throw new CustomException(ErrorCode.MEMBER_ALREADY_LEFT);
 
@@ -131,7 +135,7 @@ public class MemberService {
 
         refreshTokenRepository.save(refreshToken);
 
-        log.info("Registered Member {} successfully / id: {}", member.getEmail(), member.getId());
+        log.info("Registered Member {} successfully - id: {}", member.getEmail(), member.getId());
         return jwtToken;
     }
 
@@ -181,12 +185,14 @@ public class MemberService {
         tokenService.expireTokens(member.getEmail(), authorization);
     }
 
+    @Transactional
     public void handleLeave(Member member, String authorization) {
         Member existingMember = memberRepository.findById(member.getId())
                 .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 
-        existingMember.setMemberStatusLeave();
+        String leavingMemberEmail = existingMember.getEmail();
         handleLogout(existingMember, authorization);
-        log.info("Member {} - LEAVE", existingMember.getEmail());
+        existingMember.setMemberStatusLeave();
+        log.info("Member {} - LEAVE", leavingMemberEmail);
     }
 }

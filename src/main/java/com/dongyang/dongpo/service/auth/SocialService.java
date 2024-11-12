@@ -159,9 +159,19 @@ public class SocialService {
     }
 
     public void doLeave(Member member, String authorization) {
-        if (member.getSocialType() == SocialType.APPLE)
-            appleLoginService.revokeToken(member, authorization);
-        else
-            memberService.handleLeave(member, authorization);
+        // 추후 소셜 로그인 플랫폼 추가 시 수정
+        switch (member.getSocialType()) {
+            case APPLE:
+                appleLoginService.revokeToken(member, authorization);
+                break;
+            case KAKAO:
+                memberService.handleLeave(member, authorization);
+                break;
+//            case NAVER:
+//                memberService.handleLeave(member, authorization);
+//                break;
+            default:
+                throw new CustomException(ErrorCode.MALFORMED_TOKEN);
+        }
     }
 }

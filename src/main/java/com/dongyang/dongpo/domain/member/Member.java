@@ -19,6 +19,8 @@ import java.util.Set;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name="member_table")
 public class Member implements UserDetails {
+    private static final String LEFT_MEMBER_NICKNAME = "탈퇴한사용자";
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -78,8 +80,15 @@ public class Member implements UserDetails {
     }
 
     public void setMemberStatusLeave() {
-        this.status = Status.LEAVE;
+        this.email = null;
+        this.nickname = LEFT_MEMBER_NICKNAME + this.id;
+//        this.profilePic = null; // S3에서도 삭제 처리?
+        this.gender = null;
+        this.birthyear = null;
+        this.birthday = null;
+        this.socialId = null;
         this.leaveDate = LocalDateTime.now();
+        this.status = Status.LEAVE;
     }
 
     public static Member toEntity(UserInfo userInfo){
