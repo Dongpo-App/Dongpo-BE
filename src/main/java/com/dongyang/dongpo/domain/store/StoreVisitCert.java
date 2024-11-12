@@ -48,6 +48,6 @@ public class StoreVisitCert {
     // 24시간 이내라면 True, 아니라면 False
     public boolean is24HoursCheck() {
         LocalDateTime now = LocalDateTime.now();
-		return now.isBefore(certDate.plusHours(24));
+		return now.isAfter(certDate.plusHours(24));
 	}
 }
