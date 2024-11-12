@@ -44,9 +44,9 @@ public class StoreVisitCert {
     @Column(columnDefinition = "VARCHAR(255)")
     private OpenTime openTime;
 
-    // 현재 시간이 방문 인증 후 24시간 이내인지 확인 (리뷰 작성 가능 여부)
+    // 현재 시간이 방문 인증 후 24시간 이내인지 확인
     // 24시간 이내라면 True, 아니라면 False
-    public boolean isPossibleAddReview() {
+    public boolean is24HoursCheck() {
         LocalDateTime now = LocalDateTime.now();
 		return now.isBefore(certDate.plusHours(24));
 	}

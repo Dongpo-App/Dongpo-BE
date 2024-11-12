@@ -44,13 +44,4 @@ public class StoreReviewController {
         reviewService.deleteReview(member, reviewId);
         return ResponseEntity.ok(new ApiResponse<>("success"));
     }
-
-    @GetMapping("/{storeId}/check")
-    @Operation(summary = "리뷰 작성 가능 확인 - 방문 인증 후 24시간 이내")
-    public ResponseEntity<ApiResponse<Boolean>> checkReview(
-                                    @AuthenticationPrincipal Member member,
-                                    @PathVariable Long storeId) {
-
-        return ResponseEntity.ok(new ApiResponse<>(reviewService.checkPossibleAddReview(member, storeId)));
-    }
 }
