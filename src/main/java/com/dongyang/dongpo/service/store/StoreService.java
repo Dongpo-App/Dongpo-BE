@@ -97,7 +97,7 @@ public class StoreService {
         return storeResponse;
     }
 
-    public List<StoreIndexDto> findStoresByCurrentLocation(LatLong latLong, Member member) {
+    public List<StoreSummaryDto> findStoresByCurrentLocation(LatLong latLong, Member member) {
         CoordinateRange coordinateRange = locationUtil.calcCoordinateRangeByCurrentLocation(latLong);
 
         List<BookmarkDto> myBookmarks = bookmarkService.getMyBookmarks(member);
@@ -114,7 +114,7 @@ public class StoreService {
                 .collect(toList());
     }
 
-    public StoreIndexDto getStoreSummary(Long id, Member member) {
+    public StoreSummaryDto getStoreSummary(Long id, Member member) {
         Store store = storeRepository.findById(id)
                 .orElseThrow(() -> new CustomException(ErrorCode.STORE_NOT_FOUND));
 
@@ -223,10 +223,10 @@ public class StoreService {
         }
     }
 
-    public List<StoreIndexDto> getMyRegisteredStores(Member member) {
-        List<StoreIndexDto> storeIndexDtos = new ArrayList<>();
-        storeRepository.findByMember(member).forEach(store -> storeIndexDtos.add(store.toIndexResponse()));
-        return storeIndexDtos;
+    public List<StoreSummaryDto> getMyRegisteredStores(Member member) {
+        List<StoreSummaryDto> storeSummaryDtos = new ArrayList<>();
+        storeRepository.findByMember(member).forEach(store -> storeSummaryDtos.add(store.toIndexResponse()));
+        return storeSummaryDtos;
     }
 
     public Long getMyRegisteredStoreCount(Member member) {

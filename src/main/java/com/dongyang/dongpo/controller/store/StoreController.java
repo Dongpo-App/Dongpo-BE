@@ -22,14 +22,14 @@ public class StoreController {
 
     @GetMapping("")
     @Operation(summary = "현재 위치 기준 주변 점포 조회")
-    public ResponseEntity<ApiResponse<List<StoreIndexDto>>> getStoresByCurrentLocation(@ModelAttribute LatLong latLong,
-                                                                                       @AuthenticationPrincipal Member member) {
+    public ResponseEntity<ApiResponse<List<StoreSummaryDto>>> getStoresByCurrentLocation(@ModelAttribute LatLong latLong,
+                                                                                         @AuthenticationPrincipal Member member) {
         return ResponseEntity.ok(new ApiResponse<>(storeService.findStoresByCurrentLocation(latLong, member)));
     }
 
     @GetMapping("/{id}/summary")
     @Operation(summary = "점포 간략 정보 조회")
-    public ResponseEntity<ApiResponse<StoreIndexDto>> getStoreSummary(@PathVariable Long id, @AuthenticationPrincipal Member member) {
+    public ResponseEntity<ApiResponse<StoreSummaryDto>> getStoreSummary(@PathVariable Long id, @AuthenticationPrincipal Member member) {
         return ResponseEntity.ok(new ApiResponse<>(storeService.getStoreSummary(id, member)));
     }
 
