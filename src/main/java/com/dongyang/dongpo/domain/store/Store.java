@@ -181,6 +181,7 @@ public class Store {
                 .longitude(longitude)
                 .reportCount(reportCount)
                 .memberId(member.getId())
+                .memberNickname(member.getNickname())
                 .openTime(openTime)
                 .closeTime(closeTime)
                 .isToiletValid(isToiletValid)
