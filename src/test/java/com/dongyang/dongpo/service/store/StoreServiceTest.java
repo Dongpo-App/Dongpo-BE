@@ -151,22 +151,22 @@ class StoreServiceTest {
         Member member = mock(Member.class);
         Store store1 = mock(Store.class);
         Store store2 = mock(Store.class);
-        StoreIndexDto storeIndexDto1 = mock(StoreIndexDto.class);
-        StoreIndexDto storeIndexDto2 = mock(StoreIndexDto.class);
+        StoreSummaryDto storeSummaryDto1 = mock(StoreSummaryDto.class);
+        StoreSummaryDto storeSummaryDto2 = mock(StoreSummaryDto.class);
 
         when(storeRepository.findByMember(member)).thenReturn(List.of(store1, store2));
-        when(store1.toIndexResponse()).thenReturn(storeIndexDto1);
-        when(store2.toIndexResponse()).thenReturn(storeIndexDto2);
+        when(store1.toSummaryResponse()).thenReturn(storeSummaryDto1);
+        when(store2.toSummaryResponse()).thenReturn(storeSummaryDto2);
 
         // when
-        List<StoreIndexDto> storeIndexDtos = storeService.getMyRegisteredStores(member);
+        List<StoreSummaryDto> storeSummaryDtos = storeService.getMyRegisteredStores(member);
 
         // then
-        assertThat(storeIndexDtos).hasSize(2);
-        assertThat(storeIndexDtos).contains(storeIndexDto1, storeIndexDto2);
+        assertThat(storeSummaryDtos).hasSize(2);
+        assertThat(storeSummaryDtos).contains(storeSummaryDto1, storeSummaryDto2);
         verify(storeRepository).findByMember(member);
-        verify(store1).toIndexResponse();
-        verify(store2).toIndexResponse();
+        verify(store1).toSummaryResponse();
+        verify(store2).toSummaryResponse();
     }
 
     @Test

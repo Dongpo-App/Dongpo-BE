@@ -97,7 +97,7 @@ public class StoreService {
         return storeResponse;
     }
 
-    public List<StoreIndexDto> findStoresByCurrentLocation(LatLong latLong, Member member) {
+    public List<StoreSummaryDto> findStoresByCurrentLocation(LatLong latLong, Member member) {
         CoordinateRange coordinateRange = locationUtil.calcCoordinateRangeByCurrentLocation(latLong);
 
         List<BookmarkDto> myBookmarks = bookmarkService.getMyBookmarks(member);
@@ -109,16 +109,16 @@ public class StoreService {
                     boolean isBookmarked = myBookmarks.stream()
                             .anyMatch(bookmark -> store.getId().equals(bookmark.getStoreId()));
 
-                    return store.toIndexResponse(isBookmarked, openPossibilityService.getOpenPossibility(store));
+                    return store.toSummaryResponse(isBookmarked, openPossibilityService.getOpenPossibility(store));
                 })
                 .collect(toList());
     }
 
-    public StoreIndexDto getStoreSummary(Long id, Member member) {
+    public StoreSummaryDto getStoreSummary(Long id, Member member) {
         Store store = storeRepository.findById(id)
                 .orElseThrow(() -> new CustomException(ErrorCode.STORE_NOT_FOUND));
 
-        return store.toIndexResponse(openPossibilityService.getOpenPossibility(store),
+        return store.toSummaryResponse(openPossibilityService.getOpenPossibility(store),
                                     bookmarkService.isStoreBookmarkedByMember(store, member),
                                     storeReviewService.getReviewPicsByStoreId(id));
     }
@@ -223,10 +223,8 @@ public class StoreService {
         }
     }
 
-    public List<StoreIndexDto> getMyRegisteredStores(Member member) {
-        List<StoreIndexDto> storeIndexDtos = new ArrayList<>();
-        storeRepository.findByMember(member).forEach(store -> storeIndexDtos.add(store.toIndexResponse()));
-        return storeIndexDtos;
+    public List<StoreSummaryDto> getMyRegisteredStores(Member member) {
+        return storeRepository.findByMember(member).stream().map(Store::toSummaryResponse).toList();
     }
 
     public Long getMyRegisteredStoreCount(Member member) {

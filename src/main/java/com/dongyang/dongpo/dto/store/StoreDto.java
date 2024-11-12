@@ -24,6 +24,7 @@ public class StoreDto {
     private LocalTime openTime;
     private LocalTime closeTime;
     private Long memberId;
+    private String memberNickname;
     private int reportCount;
     private Boolean isToiletValid;
     private Store.StoreStatus status;

@@ -5,7 +5,7 @@ import com.dongyang.dongpo.dto.bookmark.BookmarkDto;
 import com.dongyang.dongpo.dto.mypage.MyPageDto;
 import com.dongyang.dongpo.dto.mypage.MyPageUpdateDto;
 import com.dongyang.dongpo.dto.store.ReviewDto;
-import com.dongyang.dongpo.dto.store.StoreIndexDto;
+import com.dongyang.dongpo.dto.store.StoreSummaryDto;
 import com.dongyang.dongpo.service.bookmark.BookmarkService;
 import com.dongyang.dongpo.service.member.MemberService;
 import com.dongyang.dongpo.service.store.StoreReviewService;
@@ -76,17 +76,17 @@ class MyPageServiceTest {
     void getMyRegisteredStores() {
         // given
         Member member = mock(Member.class);
-        StoreIndexDto store1 = mock(StoreIndexDto.class);
-        StoreIndexDto store2 = mock(StoreIndexDto.class);
-        List<StoreIndexDto> expectedStores = List.of(store1, store2);
+        StoreSummaryDto store1 = mock(StoreSummaryDto.class);
+        StoreSummaryDto store2 = mock(StoreSummaryDto.class);
+        List<StoreSummaryDto> expectedStores = List.of(store1, store2);
 
         when(storeService.getMyRegisteredStores(member)).thenReturn(expectedStores);
 
         // when
-        List<StoreIndexDto> storeIndexDtos = myPageService.getMyRegisteredStores(member);
+        List<StoreSummaryDto> storeSummaryDtos = myPageService.getMyRegisteredStores(member);
 
         // then
-        assertThat(storeIndexDtos).isEqualTo(expectedStores);
+        assertThat(storeSummaryDtos).isEqualTo(expectedStores);
         verify(storeService).getMyRegisteredStores(member);
     }
 

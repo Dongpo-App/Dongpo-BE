@@ -4,6 +4,7 @@ import com.dongyang.dongpo.domain.member.Member;
 import com.dongyang.dongpo.domain.store.Store;
 import com.dongyang.dongpo.domain.store.StoreBookmark;
 import com.dongyang.dongpo.dto.bookmark.BookmarkDto;
+import com.dongyang.dongpo.dto.bookmark.BookmarkResponseDto;
 import com.dongyang.dongpo.exception.CustomException;
 import com.dongyang.dongpo.exception.ErrorCode;
 import com.dongyang.dongpo.repository.bookmark.BookmarkRepository;
@@ -27,7 +28,7 @@ public class BookmarkService {
     private final StoreRepository storeRepository;
 
     @Transactional
-    public void addBookmark(Member member, Long storeId) {
+    public BookmarkResponseDto addBookmark(final Member member, final Long storeId) {
         Store store = storeRepository.findById(storeId)
                 .orElseThrow(() -> new CustomException(ErrorCode.STORE_NOT_FOUND));
 
@@ -38,11 +39,15 @@ public class BookmarkService {
 
         try {
             bookmarkRepository.save(bookmark);
-        } catch (DataIntegrityViolationException ignore) {
+        } catch (DataIntegrityViolationException ignore) { // 해당 점포에 대한 사용자의 북마크가 이미 존재할 경우
             throw new CustomException(ErrorCode.BOOKMARK_ALREADY_EXISTS);
         }
 
-        log.info("Member Id : {} is Add Bookmark Store Id : {}", member.getId(), storeId);
+        log.info("Member {} added Bookmark - Store Id : {}", member.getEmail(), storeId);
+        return BookmarkResponseDto.builder()
+                .isMemberBookmarked(true)
+                .bookmarkCount(getBookmarkCountByStore(store))
+                .build();
     }
 
     public List<BookmarkDto> getMyBookmarks(Member member) {
@@ -54,14 +59,18 @@ public class BookmarkService {
     }
 
     @Transactional
-    public void deleteBookmark(Long storeId, Member member) {
+    public BookmarkResponseDto deleteBookmark(Long storeId, Member member) {
         Store store = storeRepository.findById(storeId)
                 .orElseThrow(() -> new CustomException(ErrorCode.STORE_NOT_FOUND));
         StoreBookmark bookmark = bookmarkRepository.findByStoreAndMember(store, member)
                 .orElseThrow(() -> new CustomException(ErrorCode.BOOKMARK_NOT_FOUND));
 
         bookmarkRepository.delete(bookmark);
-        log.info("Member {} deleted Bookmark : storeId -> {}", member.getEmail(), storeId);
+        log.info("Member {} deleted Bookmark - StoreId : {}", member.getEmail(), storeId);
+        return BookmarkResponseDto.builder()
+                .isMemberBookmarked(false)
+                .bookmarkCount(getBookmarkCountByStore(store))
+                .build();
     }
 
     public boolean isStoreBookmarkedByMember(Store store, Member member) {

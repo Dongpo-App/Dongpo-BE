@@ -117,8 +117,8 @@ public class Store {
                 .build();
     }
 
-    public StoreIndexDto toIndexResponse() {
-        return StoreIndexDto.builder()
+    public StoreSummaryDto toSummaryResponse() {
+        return StoreSummaryDto.builder()
                 .id(id)
                 .name(name)
                 .address(address)
@@ -126,8 +126,8 @@ public class Store {
                 .build();
     }
 
-    public StoreIndexDto toIndexResponse(OpenPossibility openPossibility, Boolean isBookmarked, List<String> reviewPics) {
-        return StoreIndexDto.builder()
+    public StoreSummaryDto toSummaryResponse(OpenPossibility openPossibility, Boolean isBookmarked, List<String> reviewPics) {
+        return StoreSummaryDto.builder()
                 .id(id)
                 .name(name)
                 .address(address)
@@ -138,8 +138,8 @@ public class Store {
                 .build();
     }
 
-    public StoreIndexDto toIndexResponse(Boolean isBookmarked, OpenPossibility openPossibility) {
-        return StoreIndexDto.builder()
+    public StoreSummaryDto toSummaryResponse(Boolean isBookmarked, OpenPossibility openPossibility) {
+        return StoreSummaryDto.builder()
                 .id(id)
                 .name(name)
                 .latitude(latitude)
@@ -181,6 +181,7 @@ public class Store {
                 .longitude(longitude)
                 .reportCount(reportCount)
                 .memberId(member.getId())
+                .memberNickname(member.getNickname())
                 .openTime(openTime)
                 .closeTime(closeTime)
                 .isToiletValid(isToiletValid)
