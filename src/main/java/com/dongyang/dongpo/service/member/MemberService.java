@@ -131,7 +131,7 @@ public class MemberService {
 
         refreshTokenRepository.save(refreshToken);
 
-        log.info("Registered Member {} successfully / id: {}", member.getEmail(), member.getId());
+        log.info("Registered Member {} successfully - id: {}", member.getEmail(), member.getId());
         return jwtToken;
     }
 
