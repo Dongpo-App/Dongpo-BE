@@ -67,6 +67,10 @@ public class Member implements UserDetails {
     @Enumerated(EnumType.STRING)
     private Status status;
 
+    private Boolean isServiceTermsAgreed;
+
+    private Boolean isMarketingTermsAgreed;
+
     public void updateMemberNickname(String newNickname) {
         this.nickname = newNickname;
     }
