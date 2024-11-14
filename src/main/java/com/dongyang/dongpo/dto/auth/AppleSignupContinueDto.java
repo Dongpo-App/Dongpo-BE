@@ -12,4 +12,6 @@ public class AppleSignupContinueDto {
     private Member.Gender gender;
     private String socialId;
     private String email;
+    private Boolean isServiceTermsAgreed;
+    private Boolean isMarketingTermsAgreed;
 }

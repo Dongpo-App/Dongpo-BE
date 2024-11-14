@@ -9,6 +9,7 @@ import com.dongyang.dongpo.exception.CustomException;
 import com.dongyang.dongpo.exception.ErrorCode;
 import com.dongyang.dongpo.service.member.MemberService;
 import lombok.RequiredArgsConstructor;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -18,6 +19,10 @@ import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import org.springframework.web.util.UriBuilder;
+
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 
 @Service
@@ -32,6 +37,12 @@ public class SocialService {
 
     @Value("${kakao.redirect_uri}")
     private String redirectUri;
+
+    @Value("${kakao.terms_tag.service_terms}")
+    private String serviceTermsTag;
+
+    @Value("${kakao.terms_tag.marketing_terms}")
+    private String marketingTermsTag;
 
     public JwtToken kakaoCallback(String AccessCode) {
         WebClient webClient = WebClient.builder()
@@ -88,6 +99,8 @@ public class SocialService {
             else
                 gender = Member.Gender.NONE;
 
+            // 간편 가입 과정에서 동의한 서비스 이용 약관 조회
+            Map<String, Boolean> termsAgreementInfo = getServiceTermsAgreementInfoFromKakao(accessToken);
 
             return memberService.socialSave(UserInfo.builder()
                     .id(id)
@@ -97,7 +110,41 @@ public class SocialService {
                     .birthday(birthday)
                     .gender(gender)
                     .provider(SocialType.KAKAO)
+                    .isServiceTermsAgreed(termsAgreementInfo.get(serviceTermsTag))
+                    .isMarketingTermsAgreed(termsAgreementInfo.get(marketingTermsTag))
                     .build());
+        } catch (WebClientResponseException e) {
+            if (e.getStatusCode().value() == 401)
+                throw new CustomException(ErrorCode.SOCIAL_TOKEN_NOT_VALID);
+            else
+                throw e;
+        }
+    }
+
+    private Map<String, Boolean> getServiceTermsAgreementInfoFromKakao(String accessToken) {
+        try {
+            WebClient webClient = WebClient.builder()
+                    .baseUrl("https://kapi.kakao.com/v2/user/service_terms")
+                    .defaultHeader("Content-Type", "application/x-www-form-urlencoded;charset=utf-8")
+                    .defaultHeader("Authorization", "Bearer " + accessToken)
+
+                    .build();
+
+            String responseBody = webClient.get()
+                    .uri(uriBuilder -> uriBuilder
+                            .queryParam("result", "app_service_terms")
+                            .build())
+                    .retrieve()
+                    .bodyToMono(String.class)
+                    .block();
+
+            JSONArray serviceTerms = new JSONObject(responseBody).getJSONArray("service_terms");
+            return IntStream.range(0, serviceTerms.length())
+                    .mapToObj(serviceTerms::getJSONObject)
+                    .collect(Collectors.toMap(
+                            term -> term.getString("tag"),
+                            term -> term.getBoolean("agreed")
+                    ));
         } catch (WebClientResponseException e) {
             if (e.getStatusCode().value() == 401)
                 throw new CustomException(ErrorCode.SOCIAL_TOKEN_NOT_VALID);

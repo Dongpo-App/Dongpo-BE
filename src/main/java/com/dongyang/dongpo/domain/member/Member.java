@@ -67,6 +67,10 @@ public class Member implements UserDetails {
     @Enumerated(EnumType.STRING)
     private Status status;
 
+    private Boolean isServiceTermsAgreed;
+
+    private Boolean isMarketingTermsAgreed;
+
     public void updateMemberNickname(String newNickname) {
         this.nickname = newNickname;
     }
@@ -103,6 +107,8 @@ public class Member implements UserDetails {
                 .role(Role.ROLE_MEMBER)
                 .profilePic(userInfo.getProfilePic())
                 .status(Status.ACTIVE)
+                .isServiceTermsAgreed(userInfo.getIsServiceTermsAgreed())
+                .isMarketingTermsAgreed(userInfo.getIsMarketingTermsAgreed())
                 .build();
     }
 

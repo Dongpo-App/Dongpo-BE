@@ -76,6 +76,9 @@ public class MemberService {
     // 애플 회원 가입 수행 메소드(추가 정보 기입)
     @Transactional
     public JwtToken continueAppleSignup(AppleSignupContinueDto appleSignupContinueDto) {
+        // 서비스 이용 약관에 동의 하지 않았을 경우 가입 불허
+        if (!appleSignupContinueDto.getIsMarketingTermsAgreed())
+            throw new CustomException(ErrorCode.SERVICE_TERMS_NOT_AGREED);
 
         // 이미 가입된 회원인지, 가입 가능한 회원인지 검증
         if (validateMemberExistence(appleSignupContinueDto.getEmail(), appleSignupContinueDto.getSocialId()))

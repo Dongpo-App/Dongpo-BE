@@ -28,6 +28,7 @@ public enum ErrorCode {
     APPLE_PUBLIC_KEY_GENERATION_FAILED(400, "Apple 공개키 생성에 실패하였습니다."),
     HEADER_PARSING_FAILED(400, "헤더 파싱에 실패하였습니다."),
     CLAIMS_EXTRACTION_FAILED(400, "토큰 정보 추출에 실패하였습니다."),
+    SERVICE_TERMS_NOT_AGREED(400, "서비스 이용 약관에 동의 하지 않았습니다."),
 
     UNAUTHORIZED(403, "권한이 없습니다."),
     MEMBER_ALREADY_LEFT(403, "탈퇴한 회원입니다."),

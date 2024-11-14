@@ -20,4 +20,6 @@ public class UserInfo {
     private String birthday;
     private String profilePic;
     private Member.SocialType provider;
+    private Boolean isServiceTermsAgreed;
+    private Boolean isMarketingTermsAgreed;
 }
