@@ -104,10 +104,6 @@ public class Store {
                         .map(StorePayMethod::getPayMethod)
                         .collect(Collectors.toList()))
                 .status(status)
-                .reviews(reviews.stream()
-                        .filter(review -> review.getStatus().equals(StoreReview.ReviewStatus.VISIBLE))
-                        .map(StoreReview::toStoreReviewResponse)
-                        .toList())
                 .build();
     }
 
@@ -131,11 +127,6 @@ public class Store {
                         .map(StorePayMethod::getPayMethod)
                         .collect(Collectors.toList()))
                 .status(status)
-                .reviews(reviews.stream()
-                        .sorted(Comparator.comparingLong(StoreReview::getId).reversed())
-                        .map(StoreReview::toStoreReviewResponse)
-                        .limit(3)
-                        .toList())
                 .openPossibility(openPossibility)
                 .isBookmarked(isBookmarked)
                 .visitSuccessfulCount(storeVisitCerts.stream()

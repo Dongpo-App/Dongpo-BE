@@ -11,7 +11,6 @@ import com.dongyang.dongpo.exception.CustomException;
 import com.dongyang.dongpo.exception.ErrorCode;
 import com.dongyang.dongpo.repository.store.StoreRepository;
 import com.dongyang.dongpo.repository.store.StoreReviewRepository;
-import com.dongyang.dongpo.repository.store.StoreVisitCertRepository;
 import com.dongyang.dongpo.service.title.TitleService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,7 +29,6 @@ public class StoreReviewService {
 
     private final StoreReviewRepository reviewRepository;
     private final StoreRepository storeRepository;
-    private final StoreVisitCertRepository storeVisitCertRepository;
     private final TitleService titleService;
 
     @Transactional
@@ -71,10 +69,17 @@ public class StoreReviewService {
         if (!storeRepository.existsById(storeId))
             throw new CustomException(ErrorCode.STORE_NOT_FOUND); // 추후 의존성 수정
 
+        // 추후 페이징 구현
         return reviewRepository.findReviewWithDetailsByStoreDesc(storeId).stream()
                 .map(StoreReview::toStoreReviewResponse)
                 .toList();
     }
+
+    /**
+    public List<StoreReviewResponseDto> getRecentReviewsByStore(final Long storeId) {
+        // 점포 상세 정보 페이지의 가장 최근 3개 리뷰 응답 (추후 구현)
+    }
+    */
 
     public List<String> getReviewPicsByStoreId(Long id) {
         return reviewRepository.findByStoreId(id).stream()
