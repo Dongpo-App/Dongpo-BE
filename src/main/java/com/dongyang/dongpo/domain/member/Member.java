@@ -107,6 +107,8 @@ public class Member implements UserDetails {
                 .role(Role.ROLE_MEMBER)
                 .profilePic(userInfo.getProfilePic())
                 .status(Status.ACTIVE)
+                .isServiceTermsAgreed(userInfo.getIsServiceTermsAgreed())
+                .isMarketingTermsAgreed(userInfo.getIsMarketingTermsAgreed())
                 .build();
     }
 
