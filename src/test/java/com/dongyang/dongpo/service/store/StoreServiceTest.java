@@ -53,6 +53,9 @@ class StoreServiceTest {
     private StoreService storeService;
 
     @Mock
+    private StoreReviewService storeReviewService;
+
+    @Mock
     private LocationUtil locationUtil;
 
     @Mock
