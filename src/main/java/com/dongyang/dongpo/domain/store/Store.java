@@ -104,10 +104,6 @@ public class Store {
                         .map(StorePayMethod::getPayMethod)
                         .collect(Collectors.toList()))
                 .status(status)
-                .reviews(reviews.stream()
-                        .filter(review -> review.getStatus().equals(StoreReview.ReviewStatus.VISIBLE))
-                        .map(StoreReview::toStoreReviewResponse)
-                        .toList())
                 .build();
     }
 
