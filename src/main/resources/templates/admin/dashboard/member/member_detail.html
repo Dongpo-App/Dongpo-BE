@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{admin/common/header :: header}"></head>
+<body class="layout-fixed sidebar-expand-lg bg-body-tertiary">
+<div class="app-wrapper">
+    <div th:replace="~{admin/common/nav :: nav}"></div>
+    <div th:replace="~{admin/common/sideber :: sidebar}"></div>
+
+    <main class="app-main">
+        <div class="app-content">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="card-header">
+                        <h3 class="card-title">회원 상세 정보</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <table class="table table-bordered">
+                                    <tbody>
+                                    <tr>
+                                        <th>ID</th>
+                                        <td th:text="${member.id}"></td>
+                                    </tr>
+                                    <tr>
+                                        <th>이메일</th>
+                                        <td th:text="${member.email}"></td>
+                                    </tr>
+                                    <tr>
+                                        <th>닉네임</th>
+                                        <td th:text="${member.nickname}"></td>
+                                    </tr>
+                                    <tr>
+                                        <th>가입일</th>
+                                        <td th:text="${member.signupDate}"></td>
+                                    </tr>
+                                    <tr>
+                                        <th>상태</th>
+                                        <td th:text="${member.status}"></td>
+                                    </tr>
+                                    <tr>
+                                        <th>생일</th>
+                                        <td th:text="${member.birthyear + '-' + member.birthday}"></td>
+                                    </tr>
+                                    <tr>
+                                        <th>성별</th>
+                                        <td th:text="${member.gender}"></td>
+                                    </tr>
+                                    <tr>
+                                        <th>소셜</th>
+                                        <td th:text="${member.socialType}"></td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="row mt-4">
+                            <div class="col-md-12 text-end">
+                                <a th:href="@{/admin/dashboard/member}" class="btn btn-secondary">목록으로</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div th:replace="~{admin/common/footer :: footer}"></div>
+</div>
+</body>
+</html>

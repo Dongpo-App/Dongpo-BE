@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{admin/common/header :: header}"></head>
+<body class="layout-fixed sidebar-expand-lg bg-body-tertiary">
+<div class="app-wrapper">
+    <div th:replace="~{admin/common/nav :: nav}"></div>
+    <div th:replace="~{admin/common/sideber :: sidebar}"></div>
+
+    <main class="app-main">
+        <div class="app-content">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="card-header">
+                        <h3 class="card-title">점포 신고 상세 정보</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <table class="table table-bordered">
+                                    <tbody>
+                                    <tr>
+                                        <th>신고 ID</th>
+                                        <td th:text="${report.id}"></td>
+                                    </tr>
+<!--                                    <tr>-->
+<!--                                        <th>신고자</th>-->
+<!--                                        <td th:text="${report.member.nickname}"></td>-->
+<!--                                    </tr>-->
+<!--                                    <tr>-->
+<!--                                        <th>점포명</th>-->
+<!--                                        <td th:text="${report.store.name}"></td>-->
+<!--                                    </tr>-->
+                                    <tr>
+                                        <th>신고 사유</th>
+                                        <td th:text="${report.reason}"></td>
+                                    </tr>
+                                    <tr>
+                                        <th>신고 일시</th>
+                                        <td th:text="${report.issueDate}"></td>
+                                    </tr>
+                                    <tr>
+                                        <th>처리 상태</th>
+                                        <td th:text="${report.status}"></td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="row mt-4">
+                            <div class="col-md-12 text-end">
+                                <a th:href="@{/admin/dashboard/store/report}" class="btn btn-secondary">목록으로</a>
+                                <a th:href="@{/admin/store-reports/resolve/{id}(id=${report.id})}" class="btn btn-primary">처리 완료</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div th:replace="~{admin/common/footer :: footer}"></div>
+</div>
+</body>
+</html>

@@ -27,7 +27,9 @@
                             </thead>
                             <tbody>
                             <tr class="align-middle" th:each="member : ${members}">
-                                <td th:text="${member.id}"></td>
+                                <td>
+                                    <a th:href="@{/admin/dashboard/member/{id}(id=${member.id})}" th:text="${member.id}"></a>
+                                </td>
                                 <td th:text="${member.email}"></td>
                                 <td th:text="${member.nickname}"></td>
                                 <td><input type="checkbox" name="selectedMembers" th:value="${member.id}"></td>
