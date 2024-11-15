@@ -30,7 +30,9 @@
                             </thead>
                             <tbody>
                             <tr class="align-middle" th:each="report : ${reports}">
-                                <td th:text="${report.id}"></td>
+                                <td>
+                                    <a th:href="@{/admin/store/report/{id}(id=${report.id})}" th:text="${report.id}"></a>
+                                </td>
                                 <td th:text="${report.store.name}"></td>
                                 <td th:text="${report.store.member.nickname}"></td>
                                 <td th:text="${report.text}"></td>

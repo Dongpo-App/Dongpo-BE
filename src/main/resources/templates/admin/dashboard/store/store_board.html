@@ -28,7 +28,9 @@
                             </thead>
                             <tbody>
                             <tr class="align-middle" th:each="store : ${stores}">
-                                <td th:text="${store.id}"></td>
+                                <td>
+                                    <a th:href="@{/admin/store/{id}(id=${store.id})}" th:text="${store.id}"></a>
+                                </td>
                                 <td th:text="${store.name}"></td>
                                 <td th:text="${store.memberId}"></td>
                                 <td th:text="${store.reportCount}"></td>

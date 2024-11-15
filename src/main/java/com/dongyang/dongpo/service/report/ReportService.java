@@ -92,7 +92,17 @@ public class ReportService {
         return reviewReportRepository.findAll();
     }
 
+    public ReviewReport findOneReviewReport(Long id){
+        return reviewReportRepository.findById(id)
+                .orElse(null);
+    }
+
     public List<StoreReport> findAllStoreReport(){
         return storeReportRepository.findAll();
+    }
+
+    public StoreReport findOneStoreReport(Long id){
+        return storeReportRepository.findById(id)
+                .orElse(null);
     }
 }
