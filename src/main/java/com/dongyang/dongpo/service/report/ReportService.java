@@ -36,13 +36,12 @@ public class ReportService {
     public void addStoreReport(Long storeId, Member member, ReportDto request){
         Store store = storeRepository.findById(storeId)
                 .orElseThrow(() -> new CustomException(ErrorCode.STORE_NOT_FOUND));
-
-        storeRepository.save(store.addReport());
+        store.addReportCount();
 
         StoreReport storeReport = request.toStoreEntity(member, store);
         storeReportRepository.save(storeReport);
 
-        log.info("Member {} Report Store ID : {}", member.getId(), store.getId());
+        log.info("Member {} added Store Report - ID : {}", member.getEmail(), store.getId());
     }
 
     @Transactional
@@ -52,13 +51,12 @@ public class ReportService {
 
         StoreReview review = storeReviewRepository.findById(reviewId)
                 .orElseThrow(() -> new CustomException(ErrorCode.REVIEW_NOT_FOUND));
-
-        storeReviewRepository.save(review.addReport());
+        review.addReportCount();
 
         ReviewReport reviewReport = request.toReviewEntity(member, review);
         reviewReportRepository.save(reviewReport);
 
-        log.info("Member {} Report Review ID : {}", member.getId(), review.getId());
+        log.info("Member {} added Review Report - ID : {}", member.getEmail(), review.getId());
     }
 
     public List<ReportDto> myRegStoreReport(Member member){
