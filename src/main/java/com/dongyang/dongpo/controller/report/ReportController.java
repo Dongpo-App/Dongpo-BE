@@ -23,7 +23,7 @@ public class ReportController {
     @Operation(summary = "점포 신고")
     public ResponseEntity<ApiResponse<String>> storeReport(@PathVariable("storeId") Long storeId,
                                                            @AuthenticationPrincipal Member member,
-                                                           @RequestBody ReportDto request) throws Exception {
+                                                           @RequestBody ReportDto request) {
         reportService.addStoreReport(storeId, member, request);
         return ResponseEntity.ok(new ApiResponse<>("success"));
     }
@@ -32,8 +32,7 @@ public class ReportController {
     @Operation(summary = "리뷰 신고")
     public ResponseEntity<ApiResponse<String>> reviewReport(@PathVariable("reviewId") Long reviewId,
                                                             @AuthenticationPrincipal Member member,
-                                                            @RequestBody ReportDto request) throws Exception {
-
+                                                            @RequestBody ReportDto request) {
         reportService.addReviewReport(reviewId, member, request);
         return ResponseEntity.ok(new ApiResponse<>("success"));
     }

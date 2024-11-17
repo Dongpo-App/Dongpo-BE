@@ -13,8 +13,8 @@ public interface StoreRepository extends JpaRepository<Store, Long> {
 
     List<Store> findByMember(Member member);
 
-    @Query(value = "SELECT * FROM store_table WHERE (latitude BETWEEN :minLat AND :maxLat) " +
-                    "AND (longitude BETWEEN :minLong AND :maxLong)", nativeQuery = true)
+    @Query("SELECT s FROM Store s WHERE (s.latitude BETWEEN :minLat AND :maxLat) " +
+            "AND (s.longitude BETWEEN :minLong AND :maxLong) AND s.status = 'ACTIVE'")
     List<Store> findStoresWithinRange(@Param("minLat") double minLat,
                                       @Param("maxLat") double maxLat,
                                       @Param("minLong") double minLong,
