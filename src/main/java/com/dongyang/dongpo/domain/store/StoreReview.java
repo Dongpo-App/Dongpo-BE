@@ -114,8 +114,15 @@ public class StoreReview {
                 .build();
     }
 
-    public StoreReview addReport(){
+    public void addReportCount() {
         this.reportCount++;
-        return this;
+        if (this.reportCount >= 5) {
+            updateReviewStatusHidden();
+            this.reportCount = 0;
+        }
+    }
+
+    private void updateReviewStatusHidden() {
+        this.status = ReviewStatus.HIDDEN;
     }
 }

@@ -8,7 +8,6 @@ import lombok.*;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -180,8 +179,15 @@ public class Store {
         this.status = updateDto.getStatus();
     }
 
-    public Store addReport(){
+    public void addReportCount() {
         this.reportCount++;
-        return this;
+        if (this.reportCount >= 5) {
+            updateStoreStatusHidden();
+            this.reportCount = 0;
+        }
+    }
+
+    private void updateStoreStatusHidden() {
+        this.status = StoreStatus.HIDDEN;
     }
 }
