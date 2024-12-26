@@ -8,7 +8,7 @@ import com.dongyang.dongpo.exception.CustomException;
 import com.dongyang.dongpo.exception.ErrorCode;
 import com.dongyang.dongpo.repository.auth.RefreshTokenRepository;
 import com.dongyang.dongpo.repository.member.MemberRepository;
-import com.dongyang.dongpo.util.jwt.JwtTokenProvider;
+import com.dongyang.dongpo.util.jwt.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -19,7 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 public class TokenService {
 
-    private final JwtTokenProvider jwtTokenProvider;
+    private final JwtUtil jwtUtil;
     private final RefreshTokenRepository refreshTokenRepository;
     private final MemberRepository memberRepository;
 
@@ -28,12 +28,12 @@ public class TokenService {
         RefreshToken refreshToken = refreshTokenRepository.findByRefreshToken(jwtTokenReissueDto.getRefreshToken())
                 .orElseThrow(() -> new CustomException(ErrorCode.EXPIRED_TOKEN));
 
-        String email = jwtTokenProvider.parseClaims(jwtTokenReissueDto.getRefreshToken()).getSubject();
+        String email = jwtUtil.parseClaims(jwtTokenReissueDto.getRefreshToken()).getSubject();
 
         Member member = memberRepository.findByEmail(email)
                 .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 
-        JwtToken jwtToken = jwtTokenProvider.createToken(member.getEmail(), member.getRole());
+        JwtToken jwtToken = jwtUtil.createToken(member.getEmail(), member.getRole());
         refreshToken.updateRefreshToken(jwtToken.getRefreshToken());
         refreshTokenRepository.save(refreshToken);
 
@@ -43,7 +43,7 @@ public class TokenService {
 
     @Transactional
     public JwtToken createTokenForLoginMember(Member member){
-        JwtToken jwtToken = jwtTokenProvider.createToken(member.getEmail(), member.getRole());
+        JwtToken jwtToken = jwtUtil.createToken(member.getEmail(), member.getRole());
         RefreshToken refreshToken = refreshTokenRepository.findByEmail(member.getEmail()).orElse(null);
 
         if (refreshToken != null)
@@ -63,6 +63,6 @@ public class TokenService {
     public void expireTokens(String email, String authorization) {
         refreshTokenRepository.deleteById(email);
 
-        jwtTokenProvider.blacklistToken(authorization);
+        jwtUtil.blacklistToken(authorization);
     }
 }

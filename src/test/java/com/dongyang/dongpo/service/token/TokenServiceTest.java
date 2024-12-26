@@ -8,7 +8,7 @@ import com.dongyang.dongpo.exception.CustomException;
 import com.dongyang.dongpo.exception.ErrorCode;
 import com.dongyang.dongpo.repository.auth.RefreshTokenRepository;
 import com.dongyang.dongpo.repository.member.MemberRepository;
-import com.dongyang.dongpo.util.jwt.JwtTokenProvider;
+import com.dongyang.dongpo.util.jwt.JwtUtil;
 import io.jsonwebtoken.Claims;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -27,7 +27,7 @@ import static org.mockito.Mockito.*;
 class TokenServiceTest {
 
     @Mock
-    private JwtTokenProvider jwtTokenProvider;
+    private JwtUtil jwtUtil;
 
     @Mock
     private RefreshTokenRepository refreshTokenRepository;
@@ -52,10 +52,10 @@ class TokenServiceTest {
         Claims claims = mock(Claims.class);
         claims.setSubject("test@email");
 
-        when(jwtTokenProvider.parseClaims(any())).thenReturn(claims);
+        when(jwtUtil.parseClaims(any())).thenReturn(claims);
         when(refreshTokenRepository.findByRefreshToken(any())).thenReturn(Optional.of(refreshToken));
         when(memberRepository.findByEmail(any())).thenReturn(Optional.of(member));
-        when(jwtTokenProvider.createToken(any(), any())).thenReturn(mockJwtToken);
+        when(jwtUtil.createToken(any(), any())).thenReturn(mockJwtToken);
 
         JwtToken jwtToken = tokenService.reissueAccessToken(jwtTokenReissueDto);
 
@@ -65,7 +65,7 @@ class TokenServiceTest {
 
         verify(refreshTokenRepository).findByRefreshToken(jwtTokenReissueDto.getRefreshToken());
         verify(refreshTokenRepository).save(any(RefreshToken.class));
-        verify(jwtTokenProvider).createToken(member.getEmail(), member.getRole());
+        verify(jwtUtil).createToken(member.getEmail(), member.getRole());
     }
 
 
@@ -94,7 +94,7 @@ class TokenServiceTest {
         JwtTokenReissueDto jwtTokenReissueDto = new JwtTokenReissueDto();
 
         when(refreshTokenRepository.findByRefreshToken(any())).thenReturn(Optional.of(refreshToken));
-        when(jwtTokenProvider.parseClaims(any())).thenReturn(claims);
+        when(jwtUtil.parseClaims(any())).thenReturn(claims);
 
         // Exception
         when(memberRepository.findByEmail(any())).thenReturn(Optional.empty());
@@ -114,7 +114,7 @@ class TokenServiceTest {
         when(member.getEmail()).thenReturn("test@test.com");
         when(member.getRole()).thenReturn(Member.Role.ROLE_MEMBER);
 
-        when(jwtTokenProvider.createToken(member.getEmail(), member.getRole())).thenReturn(mockJwtToken);
+        when(jwtUtil.createToken(member.getEmail(), member.getRole())).thenReturn(mockJwtToken);
         when(refreshTokenRepository.findByEmail(member.getEmail())).thenReturn(Optional.of(refreshToken));
 
         when(mockJwtToken.getAccessToken()).thenReturn("mockAccessToken");
