@@ -1,6 +1,5 @@
 package com.dongyang.dongpo.util.jwt;
 
-import com.dongyang.dongpo.config.security.CustomUserDetailsService;
 import com.dongyang.dongpo.domain.auth.TokenBlacklist;
 import com.dongyang.dongpo.domain.member.Member.Role;
 import com.dongyang.dongpo.dto.auth.JwtToken;
@@ -12,17 +11,10 @@ import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.security.Key;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.Date;
 
 @Slf4j
@@ -36,13 +28,11 @@ public class JwtUtil {
     private final String ROLE = "role";
     private final int TOKEN_START = 7;
 
-    private final CustomUserDetailsService customUserDetailsService;
     private final TokenBlacklistRepository tokenBlacklistRepository;
 
-    public JwtUtil(@Value("${jwt.secret}") String secretKey, CustomUserDetailsService CustomUserDetailsService, TokenBlacklistRepository tokenBlacklistRepository) {
+    public JwtUtil(@Value("${jwt.secret}") String secretKey, TokenBlacklistRepository tokenBlacklistRepository) {
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         this.key = Keys.hmacShaKeyFor(keyBytes);
-        this.customUserDetailsService = CustomUserDetailsService;
         this.tokenBlacklistRepository = tokenBlacklistRepository;
     }
 
@@ -97,21 +87,6 @@ public class JwtUtil {
             log.error(e.getMessage());
             throw new CustomException(ErrorCode.CLAIMS_NOT_VALID); // Claim 검증 실패
         }
-    }
-
-    public Authentication getAuthentication(String accessToken) {
-        Claims claims = parseClaims(accessToken);
-
-        if (claims == null || claims.get(ROLE) == null)
-            throw new CustomException(ErrorCode.CLAIMS_NOT_FOUND);
-
-        Collection<? extends GrantedAuthority> authorities =
-                Arrays.stream(claims.get(ROLE).toString().split(","))
-                        .map(SimpleGrantedAuthority::new)
-                        .toList();
-
-        UserDetails principal = customUserDetailsService.loadUserByUsername(claims.getSubject());
-        return new UsernamePasswordAuthenticationToken(principal, "", authorities);
     }
 
     public Claims parseClaims(String accessToken) {
