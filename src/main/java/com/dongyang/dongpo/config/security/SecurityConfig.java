@@ -22,7 +22,6 @@ public class SecurityConfig {
 
     private final AuthenticationEntryPoint entryPoint;
     private final CustomUserDetailsService customUserDetailsService;
-    private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final JwtAuthenticationProvider jwtAuthenticationProvider;
 
     @Bean
@@ -40,7 +39,7 @@ public class SecurityConfig {
                         .anyRequest().authenticated()
                 )
                 .userDetailsService(customUserDetailsService)
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new JwtAuthenticationFilter(authenticationManager(http)), UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling(handler -> handler.authenticationEntryPoint(entryPoint))
                 .build();
     }

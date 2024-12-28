@@ -9,6 +9,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -25,7 +26,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final String HEADER_PREFIX = "Authorization";
     private final String TOKEN_PREFIX = "Bearer ";
 
-    private final JwtAuthenticationProvider jwtAuthenticationProvider;
+    private final AuthenticationManager authenticationManager;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -48,7 +49,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     private Authentication getAuthentication(String token) {
-        return jwtAuthenticationProvider.authenticate(new UsernamePasswordAuthenticationToken(null, token));
+        return authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(null, token));
     }
 
     private void setAuthentication(Authentication authentication) {
