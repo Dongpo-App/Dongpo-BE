@@ -4,6 +4,7 @@ package com.dongyang.dongpo.service.auth;
 import com.dongyang.dongpo.domain.member.Member;
 import com.dongyang.dongpo.domain.member.Member.SocialType;
 import com.dongyang.dongpo.dto.auth.JwtToken;
+import com.dongyang.dongpo.dto.auth.JwtTokenReissueDto;
 import com.dongyang.dongpo.dto.auth.UserInfo;
 import com.dongyang.dongpo.exception.CustomException;
 import com.dongyang.dongpo.exception.ErrorCode;
@@ -201,18 +202,18 @@ public class SocialService {
         }
     }
 
-    public void doLogout(Member member, String authorization) {
-        memberService.handleLogout(member, authorization);
+    public void doLogout(Member member) {
+        memberService.handleLogout(member);
     }
 
-    public void doLeave(Member member, String authorization) {
+    public void doLeave(Member member) {
         // 추후 소셜 로그인 플랫폼 추가 시 수정
         switch (member.getSocialType()) {
             case APPLE:
-                appleLoginService.revokeToken(member, authorization);
+                appleLoginService.revokeToken(member);
                 break;
             case KAKAO:
-                memberService.handleLeave(member, authorization);
+                memberService.handleLeave(member);
                 break;
 //            case NAVER:
 //                memberService.handleLeave(member, authorization);
@@ -220,5 +221,9 @@ public class SocialService {
             default:
                 throw new CustomException(ErrorCode.MALFORMED_TOKEN);
         }
+    }
+
+    public JwtToken reissueAccessToken(JwtTokenReissueDto jwtTokenReissueDto) {
+        return memberService.reissueAccessToken(jwtTokenReissueDto);
     }
 }
