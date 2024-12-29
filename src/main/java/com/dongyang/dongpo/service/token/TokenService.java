@@ -1,18 +1,17 @@
 package com.dongyang.dongpo.service.token;
 
-import com.dongyang.dongpo.domain.auth.RefreshToken;
 import com.dongyang.dongpo.domain.member.Member;
 import com.dongyang.dongpo.dto.auth.JwtToken;
-import com.dongyang.dongpo.dto.auth.JwtTokenReissueDto;
 import com.dongyang.dongpo.exception.CustomException;
 import com.dongyang.dongpo.exception.ErrorCode;
-import com.dongyang.dongpo.repository.auth.RefreshTokenRepository;
-import com.dongyang.dongpo.repository.member.MemberRepository;
 import com.dongyang.dongpo.util.jwt.JwtUtil;
+import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+
+import java.util.concurrent.TimeUnit;
 
 @Service
 @RequiredArgsConstructor
@@ -20,49 +19,64 @@ import org.springframework.transaction.annotation.Transactional;
 public class TokenService {
 
     private final JwtUtil jwtUtil;
-    private final RefreshTokenRepository refreshTokenRepository;
-    private final MemberRepository memberRepository;
+    private final StringRedisTemplate redisTemplate;
 
-    @Transactional
-    public JwtToken reissueAccessToken(JwtTokenReissueDto jwtTokenReissueDto) {
-        RefreshToken refreshToken = refreshTokenRepository.findByRefreshToken(jwtTokenReissueDto.getRefreshToken())
-                .orElseThrow(() -> new CustomException(ErrorCode.EXPIRED_TOKEN));
-
-        String email = jwtUtil.parseClaims(jwtTokenReissueDto.getRefreshToken()).getSubject();
-
-        Member member = memberRepository.findByEmail(email)
-                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
-
+    public JwtToken createTokenForLoginMember(Member member) {
         JwtToken jwtToken = jwtUtil.createToken(member.getEmail(), member.getRole());
-        refreshToken.updateRefreshToken(jwtToken.getRefreshToken());
-        refreshTokenRepository.save(refreshToken);
+        expireExistingTokens(member.getEmail());
+        saveTokens(member.getEmail(), jwtToken);
+
+        log.info("Member Login : {}", member.getEmail());
+        return jwtToken;
+    }
+
+    public JwtToken reissueAccessToken(Member member) {
+        JwtToken jwtToken = jwtUtil.createToken(member.getEmail(), member.getRole());
+        expireExistingTokens(member.getEmail());
+        saveTokens(member.getEmail(), jwtToken);
 
         log.info("Refresh Token Reissued : {}", member.getEmail());
         return jwtToken;
     }
 
-    @Transactional
-    public JwtToken createTokenForLoginMember(Member member){
-        JwtToken jwtToken = jwtUtil.createToken(member.getEmail(), member.getRole());
-        RefreshToken refreshToken = refreshTokenRepository.findByEmail(member.getEmail()).orElse(null);
-
-        if (refreshToken != null)
-            refreshToken.updateRefreshToken(jwtToken.getRefreshToken());
-        else
-            refreshToken = RefreshToken.builder()
-                    .refreshToken(jwtToken.getRefreshToken())
-                    .email(member.getEmail())
-                    .build();
-
-        refreshTokenRepository.save(refreshToken);
-        log.info("Member Login : {}", member.getEmail());
-        return jwtToken;
+    private void saveTokens(String memberEmail, JwtToken jwtToken) {
+        redisTemplate.opsForValue().set("access_token_" + memberEmail, jwtToken.getAccessToken(), 30, TimeUnit.MINUTES);
+        redisTemplate.opsForValue().set("refresh_token_" + memberEmail, jwtToken.getRefreshToken(), 7, TimeUnit.DAYS);
     }
 
-    @Transactional
-    public void expireTokens(String email, String authorization) {
-        refreshTokenRepository.deleteById(email);
+    public void expireExistingTokens(String memberEmail) {
+        String accessTokenKey = "access_token_" + memberEmail;
+        String refreshTokenKey = "refresh_token_" + memberEmail;
 
-        jwtUtil.blacklistToken(authorization);
+        if (redisTemplate.hasKey(accessTokenKey)) {
+            String accessToken = redisTemplate.opsForValue().get(accessTokenKey);
+            blacklistToken(accessToken);
+            redisTemplate.delete(accessTokenKey);
+        }
+
+        if (redisTemplate.hasKey(refreshTokenKey)) {
+            String refreshToken = redisTemplate.opsForValue().get(refreshTokenKey);
+            blacklistToken(refreshToken);
+            redisTemplate.delete(refreshTokenKey);
+        }
+    }
+
+    private void blacklistToken(String token) {
+        long remainingLife = jwtUtil.getRemainingTokenLife(token);
+        redisTemplate.opsForValue().set("blacklist_" + token, token, remainingLife, TimeUnit.MILLISECONDS);
+    }
+
+    public void validateToken(String token) {
+        if (isTokenBlacklisted(token))
+            throw new CustomException(ErrorCode.EXPIRED_TOKEN);
+        jwtUtil.validateToken(token);
+    }
+
+    public boolean isTokenBlacklisted(String token) {
+        return redisTemplate.hasKey("blacklist_" + token);
+    }
+
+    public Claims parseClaims(String token) {
+        return jwtUtil.parseClaims(token);
     }
 }

@@ -3,6 +3,7 @@ package com.dongyang.dongpo.util.jwt;
 import com.dongyang.dongpo.config.security.CustomUserDetailsService;
 import com.dongyang.dongpo.exception.CustomException;
 import com.dongyang.dongpo.exception.ErrorCode;
+import com.dongyang.dongpo.service.token.TokenService;
 import io.jsonwebtoken.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,12 +27,12 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
     private final String ROLE = "role";
 
     private final CustomUserDetailsService customUserDetailsService;
-    private final JwtUtil jwtUtil;
+    private final TokenService tokenService;
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         String token = (String) authentication.getCredentials();
-        jwtUtil.validateToken(token);
+        tokenService.validateToken(token);
         return getAuthentication(token);
     }
 
@@ -41,7 +42,7 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
     }
 
     public Authentication getAuthentication(String accessToken) {
-        Claims claims = jwtUtil.parseClaims(accessToken);
+        Claims claims = tokenService.parseClaims(accessToken);
 
         if (claims == null || claims.get(ROLE) == null)
             throw new CustomException(ErrorCode.CLAIMS_NOT_FOUND);
@@ -51,7 +52,7 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
                         .map(SimpleGrantedAuthority::new)
                         .toList();
 
-        UserDetails principal = customUserDetailsService.loadUserByUsername(claims.getSubject());
+        UserDetails principal = customUserDetailsService.loadUserByUsername(claims.getIssuer());
         return new UsernamePasswordAuthenticationToken(principal, "", authorities);
     }
 }

@@ -1,21 +1,20 @@
 package com.dongyang.dongpo.util.jwt;
 
-import com.dongyang.dongpo.domain.auth.TokenBlacklist;
 import com.dongyang.dongpo.domain.member.Member.Role;
 import com.dongyang.dongpo.dto.auth.JwtToken;
 import com.dongyang.dongpo.exception.CustomException;
 import com.dongyang.dongpo.exception.ErrorCode;
-import com.dongyang.dongpo.repository.auth.TokenBlacklistRepository;
 import io.jsonwebtoken.*;
-import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
+import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 @Slf4j
 @Component
@@ -26,24 +25,19 @@ public class JwtUtil {
     private final long REFRESHTOKEN_VALIDTIME = 7 * 24 * 60 * 60 * 1000L; // 7일
     private final String GRANT_TYPE = "Bearer";
     private final String ROLE = "role";
-    private final int TOKEN_START = 7;
 
-    private final TokenBlacklistRepository tokenBlacklistRepository;
-
-    public JwtUtil(@Value("${jwt.secret}") String secretKey, TokenBlacklistRepository tokenBlacklistRepository) {
-        byte[] keyBytes = Decoders.BASE64.decode(secretKey);
-        this.key = Keys.hmacShaKeyFor(keyBytes);
-        this.tokenBlacklistRepository = tokenBlacklistRepository;
+    public JwtUtil(@Value("${jwt.secret}") String secretKey) {
+        this.key = Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
     }
 
     public JwtToken createToken(String email, Role role) {
         Date now = new Date();
         Date accessTokenExpiredTime = new Date(now.getTime() + ACCESSTOKEN_VALIDTIME);
         Date refreshTokenExpiredTime = new Date(now.getTime() + REFRESHTOKEN_VALIDTIME);
-        Claims claims = Jwts.claims().setSubject(email);
-        claims.put(ROLE, role);
+        Claims claims = createClaims(email, role);
 
         String accessToken = Jwts.builder()
+                .setHeader(createHeader())
                 .setClaims(claims)
                 .setIssuedAt(now)
                 .setExpiration(accessTokenExpiredTime)
@@ -51,7 +45,9 @@ public class JwtUtil {
                 .compact();
 
         String refreshToken = Jwts.builder()
+                .setHeader(createHeader())
                 .setClaims(claims)
+                .setIssuedAt(now)
                 .setExpiration(refreshTokenExpiredTime)
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
@@ -64,13 +60,22 @@ public class JwtUtil {
                 .build();
     }
 
+    private Map<String, Object> createHeader() {
+        Map<String, Object> header = new HashMap<>();
+        header.put("typ", "JWT");
+        header.put("alg", "HS256");
+        return header;
+    }
+
+    private Claims createClaims(String email, Role role) {
+        Claims claims = Jwts.claims().setIssuer(email);
+        claims.put(ROLE, role);
+        return claims;
+    }
+
     public void validateToken(String token) {
-        isBlacklisted(token); // 블랙리스트 등재 여부 확인
         try {
-            Jwts.parserBuilder()
-                    .setSigningKey(key)
-                    .build()
-                    .parseClaimsJws(token);
+            parseClaims(token);
         } catch (SecurityException | MalformedJwtException | SignatureException e) {
             log.error(e.getMessage());
             throw new CustomException(ErrorCode.MALFORMED_TOKEN); // jwt서명이 유효하지 않음
@@ -102,17 +107,16 @@ public class JwtUtil {
         }
     }
 
-    @Transactional
-    public void blacklistToken(String accessToken) {
-        tokenBlacklistRepository.save(TokenBlacklist.builder().accessToken(parseAccessToken(accessToken)).build());
-    }
+    // 토큰의 남은 유효기간을 반환
+    public long getRemainingTokenLife(String token) {
+        Claims claims = Jwts.parserBuilder()
+                .setSigningKey(key)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
 
-    private void isBlacklisted(String accessToken) {
-        if (tokenBlacklistRepository.existsByAccessToken(accessToken))
-            throw new CustomException(ErrorCode.EXPIRED_TOKEN);
-    }
-
-    public String parseAccessToken(String accessToken) {
-        return accessToken.substring(TOKEN_START);
+        Date expiration = claims.getExpiration();
+        long now = System.currentTimeMillis();
+        return expiration.getTime() - now;
     }
 }
