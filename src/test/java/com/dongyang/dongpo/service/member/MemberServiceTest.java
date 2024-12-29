@@ -9,7 +9,7 @@ import com.dongyang.dongpo.repository.member.MemberRepository;
 import com.dongyang.dongpo.repository.member.MemberTitleRepository;
 import com.dongyang.dongpo.service.store.StoreService;
 import com.dongyang.dongpo.service.token.TokenService;
-import com.dongyang.dongpo.util.jwt.JwtTokenProvider;
+import com.dongyang.dongpo.util.jwt.JwtUtil;
 import com.dongyang.dongpo.util.s3.S3Service;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -32,7 +32,7 @@ class MemberServiceTest {
     private RefreshTokenRepository refreshTokenRepository;
 
     @Mock
-    private JwtTokenProvider jwtTokenProvider;
+    private JwtUtil jwtUtil;
 
     @Mock
     private TokenService tokenService;

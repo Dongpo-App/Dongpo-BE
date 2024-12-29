@@ -16,7 +16,7 @@ import com.dongyang.dongpo.repository.member.MemberRepository;
 import com.dongyang.dongpo.repository.member.MemberTitleRepository;
 import com.dongyang.dongpo.service.store.StoreService;
 import com.dongyang.dongpo.service.token.TokenService;
-import com.dongyang.dongpo.util.jwt.JwtTokenProvider;
+import com.dongyang.dongpo.util.jwt.JwtUtil;
 import com.dongyang.dongpo.util.s3.S3Service;
 import io.jsonwebtoken.Claims;
 import io.micrometer.common.util.StringUtils;
@@ -36,7 +36,7 @@ public class MemberService {
 
     private final MemberRepository memberRepository;
     private final RefreshTokenRepository refreshTokenRepository;
-    private final JwtTokenProvider jwtTokenProvider;
+    private final JwtUtil jwtUtil;
     private final TokenService tokenService;
     private final MemberTitleRepository memberTitleRepository;
     private final StoreService storeService;
@@ -130,7 +130,7 @@ public class MemberService {
                 .achieveDate(LocalDateTime.now())
                 .build());
 
-        JwtToken jwtToken = jwtTokenProvider.createToken(member.getEmail(), member.getRole());
+        JwtToken jwtToken = jwtUtil.createToken(member.getEmail(), member.getRole());
         RefreshToken refreshToken = RefreshToken.builder()
                 .email(member.getEmail())
                 .refreshToken(jwtToken.getRefreshToken())
