@@ -32,6 +32,7 @@ public enum ErrorCode {
 
     UNAUTHORIZED(403, "권한이 없습니다."),
     MEMBER_ALREADY_LEFT(403, "탈퇴한 회원입니다."),
+    UNSUPPORTED_AUTHENTICATION_TYPE(403, "지원하지 않는 인증 방식입니다."),
 
     MEMBER_EMAIL_DUPLICATED(409, "이미 사용중인 이메일입니다."),
     MEMBER_ALREADY_EXISTS(409, "이미 가입된 회원입니다."),

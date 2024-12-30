@@ -22,7 +22,8 @@ public class SecurityConfig {
 
     private final AuthenticationEntryPoint entryPoint;
     private final CustomUserDetailsService customUserDetailsService;
-    private final JwtAuthenticationProvider jwtAuthenticationProvider;
+    private final CustomAuthenticationManager authenticationManager;
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -38,16 +39,10 @@ public class SecurityConfig {
                         .requestMatchers("/", "/auth/**", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
                         .anyRequest().authenticated()
                 )
+                .authenticationManager(authenticationManager)
                 .userDetailsService(customUserDetailsService)
-                .addFilterBefore(new JwtAuthenticationFilter(authenticationManager(http)), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling(handler -> handler.authenticationEntryPoint(entryPoint))
                 .build();
-    }
-
-    @Bean
-    public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
-        AuthenticationManagerBuilder auth = http.getSharedObject(AuthenticationManagerBuilder.class);
-        auth.authenticationProvider(jwtAuthenticationProvider);
-        return auth.build();
     }
 }
