@@ -1,26 +1,22 @@
 package com.dongyang.dongpo.service.token;
 
-import com.dongyang.dongpo.domain.auth.RefreshToken;
 import com.dongyang.dongpo.domain.member.Member;
 import com.dongyang.dongpo.dto.auth.JwtToken;
-import com.dongyang.dongpo.dto.auth.JwtTokenReissueDto;
 import com.dongyang.dongpo.exception.CustomException;
 import com.dongyang.dongpo.exception.ErrorCode;
-import com.dongyang.dongpo.repository.auth.RefreshTokenRepository;
-import com.dongyang.dongpo.repository.member.MemberRepository;
 import com.dongyang.dongpo.util.jwt.JwtUtil;
-import io.jsonwebtoken.Claims;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 
-import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -30,103 +26,161 @@ class TokenServiceTest {
     private JwtUtil jwtUtil;
 
     @Mock
-    private RefreshTokenRepository refreshTokenRepository;
+    private StringRedisTemplate redisTemplate;
 
     @Mock
-    private MemberRepository memberRepository;
+    private ValueOperations<String, String> valueOperations;
 
     @InjectMocks
     private TokenService tokenService;
 
-    private final Member member = mock(Member.class);
-    private final RefreshToken refreshToken = mock(RefreshToken.class);
+    @Mock
+    private Member member;
+
+    @Mock
+    private JwtToken jwtToken;
 
     @Test
     @DisplayName("토큰 재발급")
     void reissueAccessToken() {
-        JwtToken mockJwtToken = mock(JwtToken.class);
-        JwtTokenReissueDto jwtTokenReissueDto = mock(JwtTokenReissueDto.class);
-        when(mockJwtToken.getAccessToken()).thenReturn("AccessToken");
-        when(mockJwtToken.getRefreshToken()).thenReturn("RefreshToken");
+        // Given
+        final String email = "test@example.com";
+        final String accessTokenKey = "access_token_" + email;
+        final String refreshTokenKey = "refresh_token_" + email;
+        final Member.Role role = Member.Role.ROLE_MEMBER;
 
-        Claims claims = mock(Claims.class);
-        claims.setSubject("test@email");
+        when(member.getEmail()).thenReturn(email);
+        when(member.getRole()).thenReturn(role);
+        when(jwtUtil.createToken(email, role)).thenReturn(jwtToken);
+        when(jwtToken.getAccessToken()).thenReturn("newAccessToken");
+        when(jwtToken.getRefreshToken()).thenReturn("newRefreshToken");
 
-        when(jwtUtil.parseClaims(any())).thenReturn(claims);
-        when(refreshTokenRepository.findByRefreshToken(any())).thenReturn(Optional.of(refreshToken));
-        when(memberRepository.findByEmail(any())).thenReturn(Optional.of(member));
-        when(jwtUtil.createToken(any(), any())).thenReturn(mockJwtToken);
+        ValueOperations<String, String> valueOperations = mock(ValueOperations.class);
+        when(redisTemplate.opsForValue()).thenReturn(valueOperations);
 
-        JwtToken jwtToken = tokenService.reissueAccessToken(jwtTokenReissueDto);
+        // When
+        JwtToken result = tokenService.reissueAccessToken(member);
 
-        assertNotNull(jwtToken);
-        assertNotNull(jwtToken.getAccessToken());
-        assertNotNull(jwtToken.getRefreshToken());
-
-        verify(refreshTokenRepository).findByRefreshToken(jwtTokenReissueDto.getRefreshToken());
-        verify(refreshTokenRepository).save(any(RefreshToken.class));
-        verify(jwtUtil).createToken(member.getEmail(), member.getRole());
+        // Then
+        assertEquals(jwtToken, result);
+        verify(redisTemplate).hasKey(accessTokenKey);
+        verify(redisTemplate).hasKey(refreshTokenKey);
+        verify(valueOperations).set(eq(accessTokenKey), eq("newAccessToken"), eq(30L), eq(TimeUnit.MINUTES));
+        verify(valueOperations).set(eq(refreshTokenKey), eq("newRefreshToken"), eq(7L), eq(TimeUnit.DAYS));
     }
 
 
     @Test
     @DisplayName("토큰 재발급 실패 - 토큰 만료")
     void reissueAccessTokenExpired() {
-        Claims claims = mock(Claims.class);
-        claims.setSubject("test@email");
-        JwtTokenReissueDto jwtTokenReissueDto = new JwtTokenReissueDto();
+        // Given
+        final String email = "test@example.com";
+        final Member.Role role = Member.Role.ROLE_MEMBER;
 
-        // Exception
-        when(refreshTokenRepository.findByRefreshToken(any())).thenReturn(Optional.empty());
+        when(member.getEmail()).thenReturn(email);
+        when(member.getRole()).thenReturn(role);
+        when(jwtUtil.createToken(email, role)).thenThrow(new CustomException(ErrorCode.EXPIRED_TOKEN));
 
-        Exception exception = assertThrows(Exception.class, () -> tokenService.reissueAccessToken(jwtTokenReissueDto));
-
-        assertInstanceOf(CustomException.class, exception);
-        assertEquals(ErrorCode.EXPIRED_TOKEN.getMessage(), exception.getMessage());
-        verify(refreshTokenRepository).findByRefreshToken(jwtTokenReissueDto.getRefreshToken());
+        // When & Then
+        assertThrows(CustomException.class, () -> tokenService.reissueAccessToken(member));
     }
 
     @Test
     @DisplayName("토큰 재발급 실패 - 회원 정보 없음")
     void reissueAccessTokenMemberNotFound() {
-        Claims claims = mock(Claims.class);
-        claims.setSubject("test@email");
-        JwtTokenReissueDto jwtTokenReissueDto = new JwtTokenReissueDto();
+        // Given
+        final String email = "nonexistent@example.com";
+        final Member.Role role = Member.Role.ROLE_MEMBER;
 
-        when(refreshTokenRepository.findByRefreshToken(any())).thenReturn(Optional.of(refreshToken));
-        when(jwtUtil.parseClaims(any())).thenReturn(claims);
+        when(member.getEmail()).thenReturn(email);
+        when(member.getRole()).thenReturn(role);
+        when(jwtUtil.createToken(email, role)).thenThrow(new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 
-        // Exception
-        when(memberRepository.findByEmail(any())).thenReturn(Optional.empty());
-
-        Exception exception = assertThrows(Exception.class, () -> tokenService.reissueAccessToken(jwtTokenReissueDto));
-
-        assertInstanceOf(CustomException.class, exception);
-        assertEquals(ErrorCode.MEMBER_NOT_FOUND.getMessage(), exception.getMessage());
-        verify(memberRepository).findByEmail(any());
+        // When & Then
+        assertThrows(CustomException.class, () -> tokenService.reissueAccessToken(member));
     }
 
     @Test
     @DisplayName("소셜 로그인 - 이미 존재하는 회원일 경우 토큰 발급")
     void createTokenForLoginMember() {
-        JwtToken mockJwtToken = mock(JwtToken.class);
+        // Given
+        final String email = "test@example.com";
+        final String accessTokenKey = "access_token_" + email;
+        final String refreshTokenKey = "refresh_token_" + email;
+        final Member.Role role = Member.Role.ROLE_MEMBER;
 
-        when(member.getEmail()).thenReturn("test@test.com");
-        when(member.getRole()).thenReturn(Member.Role.ROLE_MEMBER);
+        when(member.getEmail()).thenReturn(email);
+        when(member.getRole()).thenReturn(role);
+        when(jwtUtil.createToken(email, role)).thenReturn(jwtToken);
 
-        when(jwtUtil.createToken(member.getEmail(), member.getRole())).thenReturn(mockJwtToken);
-        when(refreshTokenRepository.findByEmail(member.getEmail())).thenReturn(Optional.of(refreshToken));
+        when(redisTemplate.hasKey(accessTokenKey)).thenReturn(true);
+        when(redisTemplate.hasKey(refreshTokenKey)).thenReturn(true);
+        when(jwtToken.getAccessToken()).thenReturn("accessToken");
+        when(jwtToken.getRefreshToken()).thenReturn("refreshToken");
+        when(redisTemplate.opsForValue()).thenReturn(valueOperations);
 
-        when(mockJwtToken.getAccessToken()).thenReturn("mockAccessToken");
-        when(mockJwtToken.getRefreshToken()).thenReturn("mockRefreshToken");
+        // When
+        JwtToken result = tokenService.createTokenForLoginMember(member);
 
-        JwtToken resultToken = tokenService.createTokenForLoginMember(member);
+        // Then
+        assertEquals(jwtToken, result);
+        verify(redisTemplate).hasKey(accessTokenKey);
+        verify(redisTemplate).hasKey(refreshTokenKey);
+        verify(redisTemplate).delete(accessTokenKey);
+        verify(redisTemplate).delete(refreshTokenKey);
+        verify(valueOperations).set(eq(accessTokenKey), eq("accessToken"), eq(30L), eq(TimeUnit.MINUTES));
+        verify(valueOperations).set(eq(refreshTokenKey), eq("refreshToken"), eq(7L), eq(TimeUnit.DAYS));
+    }
 
-        assertNotNull(resultToken);
-        assertEquals("mockAccessToken", resultToken.getAccessToken());
-        assertEquals("mockRefreshToken", resultToken.getRefreshToken());
+    @Test
+    @DisplayName("기존 토큰 만료")
+    void expireExistingTokens() {
+        // Given
+        final String email = "test@example.com";
+        final String accessTokenKey = "access_token_" + email;
+        final String refreshTokenKey = "refresh_token_" + email;
 
-        verify(refreshToken).updateRefreshToken(mockJwtToken.getRefreshToken());
-        verify(refreshTokenRepository).save(refreshToken);
+        when(redisTemplate.hasKey(accessTokenKey)).thenReturn(true);
+        when(redisTemplate.hasKey(refreshTokenKey)).thenReturn(true);
+
+        ValueOperations<String, String> valueOperations = mock(ValueOperations.class);
+        when(redisTemplate.opsForValue()).thenReturn(valueOperations);
+        when(valueOperations.get(accessTokenKey)).thenReturn("oldAccessToken");
+        when(valueOperations.get(refreshTokenKey)).thenReturn("oldRefreshToken");
+        when(jwtUtil.getRemainingTokenLife(anyString())).thenReturn(1000L);
+
+        // When
+        tokenService.expireExistingTokens(email);
+
+        // Then
+        verify(redisTemplate).delete(accessTokenKey);
+        verify(redisTemplate).delete(refreshTokenKey);
+        verify(valueOperations).set(eq("blacklist_oldAccessToken"), eq("oldAccessToken"), eq(1000L), eq(TimeUnit.MILLISECONDS));
+        verify(valueOperations).set(eq("blacklist_oldRefreshToken"), eq("oldRefreshToken"), eq(1000L), eq(TimeUnit.MILLISECONDS));
+    }
+
+    @Test
+    @DisplayName("토큰 검증 - 토큰이 블랙리스트에 있을 경우")
+    void validateTokenBlacklisted() {
+        // Given
+        final String token = "blacklistedToken";
+        when(redisTemplate.hasKey("blacklist_" + token)).thenReturn(true);
+
+        // When & Then
+        assertThrows(CustomException.class, () -> tokenService.validateToken(token));
+    }
+
+    @Test
+    @DisplayName("토큰 검증 - 토큰이 블랙리스트에 없을 경우")
+    void validateTokenNotBlacklisted() {
+        // Given
+        final String token = "validToken";
+        when(redisTemplate.hasKey("blacklist_" + token)).thenReturn(false);
+
+        // When
+        tokenService.validateToken(token);
+
+        // Then
+        verify(jwtUtil).validateToken(token);
     }
 }
