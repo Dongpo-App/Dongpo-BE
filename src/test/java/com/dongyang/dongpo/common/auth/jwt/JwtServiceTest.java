@@ -1,10 +1,9 @@
-package com.dongyang.dongpo.service.token;
+package com.dongyang.dongpo.common.auth.jwt;
 
-import com.dongyang.dongpo.domain.member.Member;
-import com.dongyang.dongpo.dto.auth.JwtToken;
-import com.dongyang.dongpo.exception.CustomException;
-import com.dongyang.dongpo.exception.ErrorCode;
-import com.dongyang.dongpo.util.jwt.JwtUtil;
+import com.dongyang.dongpo.domain.member.entity.Member;
+import com.dongyang.dongpo.domain.auth.dto.JwtToken;
+import com.dongyang.dongpo.common.exception.CustomException;
+import com.dongyang.dongpo.common.exception.ErrorCode;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -20,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class TokenServiceTest {
+class JwtServiceTest {
 
     @Mock
     private JwtUtil jwtUtil;
@@ -32,7 +31,7 @@ class TokenServiceTest {
     private ValueOperations<String, String> valueOperations;
 
     @InjectMocks
-    private TokenService tokenService;
+    private JwtService jwtService;
 
     @Mock
     private Member member;
@@ -59,7 +58,7 @@ class TokenServiceTest {
         when(redisTemplate.opsForValue()).thenReturn(valueOperations);
 
         // When
-        JwtToken result = tokenService.reissueAccessToken(member);
+        JwtToken result = jwtService.reissueAccessToken(member);
 
         // Then
         assertEquals(jwtToken, result);
@@ -82,7 +81,7 @@ class TokenServiceTest {
         when(jwtUtil.createToken(email, role)).thenThrow(new CustomException(ErrorCode.EXPIRED_TOKEN));
 
         // When & Then
-        assertThrows(CustomException.class, () -> tokenService.reissueAccessToken(member));
+        assertThrows(CustomException.class, () -> jwtService.reissueAccessToken(member));
     }
 
     @Test
@@ -97,7 +96,7 @@ class TokenServiceTest {
         when(jwtUtil.createToken(email, role)).thenThrow(new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 
         // When & Then
-        assertThrows(CustomException.class, () -> tokenService.reissueAccessToken(member));
+        assertThrows(CustomException.class, () -> jwtService.reissueAccessToken(member));
     }
 
     @Test
@@ -120,7 +119,7 @@ class TokenServiceTest {
         when(redisTemplate.opsForValue()).thenReturn(valueOperations);
 
         // When
-        JwtToken result = tokenService.createTokenForLoginMember(member);
+        JwtToken result = jwtService.createTokenForLoginMember(member);
 
         // Then
         assertEquals(jwtToken, result);
@@ -150,7 +149,7 @@ class TokenServiceTest {
         when(jwtUtil.getRemainingTokenLife(anyString())).thenReturn(1000L);
 
         // When
-        tokenService.expireExistingTokens(email);
+        jwtService.expireExistingTokens(email);
 
         // Then
         verify(redisTemplate).delete(accessTokenKey);
@@ -167,7 +166,7 @@ class TokenServiceTest {
         when(redisTemplate.hasKey("blacklist_" + token)).thenReturn(true);
 
         // When & Then
-        assertThrows(CustomException.class, () -> tokenService.validateToken(token));
+        assertThrows(CustomException.class, () -> jwtService.validateToken(token));
     }
 
     @Test
@@ -178,7 +177,7 @@ class TokenServiceTest {
         when(redisTemplate.hasKey("blacklist_" + token)).thenReturn(false);
 
         // When
-        tokenService.validateToken(token);
+        jwtService.validateToken(token);
 
         // Then
         verify(jwtUtil).validateToken(token);

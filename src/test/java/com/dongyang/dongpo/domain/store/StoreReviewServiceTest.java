@@ -1,11 +1,12 @@
-package com.dongyang.dongpo.service.store;
+package com.dongyang.dongpo.domain.store;
 
-import com.dongyang.dongpo.domain.member.Member;
-import com.dongyang.dongpo.domain.store.StoreReview;
-import com.dongyang.dongpo.dto.store.ReviewDto;
-import com.dongyang.dongpo.repository.store.StoreRepository;
-import com.dongyang.dongpo.repository.store.StoreReviewRepository;
-import com.dongyang.dongpo.service.title.TitleService;
+import com.dongyang.dongpo.domain.member.entity.Member;
+import com.dongyang.dongpo.domain.store.entity.StoreReview;
+import com.dongyang.dongpo.domain.store.dto.ReviewDto;
+import com.dongyang.dongpo.domain.store.repository.StoreRepository;
+import com.dongyang.dongpo.domain.store.repository.StoreReviewRepository;
+import com.dongyang.dongpo.domain.store.service.StoreReviewService;
+import com.dongyang.dongpo.domain.member.service.TitleService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

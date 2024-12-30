@@ -1,8 +1,8 @@
-package com.dongyang.dongpo.service.location;
+package com.dongyang.dongpo.util.location;
 
-import com.dongyang.dongpo.dto.store.StoreRegisterDto;
-import com.dongyang.dongpo.repository.store.StoreRepository;
-import com.dongyang.dongpo.util.location.LocationUtil;
+import com.dongyang.dongpo.domain.store.dto.StoreRegisterDto;
+import com.dongyang.dongpo.domain.store.repository.StoreRepository;
+import com.dongyang.dongpo.common.util.location.LocationUtil;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

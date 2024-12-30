@@ -1,10 +1,11 @@
-package com.dongyang.dongpo.service.title;
+package com.dongyang.dongpo.domain.member;
 
-import com.dongyang.dongpo.domain.member.Member;
-import com.dongyang.dongpo.domain.member.MemberTitle;
-import com.dongyang.dongpo.domain.member.Title;
-import com.dongyang.dongpo.dto.mypage.MyPageDto;
-import com.dongyang.dongpo.repository.member.MemberTitleRepository;
+import com.dongyang.dongpo.domain.member.entity.Member;
+import com.dongyang.dongpo.domain.member.entity.MemberTitle;
+import com.dongyang.dongpo.domain.member.entity.Title;
+import com.dongyang.dongpo.domain.member.dto.MyPageDto;
+import com.dongyang.dongpo.domain.member.repository.MemberTitleRepository;
+import com.dongyang.dongpo.domain.member.service.TitleService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

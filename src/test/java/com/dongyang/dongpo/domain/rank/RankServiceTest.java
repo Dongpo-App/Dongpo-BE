@@ -1,11 +1,12 @@
-package com.dongyang.dongpo.service.rank;
+package com.dongyang.dongpo.domain.rank;
 
-import com.dongyang.dongpo.domain.member.Member;
-import com.dongyang.dongpo.domain.member.Title;
-import com.dongyang.dongpo.dto.rank.RankDto;
-import com.dongyang.dongpo.repository.store.StoreRepository;
-import com.dongyang.dongpo.repository.store.StoreReviewRepository;
-import com.dongyang.dongpo.repository.store.StoreVisitCertRepository;
+import com.dongyang.dongpo.domain.member.entity.Member;
+import com.dongyang.dongpo.domain.member.entity.Title;
+import com.dongyang.dongpo.domain.rank.dto.RankDto;
+import com.dongyang.dongpo.domain.rank.service.RankService;
+import com.dongyang.dongpo.domain.store.repository.StoreRepository;
+import com.dongyang.dongpo.domain.store.repository.StoreReviewRepository;
+import com.dongyang.dongpo.domain.store.repository.StoreVisitCertRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

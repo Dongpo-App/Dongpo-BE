@@ -1,11 +1,12 @@
-package com.dongyang.dongpo.service.bookmark;
+package com.dongyang.dongpo.domain.bookmark;
 
-import com.dongyang.dongpo.domain.member.Member;
-import com.dongyang.dongpo.domain.store.Store;
-import com.dongyang.dongpo.domain.store.StoreBookmark;
-import com.dongyang.dongpo.dto.bookmark.BookmarkDto;
-import com.dongyang.dongpo.repository.bookmark.BookmarkRepository;
-import com.dongyang.dongpo.repository.store.StoreRepository;
+import com.dongyang.dongpo.domain.bookmark.service.BookmarkService;
+import com.dongyang.dongpo.domain.member.entity.Member;
+import com.dongyang.dongpo.domain.store.entity.Store;
+import com.dongyang.dongpo.domain.bookmark.entity.StoreBookmark;
+import com.dongyang.dongpo.domain.bookmark.dto.BookmarkDto;
+import com.dongyang.dongpo.domain.bookmark.repository.BookmarkRepository;
+import com.dongyang.dongpo.domain.store.repository.StoreRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
