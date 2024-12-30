@@ -77,19 +77,14 @@ public class JwtUtil {
         try {
             parseClaims(token);
         } catch (SecurityException | MalformedJwtException | SignatureException e) {
-            log.error(e.getMessage());
             throw new CustomException(ErrorCode.MALFORMED_TOKEN); // jwt서명이 유효하지 않음
         } catch (UnsupportedJwtException e) {
-            log.error(e.getMessage());
             throw new CustomException(ErrorCode.UNSUPPORTED_TOKEN); // 지원하지않는 jwt 토큰
         } catch (ExpiredJwtException e) {
-            log.error(e.getMessage());
             throw new CustomException(ErrorCode.EXPIRED_TOKEN); // 토큰 시간 만료
         } catch (IllegalArgumentException e) {
-            log.error(e.getMessage());
             throw new CustomException(ErrorCode.CLAIMS_NOT_FOUND); // claims 없음
         } catch (ClaimJwtException e) {
-            log.error(e.getMessage());
             throw new CustomException(ErrorCode.CLAIMS_NOT_VALID); // Claim 검증 실패
         }
     }
@@ -102,7 +97,6 @@ public class JwtUtil {
                     .parseClaimsJws(accessToken)
                     .getBody();
         } catch (Exception e) {
-            log.error("Error parsing claims: ", e);
             throw new CustomException(ErrorCode.EXPIRED_TOKEN);
         }
     }
