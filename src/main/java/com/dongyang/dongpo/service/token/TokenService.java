@@ -18,6 +18,12 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class TokenService {
 
+    private final String ACCESS_TOKEN_PREFIX = "access_token_";
+    private final String REFRESH_TOKEN_PREFIX = "refresh_token_";
+    private final String BLACKLIST_PREFIX = "blacklist_";
+    private final long ACCESS_TOKEN_VALID_MINUTES = 30;
+    private final long REFRESH_TOKEN_VALID_DAYS = 7;
+
     private final JwtUtil jwtUtil;
     private final StringRedisTemplate redisTemplate;
 
@@ -40,13 +46,13 @@ public class TokenService {
     }
 
     private void saveTokens(String memberEmail, JwtToken jwtToken) {
-        redisTemplate.opsForValue().set("access_token_" + memberEmail, jwtToken.getAccessToken(), 30, TimeUnit.MINUTES);
-        redisTemplate.opsForValue().set("refresh_token_" + memberEmail, jwtToken.getRefreshToken(), 7, TimeUnit.DAYS);
+        redisTemplate.opsForValue().set(ACCESS_TOKEN_PREFIX + memberEmail, jwtToken.getAccessToken(), ACCESS_TOKEN_VALID_MINUTES, TimeUnit.MINUTES);
+        redisTemplate.opsForValue().set(REFRESH_TOKEN_PREFIX + memberEmail, jwtToken.getRefreshToken(), REFRESH_TOKEN_VALID_DAYS, TimeUnit.DAYS);
     }
 
     public void expireExistingTokens(String memberEmail) {
-        String accessTokenKey = "access_token_" + memberEmail;
-        String refreshTokenKey = "refresh_token_" + memberEmail;
+        String accessTokenKey = ACCESS_TOKEN_PREFIX + memberEmail;
+        String refreshTokenKey = REFRESH_TOKEN_PREFIX + memberEmail;
 
         if (redisTemplate.hasKey(accessTokenKey)) {
             String accessToken = redisTemplate.opsForValue().get(accessTokenKey);
@@ -63,7 +69,7 @@ public class TokenService {
 
     private void blacklistToken(String token) {
         long remainingLife = jwtUtil.getRemainingTokenLife(token);
-        redisTemplate.opsForValue().set("blacklist_" + token, token, remainingLife, TimeUnit.MILLISECONDS);
+        redisTemplate.opsForValue().set(BLACKLIST_PREFIX + token, token, remainingLife, TimeUnit.MILLISECONDS);
     }
 
     public void validateToken(String token) {
@@ -73,7 +79,7 @@ public class TokenService {
     }
 
     public boolean isTokenBlacklisted(String token) {
-        return redisTemplate.hasKey("blacklist_" + token);
+        return redisTemplate.hasKey(BLACKLIST_PREFIX + token);
     }
 
     public Claims parseClaims(String token) {
