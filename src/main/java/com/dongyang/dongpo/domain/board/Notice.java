@@ -1,7 +1,7 @@
 package com.dongyang.dongpo.domain.board;
 
-import com.dongyang.dongpo.domain.admin.Admin;
-import com.dongyang.dongpo.dto.notice.NoticeDto;
+import com.dongyang.dongpo.domain.admin.dto.NoticeDto;
+import com.dongyang.dongpo.domain.admin.entity.Admin;
 import jakarta.persistence.*;
 import lombok.*;
 

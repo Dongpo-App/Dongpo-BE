@@ -1,0 +1,33 @@
+package com.dongyang.dongpo.domain.admin.dto;
+
+import com.dongyang.dongpo.domain.admin.entity.Admin;
+import com.dongyang.dongpo.domain.board.Notice;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.util.List;
+
+@Data
+@JsonInclude(JsonInclude.Include.NON_NULL)
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+public class NoticeDto {
+
+    private Long id;
+    private String title;
+    private String text;
+    private String name;
+    private List<PicDto> imgs;
+
+    public Notice toEntity(Admin admin){
+        return Notice.builder()
+                .title(title)
+                .text(text)
+                .admin(admin)
+                .build();
+    }
+}
