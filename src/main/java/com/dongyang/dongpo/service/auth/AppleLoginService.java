@@ -157,7 +157,7 @@ public class AppleLoginService {
 
     // 애플 로그인 사용자 탈퇴 메소드
     @Transactional
-    public void revokeToken(Member member, String authorization) {
+    public void revokeToken(Member member) {
         AppleRefreshToken refresh = appleRefreshTokenRepository.findBySocialId(member.getSocialId())
                 .orElseThrow(() -> new CustomException(ErrorCode.MALFORMED_TOKEN));
 
@@ -180,7 +180,7 @@ public class AppleLoginService {
         appleRefreshTokenRepository.deleteBySocialId(member.getSocialId());
 
         // 사용자 상태를 탈퇴로 변경
-        memberService.handleLeave(member, authorization);
+        memberService.handleLeave(member);
 
         log.info("Member {} Account has been successfully revoked.", member.getEmail());
     }

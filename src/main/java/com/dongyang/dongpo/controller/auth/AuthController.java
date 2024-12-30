@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
 
     private final SocialService socialService;
-    private final TokenService tokenService;
     private final AppleLoginService appleLoginService;
 
     @PostMapping("/kakao")
@@ -55,22 +54,20 @@ public class AuthController {
     @PostMapping("/reissue")
     @Operation(summary = "JWT토큰 재발급")
     public ResponseEntity<ApiResponse<JwtToken>> reissue(@RequestBody JwtTokenReissueDto jwtTokenReissueDto) {
-        return ResponseEntity.ok(new ApiResponse<>(tokenService.reissueAccessToken(jwtTokenReissueDto)));
+        return ResponseEntity.ok(new ApiResponse<>(socialService.reissueAccessToken(jwtTokenReissueDto)));
     }
 
     @PostMapping("/logout")
     @Operation(summary = "로그아웃")
-    public ResponseEntity<ApiResponse<String>> logout(@AuthenticationPrincipal Member member,
-                                                      @RequestHeader("Authorization") String authorization) {
-        socialService.doLogout(member, authorization);
+    public ResponseEntity<ApiResponse<String>> logout(@AuthenticationPrincipal Member member) {
+        socialService.doLogout(member);
         return ResponseEntity.ok(new ApiResponse<>("Logout success."));
     }
 
     @PostMapping("/leave")
     @Operation(summary = "회원탈퇴")
-    public ResponseEntity<ApiResponse<String>> leave(@AuthenticationPrincipal Member member,
-                                                     @RequestHeader("Authorization") String authorization) {
-        socialService.doLeave(member, authorization);
+    public ResponseEntity<ApiResponse<String>> leave(@AuthenticationPrincipal Member member) {
+        socialService.doLeave(member);
         return ResponseEntity.ok(new ApiResponse<>("Leave success."));
     }
 }

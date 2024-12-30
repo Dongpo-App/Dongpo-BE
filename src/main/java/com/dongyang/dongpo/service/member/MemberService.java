@@ -1,22 +1,16 @@
 package com.dongyang.dongpo.service.member;
 
-import com.dongyang.dongpo.domain.auth.RefreshToken;
 import com.dongyang.dongpo.domain.member.Member;
 import com.dongyang.dongpo.domain.member.MemberTitle;
-import com.dongyang.dongpo.dto.auth.AppleLoginResponse;
-import com.dongyang.dongpo.dto.auth.AppleSignupContinueDto;
-import com.dongyang.dongpo.dto.auth.JwtToken;
-import com.dongyang.dongpo.dto.auth.UserInfo;
+import com.dongyang.dongpo.dto.auth.*;
 import com.dongyang.dongpo.dto.mypage.MyPageDto;
 import com.dongyang.dongpo.dto.mypage.MyPageUpdateDto;
 import com.dongyang.dongpo.exception.CustomException;
 import com.dongyang.dongpo.exception.ErrorCode;
-import com.dongyang.dongpo.repository.auth.RefreshTokenRepository;
 import com.dongyang.dongpo.repository.member.MemberRepository;
 import com.dongyang.dongpo.repository.member.MemberTitleRepository;
 import com.dongyang.dongpo.service.store.StoreService;
 import com.dongyang.dongpo.service.token.TokenService;
-import com.dongyang.dongpo.util.jwt.JwtUtil;
 import com.dongyang.dongpo.util.s3.S3Service;
 import io.jsonwebtoken.Claims;
 import io.micrometer.common.util.StringUtils;
@@ -35,8 +29,6 @@ import java.util.List;
 public class MemberService {
 
     private final MemberRepository memberRepository;
-    private final RefreshTokenRepository refreshTokenRepository;
-    private final JwtUtil jwtUtil;
     private final TokenService tokenService;
     private final MemberTitleRepository memberTitleRepository;
     private final StoreService storeService;
@@ -46,7 +38,7 @@ public class MemberService {
     private String bucketFullUrl;
 
     @Transactional
-    public JwtToken socialSave(UserInfo userInfo){
+    public JwtToken socialSave(UserInfo userInfo) {
         Member member = Member.toEntity(userInfo);
         if (validateMemberExistence(member.getEmail(), member.getSocialId()))
             return tokenService.createTokenForLoginMember(member);
@@ -65,7 +57,7 @@ public class MemberService {
         // 이미 존재하는 회원인지 검증
         if (validateMemberExistence(email, socialId)) {
             Member existingMember = memberRepository.findBySocialId(socialId)
-                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+                    .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
             return AppleLoginResponse.responseJwtToken(tokenService.createTokenForLoginMember(existingMember));
         }
 
@@ -129,20 +121,12 @@ public class MemberService {
                 .title(member.getMainTitle())
                 .achieveDate(LocalDateTime.now())
                 .build());
-
-        JwtToken jwtToken = jwtUtil.createToken(member.getEmail(), member.getRole());
-        RefreshToken refreshToken = RefreshToken.builder()
-                .email(member.getEmail())
-                .refreshToken(jwtToken.getRefreshToken())
-                .build();
-
-        refreshTokenRepository.save(refreshToken);
-
         log.info("Registered Member {} successfully - id: {}", member.getEmail(), member.getId());
-        return jwtToken;
+
+        return tokenService.createTokenForLoginMember(member);
     }
 
-    public List<Member> findAll(){
+    public List<Member> findAll() {
         return memberRepository.findAll();
     }
 
@@ -184,18 +168,24 @@ public class MemberService {
         }
     }
 
-    public void handleLogout(Member member, String authorization) {
-        tokenService.expireTokens(member.getEmail(), authorization);
+    public void handleLogout(Member member) {
+        tokenService.expireExistingTokens(member.getEmail());
     }
 
     @Transactional
-    public void handleLeave(Member member, String authorization) {
+    public void handleLeave(Member member) {
         Member existingMember = memberRepository.findById(member.getId())
                 .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 
         String leavingMemberEmail = existingMember.getEmail();
-        handleLogout(existingMember, authorization);
+        handleLogout(existingMember);
         existingMember.setMemberStatusLeave();
         log.info("Member {} - LEAVE", leavingMemberEmail);
+    }
+
+    public JwtToken reissueAccessToken(JwtTokenReissueDto jwtTokenReissueDto) {
+        Claims claims = tokenService.parseClaims(jwtTokenReissueDto.getRefreshToken());
+        return tokenService.reissueAccessToken(memberRepository.findByEmail(claims.getIssuer())
+                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND)));
     }
 }
