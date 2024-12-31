@@ -1,0 +1,65 @@
+package com.dongyang.dongpo.domain.report.entity;
+
+import com.dongyang.dongpo.domain.member.entity.Member;
+import com.dongyang.dongpo.domain.report.dto.ReportDto;
+import com.dongyang.dongpo.domain.store.entity.StoreReview;
+import jakarta.persistence.*;
+import lombok.*;
+
+import java.time.LocalDateTime;
+
+@Entity
+@Getter
+@Setter
+@Builder
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
+@Table(name = "review_report")
+public class ReviewReport {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "report_writer")
+    private Member member;
+
+    @Column(name = "report_reason")
+    @Enumerated(EnumType.STRING)
+    private ReportReason reason;
+
+    @Column(columnDefinition = "TEXT")
+    private String text;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "reporting_review_id")
+    private StoreReview review;
+
+    @Column(columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP")
+    @Builder.Default
+    private LocalDateTime issueDate = LocalDateTime.now();
+
+    @Column(length = 24)
+    private String issueIp;
+
+    @Column(columnDefinition = "VARCHAR(255)")
+    @Enumerated(EnumType.STRING)
+    @Builder.Default
+    private ReportStatus status = ReportStatus.OPEN;
+
+
+
+    public enum ReportStatus {
+        OPEN, PROCEEDING, CLOSED
+    }
+
+    public ReportDto toDto() {
+        return ReportDto.builder()
+                .id(id)
+                .reviewId(review.getId())
+                .memberId(member.getId())
+                .text(text)
+                .issueDate(issueDate)
+                .build();
+    }
+}
