@@ -74,7 +74,7 @@
 </br>
 
 ## 💻 System Architecture
-<img src="https://github.com/user-attachments/assets/ff21088f-f4f5-479e-98b5-392db551cfb6" width="500px">
+<img src="https://github.com/user-attachments/assets/ff21088f-f4f5-479e-98b5-392db551cfb6" width="600px">
 
 </br>
 
