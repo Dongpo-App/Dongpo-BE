@@ -21,12 +21,12 @@ public class AuthController {
 
     @PostMapping("/kakao")
     public ResponseEntity<ApiResponse<JwtToken>> kakao(@RequestBody SocialTokenDto token) {
-        return ResponseEntity.ok(new ApiResponse<>(authService.getKakaoUserInfo(token.getToken())));
+        return ResponseEntity.ok(new ApiResponse<>(authService.handleLogin(token.getToken())));
     }
 
     @GetMapping("/kakao/callback")
-    public ResponseEntity<ApiResponse<JwtToken>> kakaoCallback(@RequestParam("code") String AccessCode) {
-        return ResponseEntity.ok(new ApiResponse<>(authService.kakaoCallback(AccessCode)));
+    public ResponseEntity<ApiResponse<JwtToken>> kakaoCallback(@RequestParam("code") String accessCode) {
+        return ResponseEntity.ok(new ApiResponse<>(authService.kakaoCallback(accessCode)));
     }
 
     /*
@@ -38,7 +38,7 @@ public class AuthController {
 
     @PostMapping("/apple")
     public ResponseEntity<ApiResponse<?>> apple(@RequestBody AppleLoginDto appleLoginDto) {
-        AppleLoginResponse response = authService.getAppleUserInfo(appleLoginDto);
+        AppleLoginResponse response = authService.handleAppleLogin(appleLoginDto);
 
         return response.getJwtToken() == null
                 ? ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ApiResponse<>(response.getClaims(), ErrorCode.ADDITIONAL_INFO_REQUIRED_FOR_SIGNUP.toString()))
@@ -47,7 +47,7 @@ public class AuthController {
 
     @PostMapping("/apple/continue")
     public ResponseEntity<ApiResponse<JwtToken>> appleSignupContinue(@RequestBody AppleSignupContinueDto appleSignupContinueDto) {
-        return ResponseEntity.ok(new ApiResponse<>(authService.continueSignup(appleSignupContinueDto)));
+        return ResponseEntity.ok(new ApiResponse<>(authService.continueAppleSignup(appleSignupContinueDto)));
     }
 
     @PostMapping("/reissue")
@@ -59,14 +59,14 @@ public class AuthController {
     @PostMapping("/logout")
     @Operation(summary = "로그아웃")
     public ResponseEntity<ApiResponse<String>> logout(@AuthenticationPrincipal Member member) {
-        authService.doLogout(member);
+        authService.logout(member);
         return ResponseEntity.ok(new ApiResponse<>("Logout success."));
     }
 
     @PostMapping("/leave")
     @Operation(summary = "회원탈퇴")
     public ResponseEntity<ApiResponse<String>> leave(@AuthenticationPrincipal Member member) {
-        authService.doLeave(member);
+        authService.withdraw(member);
         return ResponseEntity.ok(new ApiResponse<>("Leave success."));
     }
 }
