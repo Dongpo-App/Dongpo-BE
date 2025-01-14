@@ -1,6 +1,5 @@
 package com.dongyang.dongpo.domain.member.service;
 
-import com.dongyang.dongpo.common.auth.jwt.JwtService;
 import com.dongyang.dongpo.common.exception.CustomException;
 import com.dongyang.dongpo.common.exception.ErrorCode;
 import com.dongyang.dongpo.common.fileupload.s3.S3Service;
@@ -12,8 +11,6 @@ import com.dongyang.dongpo.domain.member.entity.MemberTitle;
 import com.dongyang.dongpo.domain.member.repository.MemberRepository;
 import com.dongyang.dongpo.domain.member.repository.MemberTitleRepository;
 import com.dongyang.dongpo.domain.store.service.StoreService;
-import io.jsonwebtoken.Claims;
-import io.micrometer.common.util.StringUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,71 +21,52 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
 @Slf4j
+@Transactional
+@RequiredArgsConstructor
 public class MemberService {
-
-    private final MemberRepository memberRepository;
-    private final JwtService jwtService;
-    private final MemberTitleRepository memberTitleRepository;
-    private final StoreService storeService;
-    private final S3Service s3Service;
 
     @Value("${cloud.aws.s3.bucket-full-url}")
     private String bucketFullUrl;
 
-    @Transactional
-    public JwtToken socialSave(UserInfo userInfo) {
+    private final MemberRepository memberRepository;
+    private final MemberTitleRepository memberTitleRepository;
+    private final StoreService storeService;
+    private final S3Service s3Service;
+
+    // 회원 가입 처리
+    public Member registerNewMember(UserInfo userInfo) {
         Member member = Member.toEntity(userInfo);
-        if (validateMemberExistence(member.getEmail(), member.getSocialId()))
-            return jwtService.createTokenForLoginMember(member);
-
-        return registerMemberAndCreateToken(member);
+        memberRepository.save(member);
+        memberTitleRepository.save(MemberTitle.builder()
+                .member(member)
+                .title(member.getMainTitle())
+                .achieveDate(LocalDateTime.now())
+                .build());
+        log.info("Registered Member {} successfully - id: {}", member.getEmail(), member.getId());
+        return member;
     }
 
-    // 애플 로그인 수행 메소드
-    public AppleLoginResponse handleAppleLogin(Claims claims) {
-        final String socialId = claims.get("sub", String.class);
-        final String email = claims.get("email", String.class);
-
-        if (StringUtils.isBlank(email))
-            throw new CustomException(ErrorCode.MEMBER_ALREADY_LEFT);
-
-        // 이미 존재하는 회원인지 검증
-        if (validateMemberExistence(email, socialId)) {
-            Member existingMember = memberRepository.findBySocialId(socialId)
-                    .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
-            return AppleLoginResponse.responseJwtToken(jwtService.createTokenForLoginMember(existingMember));
-        }
-
-        // 존재하지 않는 회원인 경우 필수 클레임 정보 반환
-        return AppleLoginResponse.responseClaims(claims);
+    // 사용자 전체 조회
+    public List<Member> findAll() {
+        return memberRepository.findAll();
     }
 
-    // 애플 회원 가입 수행 메소드(추가 정보 기입)
-    @Transactional
-    public JwtToken continueAppleSignup(AppleSignupContinueDto appleSignupContinueDto) {
-        // 서비스 이용 약관에 동의 하지 않았을 경우 가입 불허
-        if (!appleSignupContinueDto.getIsMarketingTermsAgreed())
-            throw new CustomException(ErrorCode.SERVICE_TERMS_NOT_AGREED);
+    // id로 사용자 조회
+    public Member findById(Long id) {
+        return memberRepository.findById(id)
+                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+    }
 
-        // 이미 가입된 회원인지, 가입 가능한 회원인지 검증
-        if (validateMemberExistence(appleSignupContinueDto.getEmail(), appleSignupContinueDto.getSocialId()))
-            throw new CustomException(ErrorCode.MEMBER_ALREADY_EXISTS);
+    // 이메일로 사용자 조회
+    public Member findByEmail(String email) {
+        return memberRepository.findByEmail(email)
+                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+    }
 
-        Member member = Member.toEntity(UserInfo.builder()
-                .email(appleSignupContinueDto.getEmail())
-                .nickname(appleSignupContinueDto.getNickname())
-                .birthyear(appleSignupContinueDto.getBirthday().substring(0, 4))
-                .birthday(appleSignupContinueDto.getBirthday().substring(5))
-                .gender(appleSignupContinueDto.getGender())
-                .provider(Member.SocialType.APPLE)
-                .id(appleSignupContinueDto.getSocialId())
-                .build()
-        );
-
-        // 가입 처리 및 토큰 발급
-        return registerMemberAndCreateToken(member);
+    // 탈퇴 처리
+    public void setMemberStatusLeave(final Member member) {
+        findByEmail(member.getEmail()).setMemberStatusLeave();
     }
 
     // 이미 가입 된 회원인지, 가입 가능한 회원인지 검증
@@ -113,38 +91,12 @@ public class MemberService {
         return false;
     }
 
-    // 회원 가입 처리 및 토큰 발급
-    private JwtToken registerMemberAndCreateToken(Member member) {
-        memberRepository.save(member);
-        memberTitleRepository.save(MemberTitle.builder()
-                .member(member)
-                .title(member.getMainTitle())
-                .achieveDate(LocalDateTime.now())
-                .build());
-        log.info("Registered Member {} successfully - id: {}", member.getEmail(), member.getId());
-
-        return jwtService.createTokenForLoginMember(member);
-    }
-
-    public List<Member> findAll() {
-        return memberRepository.findAll();
-    }
-
-    public Member findOne(Long id) {
-        return memberRepository.findById(id).orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
-    }
-
-    public Member findByEmail(String email) {
-        return memberRepository.findByEmail(email).orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
-    }
-
     public MyPageDto getMemberInfoIndex(Member member) {
         List<MemberTitle> memberTitles = memberTitleRepository.findByMember(member);
         Long storeRegisterCount = storeService.getMyRegisteredStoreCount(member);
         return MyPageDto.toEntity(member, memberTitles, storeRegisterCount);
     }
 
-    @Transactional
     public void updateMemberInfo(String memberEmail, MyPageUpdateDto myPageUpdateDto) {
         if (myPageUpdateDto.getNickname().length() > 7) // 문자 수 7자 초과시 예외 발생
             throw new CustomException(ErrorCode.ARGUMENT_NOT_SATISFIED);
@@ -168,24 +120,4 @@ public class MemberService {
         }
     }
 
-    public void handleLogout(Member member) {
-        jwtService.expireExistingTokens(member.getEmail());
-    }
-
-    @Transactional
-    public void handleLeave(Member member) {
-        Member existingMember = memberRepository.findById(member.getId())
-                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
-
-        String leavingMemberEmail = existingMember.getEmail();
-        handleLogout(existingMember);
-        existingMember.setMemberStatusLeave();
-        log.info("Member {} - LEAVE", leavingMemberEmail);
-    }
-
-    public JwtToken reissueAccessToken(JwtTokenReissueDto jwtTokenReissueDto) {
-        Claims claims = jwtService.parseClaims(jwtTokenReissueDto.getRefreshToken());
-        return jwtService.reissueAccessToken(memberRepository.findByEmail(claims.getIssuer())
-                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND)));
-    }
 }
