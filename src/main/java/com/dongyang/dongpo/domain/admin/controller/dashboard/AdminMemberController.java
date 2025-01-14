@@ -20,7 +20,7 @@ public class AdminMemberController {
     @GetMapping("/{id}")
     public String detail(@PathVariable("id") Long id, Model model,
         @AuthenticationPrincipal Admin admin) {
-        model.addAttribute("member", memberService.findOne(id));
+        model.addAttribute("member", memberService.findById(id));
         model.addAttribute("admin", admin);
         return "admin/dashboard/member/member_detail";
     }

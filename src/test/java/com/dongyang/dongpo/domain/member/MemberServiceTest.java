@@ -55,7 +55,7 @@ class MemberServiceTest {
     }
 
     @Test
-    void findOne() {
+    void findById() {
     }
 
     @Test
