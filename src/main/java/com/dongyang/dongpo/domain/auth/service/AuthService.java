@@ -174,7 +174,7 @@ public class AuthService {
         }
     }
 
-
+    /*
     public JwtToken getNaverUserInfo(String accessToken) {
         try {
             WebClient webClient = WebClient.builder()
@@ -221,6 +221,7 @@ public class AuthService {
                 throw e;
         }
     }
+     */
 
     public void doLogout(Member member) {
         memberService.handleLogout(member);

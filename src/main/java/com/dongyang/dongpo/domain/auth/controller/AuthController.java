@@ -29,10 +29,12 @@ public class AuthController {
         return ResponseEntity.ok(new ApiResponse<>(authService.kakaoCallback(AccessCode)));
     }
 
+    /*
     @PostMapping("/naver")
     public ResponseEntity<ApiResponse<JwtToken>> naver(@RequestBody SocialTokenDto token) {
         return ResponseEntity.ok(new ApiResponse<>(authService.getNaverUserInfo(token.getToken())));
     }
+     */
 
     @PostMapping("/apple")
     public ResponseEntity<ApiResponse<?>> apple(@RequestBody AppleLoginDto appleLoginDto) {
