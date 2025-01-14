@@ -3,8 +3,7 @@ package com.dongyang.dongpo.domain.auth.controller;
 import com.dongyang.dongpo.common.dto.apiresponse.ApiResponse;
 import com.dongyang.dongpo.common.exception.ErrorCode;
 import com.dongyang.dongpo.domain.auth.dto.*;
-import com.dongyang.dongpo.domain.auth.service.AppleLoginService;
-import com.dongyang.dongpo.domain.auth.service.SocialService;
+import com.dongyang.dongpo.domain.auth.service.AuthService;
 import com.dongyang.dongpo.domain.member.entity.Member;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
@@ -18,27 +17,26 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class AuthController {
 
-    private final SocialService socialService;
-    private final AppleLoginService appleLoginService;
+    private final AuthService authService;
 
     @PostMapping("/kakao")
     public ResponseEntity<ApiResponse<JwtToken>> kakao(@RequestBody SocialTokenDto token) {
-        return ResponseEntity.ok(new ApiResponse<>(socialService.getKakaoUserInfo(token.getToken())));
+        return ResponseEntity.ok(new ApiResponse<>(authService.getKakaoUserInfo(token.getToken())));
     }
 
     @GetMapping("/kakao/callback")
     public ResponseEntity<ApiResponse<JwtToken>> kakaoCallback(@RequestParam("code") String AccessCode) {
-        return ResponseEntity.ok(new ApiResponse<>(socialService.kakaoCallback(AccessCode)));
+        return ResponseEntity.ok(new ApiResponse<>(authService.kakaoCallback(AccessCode)));
     }
 
     @PostMapping("/naver")
     public ResponseEntity<ApiResponse<JwtToken>> naver(@RequestBody SocialTokenDto token) {
-        return ResponseEntity.ok(new ApiResponse<>(socialService.getNaverUserInfo(token.getToken())));
+        return ResponseEntity.ok(new ApiResponse<>(authService.getNaverUserInfo(token.getToken())));
     }
 
     @PostMapping("/apple")
     public ResponseEntity<ApiResponse<?>> apple(@RequestBody AppleLoginDto appleLoginDto) {
-        AppleLoginResponse response = appleLoginService.getAppleUserInfo(appleLoginDto);
+        AppleLoginResponse response = authService.getAppleUserInfo(appleLoginDto);
 
         return response.getJwtToken() == null
                 ? ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ApiResponse<>(response.getClaims(), ErrorCode.ADDITIONAL_INFO_REQUIRED_FOR_SIGNUP.toString()))
@@ -47,26 +45,26 @@ public class AuthController {
 
     @PostMapping("/apple/continue")
     public ResponseEntity<ApiResponse<JwtToken>> appleSignupContinue(@RequestBody AppleSignupContinueDto appleSignupContinueDto) {
-        return ResponseEntity.ok(new ApiResponse<>(appleLoginService.continueSignup(appleSignupContinueDto)));
+        return ResponseEntity.ok(new ApiResponse<>(authService.continueSignup(appleSignupContinueDto)));
     }
 
     @PostMapping("/reissue")
     @Operation(summary = "JWT토큰 재발급")
     public ResponseEntity<ApiResponse<JwtToken>> reissue(@RequestBody JwtTokenReissueDto jwtTokenReissueDto) {
-        return ResponseEntity.ok(new ApiResponse<>(socialService.reissueAccessToken(jwtTokenReissueDto)));
+        return ResponseEntity.ok(new ApiResponse<>(authService.reissueAccessToken(jwtTokenReissueDto)));
     }
 
     @PostMapping("/logout")
     @Operation(summary = "로그아웃")
     public ResponseEntity<ApiResponse<String>> logout(@AuthenticationPrincipal Member member) {
-        socialService.doLogout(member);
+        authService.doLogout(member);
         return ResponseEntity.ok(new ApiResponse<>("Logout success."));
     }
 
     @PostMapping("/leave")
     @Operation(summary = "회원탈퇴")
     public ResponseEntity<ApiResponse<String>> leave(@AuthenticationPrincipal Member member) {
-        socialService.doLeave(member);
+        authService.doLeave(member);
         return ResponseEntity.ok(new ApiResponse<>("Leave success."));
     }
 }
