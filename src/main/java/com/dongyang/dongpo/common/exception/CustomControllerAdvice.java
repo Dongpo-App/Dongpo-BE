@@ -8,14 +8,13 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
 public class CustomControllerAdvice {
-    private static final ApiResponse<String> response = new ApiResponse<>();
 
     @ExceptionHandler(CustomException.class)
     public ResponseEntity<ApiResponse<String>> customException(CustomException e) {
-        response.setMessage(e.getMessage());
-        HttpStatus status = HttpStatus.valueOf(e.getErrorCode().getCode());
+        ErrorCode errorCode = e.getErrorCode();
 
-        return ResponseEntity.status(status).body(response);
+        HttpStatus status = HttpStatus.valueOf(errorCode.getStatus());
+        return ResponseEntity.status(status).body(new ApiResponse<>(errorCode.getCode(), errorCode.getMessage()));
     }
 
 }
