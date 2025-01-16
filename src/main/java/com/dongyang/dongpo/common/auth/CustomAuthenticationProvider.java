@@ -24,7 +24,7 @@ import java.util.Collection;
 @RequiredArgsConstructor
 public class CustomAuthenticationProvider implements AuthenticationProvider {
 
-    private final String ROLE = "role";
+    private static final String ROLE = "role";
 
     private final CustomUserDetailsService customUserDetailsService;
     private final JwtService jwtService;
@@ -32,7 +32,6 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         String token = (String) authentication.getCredentials();
-        jwtService.validateToken(token);
         return getAuthentication(token);
     }
 
