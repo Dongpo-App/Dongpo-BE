@@ -1,13 +1,11 @@
 package com.dongyang.dongpo.domain.auth.controller;
 
 import com.dongyang.dongpo.common.dto.apiresponse.ApiResponse;
-import com.dongyang.dongpo.common.exception.ErrorCode;
 import com.dongyang.dongpo.domain.auth.dto.*;
 import com.dongyang.dongpo.domain.auth.service.AuthService;
 import com.dongyang.dongpo.domain.member.entity.Member;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -37,16 +35,8 @@ public class AuthController {
      */
 
     @PostMapping("/apple")
-    public ResponseEntity<ApiResponse<?>> apple(@RequestBody AppleLoginDto appleLoginDto) {
-        AppleLoginResponse response = authService.handleAppleLogin(appleLoginDto);
-
-        return response.getJwtToken() == null ?
-                ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
-                        new ApiResponse<>(
-                                response.getClaims(),
-                                ErrorCode.ADDITIONAL_INFO_REQUIRED_FOR_SIGNUP.getCode(),
-                                ErrorCode.ADDITIONAL_INFO_REQUIRED_FOR_SIGNUP.getMessage())
-                ) : ResponseEntity.ok(new ApiResponse<>(response.getJwtToken()));
+    public ResponseEntity<ApiResponse<JwtToken>> apple(@RequestBody AppleLoginDto appleLoginDto) {
+        return ResponseEntity.ok(new ApiResponse<>(authService.handleAppleLogin(appleLoginDto)));
     }
 
     @PostMapping("/apple/continue")
