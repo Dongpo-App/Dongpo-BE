@@ -97,7 +97,7 @@ public class StoreReviewService {
         Member reviewMember = review.getMember();
 
         if (!reviewMember.getId().equals(member.getId()))
-            throw new CustomException(ErrorCode.UNAUTHORIZED);
+            throw new CustomException(ErrorCode.REVIEW_NOT_OWNED_BY_USER);
 
         review.delete();
         log.info("Deleted Review: {} by Member: {}", reviewId, member.getEmail());

@@ -40,9 +40,13 @@ public class AuthController {
     public ResponseEntity<ApiResponse<?>> apple(@RequestBody AppleLoginDto appleLoginDto) {
         AppleLoginResponse response = authService.handleAppleLogin(appleLoginDto);
 
-        return response.getJwtToken() == null
-                ? ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ApiResponse<>(response.getClaims(), ErrorCode.ADDITIONAL_INFO_REQUIRED_FOR_SIGNUP.toString()))
-                : ResponseEntity.ok(new ApiResponse<>(response.getJwtToken()));
+        return response.getJwtToken() == null ?
+                ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
+                        new ApiResponse<>(
+                                response.getClaims(),
+                                ErrorCode.ADDITIONAL_INFO_REQUIRED_FOR_SIGNUP.getCode(),
+                                ErrorCode.ADDITIONAL_INFO_REQUIRED_FOR_SIGNUP.getMessage())
+                ) : ResponseEntity.ok(new ApiResponse<>(response.getJwtToken()));
     }
 
     @PostMapping("/apple/continue")
