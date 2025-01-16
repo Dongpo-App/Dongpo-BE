@@ -1,6 +1,5 @@
 package com.dongyang.dongpo.common.auth.filter;
 
-import com.dongyang.dongpo.common.auth.CustomAuthenticationManager;
 import com.dongyang.dongpo.common.exception.CustomException;
 import com.dongyang.dongpo.common.exception.ErrorCode;
 import io.netty.util.internal.StringUtil;
@@ -10,6 +9,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -23,10 +23,10 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    private final String HEADER_PREFIX = "Authorization";
-    private final String TOKEN_PREFIX = "Bearer ";
+    private static final String HEADER_PREFIX = "Authorization";
+    private static final String TOKEN_PREFIX = "Bearer ";
 
-    private final CustomAuthenticationManager authenticationManager;
+    private final AuthenticationManager authenticationManager;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {

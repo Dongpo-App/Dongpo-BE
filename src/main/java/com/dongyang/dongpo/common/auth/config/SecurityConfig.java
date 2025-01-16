@@ -1,16 +1,20 @@
 package com.dongyang.dongpo.common.auth.config;
 
-import com.dongyang.dongpo.common.auth.CustomAuthenticationManager;
+import com.dongyang.dongpo.common.auth.CustomAuthenticationProvider;
+import com.dongyang.dongpo.common.auth.handler.CustomAccessDeniedHandler;
+import com.dongyang.dongpo.common.auth.handler.CustomAuthenticationEntryPoint;
 import com.dongyang.dongpo.common.auth.filter.JwtAuthenticationFilter;
-import com.dongyang.dongpo.common.auth.userdetails.CustomUserDetailsService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
@@ -19,13 +23,13 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final AuthenticationEntryPoint entryPoint;
-    private final CustomUserDetailsService customUserDetailsService;
-    private final CustomAuthenticationManager authenticationManager;
-    private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final CustomAuthenticationEntryPoint entryPoint;
+    private final CustomAccessDeniedHandler accessDeniedHandler;
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain filterChain(HttpSecurity http, AuthenticationConfiguration config) throws Exception {
+        AuthenticationManager authenticationManager = config.getAuthenticationManager();
+
         return http
                 .csrf(AbstractHttpConfigurer::disable) // 임시
                 .cors(AbstractHttpConfigurer::disable) // 임시
@@ -38,10 +42,21 @@ public class SecurityConfig {
                         .requestMatchers("/", "/auth/**", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
                         .anyRequest().authenticated()
                 )
-                .authenticationManager(authenticationManager)
-                .userDetailsService(customUserDetailsService)
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-                .exceptionHandling(handler -> handler.authenticationEntryPoint(entryPoint))
+                .addFilterBefore(new JwtAuthenticationFilter(authenticationManager), UsernamePasswordAuthenticationFilter.class)
+                .exceptionHandling(handler -> handler
+                        .authenticationEntryPoint(entryPoint)
+                        .accessDeniedHandler(accessDeniedHandler)
+                )
                 .build();
+    }
+
+    @Autowired
+    public void configure(AuthenticationManagerBuilder auth, CustomAuthenticationProvider authenticationProvider) {
+        auth.authenticationProvider(authenticationProvider);
+    }
+
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+        return config.getAuthenticationManager();
     }
 }
