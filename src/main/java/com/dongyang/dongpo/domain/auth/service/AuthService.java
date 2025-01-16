@@ -3,6 +3,7 @@ package com.dongyang.dongpo.domain.auth.service;
 
 import com.dongyang.dongpo.common.auth.jwt.JwtService;
 import com.dongyang.dongpo.common.exception.CustomException;
+import com.dongyang.dongpo.common.exception.CustomSignupException;
 import com.dongyang.dongpo.common.exception.ErrorCode;
 import com.dongyang.dongpo.domain.auth.dto.*;
 import com.dongyang.dongpo.domain.member.entity.Member;
@@ -37,7 +38,7 @@ public class AuthService {
     }
 
     // 애플 소셜 로그인 처리
-    public AppleLoginResponse handleAppleLogin(final AppleLoginDto appleLoginDto) {
+    public JwtToken handleAppleLogin(final AppleLoginDto appleLoginDto) {
         final Claims appleUserClaims = getAppleUserInfo(appleLoginDto);
         final String socialId = appleUserClaims.get("sub", String.class);
         final String email = appleUserClaims.get("email", String.class);
@@ -46,14 +47,16 @@ public class AuthService {
         if (StringUtils.isBlank(email))
             throw new CustomException(ErrorCode.MEMBER_ALREADY_LEFT);
 
-        // 이미 존재하는 회원일 경우 로그인 처리
-        if (memberService.validateMemberExistence(email, socialId)) {
-            final Member member = memberService.findByEmail(email);
-            return AppleLoginResponse.responseJwtToken(jwtService.createTokenForLoginMember(member));
-        }
-
         // 존재하지 않는 회원인 경우 필수 클레임 정보 반환
-        return AppleLoginResponse.responseClaims(appleUserClaims);
+        if (memberService.validateMemberExistence(email, socialId))
+            throw new CustomSignupException(
+                    ErrorCode.ADDITIONAL_INFO_REQUIRED_FOR_SIGNUP,
+                    ClaimsResponseDto.builder().email(email).socialId(socialId).build()
+            );
+
+        // 이미 존재하는 회원일 경우 로그인 처리
+        final Member member = memberService.findByEmail(email);
+        return jwtService.createTokenForLoginMember(member);
     }
 
     // 애플 회원 가입 수행 메소드(추가 정보 기입)
