@@ -21,6 +21,7 @@ public enum ErrorCode {
     ADDITIONAL_INFO_REQUIRED_FOR_SIGNUP(401, "A012", "회원 가입에 필요한 추가 정보 요청."),
     APPLE_AUTHORIZATION_CODE_EXPIRED(401, "A013", "Apple 인증 코드가 만료되었습니다."),
     APPLE_PUBLIC_KEY_GENERATION_FAILED(401, "A014", "Apple 공개키 생성에 실패하였습니다."),
+    ACCESS_FORBIDDEN(403, "A015", "권한이 없습니다."),
 
     // 사용자 관련 예외
     MEMBER_NOT_FOUND(400, "B001", "회원을 찾지 못하였습니다."),
