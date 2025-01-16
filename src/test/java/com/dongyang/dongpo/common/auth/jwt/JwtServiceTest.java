@@ -166,7 +166,7 @@ class JwtServiceTest {
         when(redisTemplate.hasKey("blacklist_" + token)).thenReturn(true);
 
         // When & Then
-        assertThrows(CustomException.class, () -> jwtService.validateToken(token));
+        assertThrows(CustomException.class, () -> jwtService.parseClaims(token));
     }
 
     @Test
@@ -177,9 +177,9 @@ class JwtServiceTest {
         when(redisTemplate.hasKey("blacklist_" + token)).thenReturn(false);
 
         // When
-        jwtService.validateToken(token);
+        jwtService.parseClaims(token);
 
         // Then
-        verify(jwtUtil).validateToken(token);
+        verify(jwtUtil).parseClaims(token);
     }
 }

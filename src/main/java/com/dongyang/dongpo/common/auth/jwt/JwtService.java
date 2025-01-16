@@ -17,11 +17,11 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class JwtService {
 
-    private final String ACCESS_TOKEN_PREFIX = "access_token_";
-    private final String REFRESH_TOKEN_PREFIX = "refresh_token_";
-    private final String BLACKLIST_PREFIX = "blacklist_";
-    private final long ACCESS_TOKEN_VALID_MINUTES = 30;
-    private final long REFRESH_TOKEN_VALID_DAYS = 7;
+    private static final String ACCESS_TOKEN_PREFIX = "access_token_";
+    private static final String REFRESH_TOKEN_PREFIX = "refresh_token_";
+    private static final String BLACKLIST_PREFIX = "blacklist_";
+    private static final long ACCESS_TOKEN_VALID_MINUTES = 30;
+    private static final long REFRESH_TOKEN_VALID_DAYS = 7;
 
     private final JwtUtil jwtUtil;
     private final StringRedisTemplate redisTemplate;
@@ -71,17 +71,13 @@ public class JwtService {
         redisTemplate.opsForValue().set(BLACKLIST_PREFIX + token, token, remainingLife, TimeUnit.MILLISECONDS);
     }
 
-    public void validateToken(String token) {
-        if (isTokenBlacklisted(token))
-            throw new CustomException(ErrorCode.EXPIRED_TOKEN);
-        jwtUtil.validateToken(token);
-    }
-
     public boolean isTokenBlacklisted(String token) {
         return redisTemplate.hasKey(BLACKLIST_PREFIX + token);
     }
 
     public Claims parseClaims(String token) {
+        if (isTokenBlacklisted(token))
+            throw new CustomException(ErrorCode.EXPIRED_TOKEN);
         return jwtUtil.parseClaims(token);
     }
 }

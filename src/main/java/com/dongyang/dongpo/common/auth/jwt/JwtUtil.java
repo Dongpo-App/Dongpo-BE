@@ -20,11 +20,12 @@ import java.util.Map;
 @Component
 public class JwtUtil {
 
+    private static final long ACCESSTOKEN_VALIDTIME = 30 * 60 * 1000L; // 30분
+    private static final long REFRESHTOKEN_VALIDTIME = 7 * 24 * 60 * 60 * 1000L; // 7일
+    private static final String GRANT_TYPE = "Bearer";
+    private static final String ROLE = "role";
+
     private final Key key;
-    private final long ACCESSTOKEN_VALIDTIME = 30 * 60 * 1000L; // 30분
-    private final long REFRESHTOKEN_VALIDTIME = 7 * 24 * 60 * 60 * 1000L; // 7일
-    private final String GRANT_TYPE = "Bearer";
-    private final String ROLE = "role";
 
     public JwtUtil(@Value("${jwt.secret}") String secretKey) {
         this.key = Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
@@ -73,9 +74,13 @@ public class JwtUtil {
         return claims;
     }
 
-    public void validateToken(String token) {
+    public Claims parseClaims(String token) {
         try {
-            parseClaims(token);
+            return Jwts.parserBuilder()
+                    .setSigningKey(key)
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody();
         } catch (SecurityException | MalformedJwtException | SignatureException e) {
             throw new CustomException(ErrorCode.MALFORMED_TOKEN); // jwt서명이 유효하지 않음
         } catch (UnsupportedJwtException e) {
@@ -86,18 +91,6 @@ public class JwtUtil {
             throw new CustomException(ErrorCode.CLAIMS_NOT_FOUND); // claims 없음
         } catch (ClaimJwtException e) {
             throw new CustomException(ErrorCode.CLAIMS_NOT_VALID); // Claim 검증 실패
-        }
-    }
-
-    public Claims parseClaims(String accessToken) {
-        try {
-            return Jwts.parserBuilder()
-                    .setSigningKey(key)
-                    .build()
-                    .parseClaimsJws(accessToken)
-                    .getBody();
-        } catch (Exception e) {
-            throw new CustomException(ErrorCode.EXPIRED_TOKEN);
         }
     }
 

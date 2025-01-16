@@ -20,7 +20,7 @@ import org.springframework.security.web.SecurityFilterChain;
 public class AdminSecurityConfig {
 
     private final AdminUserDetailsService userDetailsService;
-    private final CustomAccessDeniedHandler accessDeniedHandler;
+    private final CustomAdminAccessDeniedHandler accessDeniedHandler;
 
     @Bean
     public SecurityFilterChain adminFilterChain(HttpSecurity http) throws Exception {
