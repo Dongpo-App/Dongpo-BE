@@ -1,10 +1,7 @@
 package com.dongyang.dongpo.domain.store.entity;
 
 import com.dongyang.dongpo.domain.member.entity.Member;
-import com.dongyang.dongpo.domain.store.dto.OpenPossibility;
-import com.dongyang.dongpo.domain.store.dto.StoreDto;
-import com.dongyang.dongpo.domain.store.dto.StoreSummaryDto;
-import com.dongyang.dongpo.domain.store.dto.StoreUpdateDto;
+import com.dongyang.dongpo.domain.store.dto.*;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -138,6 +135,16 @@ public class Store {
                         .filter(cert -> !cert.getIsVisitSuccessful())
                         .count())
                 .bookmarkCount(bookmarkCount)
+                .build();
+    }
+
+    public NearbyStoresResponseDto toNearbyStoresResponse(final Boolean isBookmarked) {
+        return NearbyStoresResponseDto.builder()
+                .id(this.id)
+                .name(this.name)
+                .latitude(this.latitude)
+                .longitude(this.longitude)
+                .isBookmarked(isBookmarked)
                 .build();
     }
 
