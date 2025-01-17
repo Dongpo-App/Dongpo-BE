@@ -7,7 +7,6 @@ import com.dongyang.dongpo.common.exception.ErrorCode;
 import com.dongyang.dongpo.common.util.location.LocationUtil;
 import com.dongyang.dongpo.common.util.member.MemberUtil;
 import com.dongyang.dongpo.common.util.store.StoreUtil;
-import com.dongyang.dongpo.domain.bookmark.dto.BookmarkDto;
 import com.dongyang.dongpo.domain.bookmark.service.BookmarkService;
 import com.dongyang.dongpo.domain.member.entity.Member;
 import com.dongyang.dongpo.domain.member.entity.Title;
@@ -30,8 +29,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import static java.util.stream.Collectors.toList;
-
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -50,13 +47,18 @@ public class StoreService {
     private final StoreUtil storeUtil;
     private final MemberUtil memberUtil;
 
+    public Store findById(Long id) {
+        return storeRepository.findById(id)
+                .orElseThrow(() -> new CustomException(ErrorCode.STORE_NOT_FOUND));
+    }
+
     @Transactional
     public void addStore(StoreRegisterDto registerDto, Member member) {
         // 사용자의 현재 위치와 점포 등록 위치가 범위 내에 있는지 검증
         if (!locationUtil.verifyStoreRegistration(registerDto))
             throw new CustomException(ErrorCode.DISTANCE_OUT_OF_RANGE);
 
-        Store savedStore = storeRepository.save(registerDto.toStore(member));
+        Store savedStore = storeRepository.save(registerDto.toEntity(member));
 
         for (Store.PayMethod payMethod : registerDto.getPayMethods()) {
             StorePayMethod storePayMethod = StorePayMethod.builder()
@@ -81,11 +83,6 @@ public class StoreService {
             titleService.addTitle(member, Title.REGISTER_PRO);
     }
 
-    public void existsById(final Long storeId) {
-        if (!storeRepository.existsById(storeId))
-            throw new CustomException(ErrorCode.STORE_NOT_FOUND);
-    }
-
     public List<StoreDto> findAll() {
         List<Store> stores = storeRepository.findAll();
         List<StoreDto> storeResponse = new ArrayList<>();
@@ -96,35 +93,30 @@ public class StoreService {
         return storeResponse;
     }
 
-    public List<StoreSummaryDto> findStoresByCurrentLocation(LatLong latLong, Member member) {
+    public List<NearbyStoresResponseDto> findStoresByCurrentLocation(final LatLong latLong, final Member member) {
         CoordinateRange coordinateRange = locationUtil.calcCoordinateRangeByCurrentLocation(latLong);
 
-        List<BookmarkDto> myBookmarks = bookmarkService.getMyBookmarks(member);
-
-        return storeRepository.findStoresWithinRange(coordinateRange.getMinLat(), coordinateRange.getMaxLat(),
-                                                     coordinateRange.getMinLong(), coordinateRange.getMaxLong())
+        return storeRepository.findStoresWithBookmarksWithinRange(
+                        coordinateRange.getMinLat(), coordinateRange.getMaxLat(),
+                        coordinateRange.getMinLong(), coordinateRange.getMaxLong(),
+                        member.getId())
                 .stream()
-                .map(store -> {
-                    boolean isBookmarked = myBookmarks.stream()
-                            .anyMatch(bookmark -> store.getId().equals(bookmark.getStoreId()));
-
-                    return store.toSummaryResponse(isBookmarked, openPossibilityService.getOpenPossibility(store));
-                })
-                .collect(toList());
+                .map(result -> {
+                    Store store = (Store) result[0];
+                    boolean isBookmarked = result[1] != null;
+                    return store.toNearbyStoresResponse(isBookmarked);
+                }).toList();
     }
 
-    public StoreSummaryDto getStoreSummary(Long id, Member member) {
-        Store store = storeRepository.findById(id)
-                .orElseThrow(() -> new CustomException(ErrorCode.STORE_NOT_FOUND));
-
+    public StoreSummaryDto getStoreSummary(final Long id, final Member member) {
+        Store store = findById(id);
         return store.toSummaryResponse(openPossibilityService.getOpenPossibility(store),
                                     bookmarkService.isStoreBookmarkedByMember(store, member),
                                     storeReviewService.getReviewPicsByStoreId(id));
     }
 
     public StoreDto detailStore(Long id, Member member) {
-        Store store = storeRepository.findById(id)
-                .orElseThrow(() -> new CustomException(ErrorCode.STORE_NOT_FOUND));
+        Store store = findById(id);
 
         List<Member> mostVisitMembers = storeVisitCertRepository.findTopVisitorsByStore(store);
 
@@ -135,8 +127,8 @@ public class StoreService {
         );
 
         response.setMostVisitMembers(mostVisitMembers.stream()
-            .map(m -> MostVisitMemberResponse.of(m.getId(), m.getNickname(), m.getMainTitle(), m.getProfilePic()))
-            .toList());
+                .map(m -> MostVisitMemberResponse.of(m.getId(), m.getNickname(), m.getMainTitle(), m.getProfilePic()))
+                .toList());
 
         return response;
     }
@@ -150,8 +142,7 @@ public class StoreService {
 
     @Transactional
     public void updateStore(Long id, StoreUpdateDto request, Member member) {
-        Store store = storeRepository.findById(id)
-                .orElseThrow(() -> new CustomException(ErrorCode.STORE_NOT_FOUND));
+        Store store = findById(id);
 
         // 사용자가 등록한 점포인지 확인
         if (member.getEmail().equals(store.getMember().getEmail())) {
@@ -231,10 +222,7 @@ public class StoreService {
     }
 
     public StoreDto findOne(Long id) {
-        Store store = storeRepository.findById(id)
-                .orElseThrow(() -> new CustomException(ErrorCode.STORE_NOT_FOUND));
-
-        return store.toResponse();
+        return findById(id).toResponse();
     }
 
     public RecommendResponse recommendStoreByAge(Member member) {
@@ -254,8 +242,7 @@ public class StoreService {
 
     // 비교 대상 점포의 좌표 반환
     public LatLong getStoreCoordinates(Long storeId) {
-        Store targetStore = storeRepository.findById(storeId)
-                .orElseThrow(() -> new CustomException(ErrorCode.STORE_NOT_FOUND));
+        Store targetStore = findById(storeId);
         return LatLong.builder()
                 .latitude(targetStore.getLatitude())
                 .longitude(targetStore.getLongitude())
@@ -274,11 +261,11 @@ public class StoreService {
         if (locationUtil.calcDistance(newCoordinate, getStoreCoordinates(storeVisitCertDto.getStoreId())) >= 100)
             throw new CustomException(ErrorCode.DISTANCE_OUT_OF_RANGE);
 
-        Store store = storeRepository.findById(storeVisitCertDto.getStoreId()).orElseThrow(() -> new CustomException(ErrorCode.STORE_NOT_FOUND));
+        Store store = findById(storeVisitCertDto.getStoreId());
 
         LocalDateTime now = LocalDateTime.now();
         OpenTime openTime = storeUtil.getOpenTime(now);
-        if (storeVisitCertDto.isVisitSuccessful()){ // 방문 인증 성공
+        if (storeVisitCertDto.getIsVisitSuccessful()) { // 방문 인증 성공
             storeVisitCertRepository.save(StoreVisitCert.builder()
                     .store(store)
                     .member(member)
@@ -295,7 +282,7 @@ public class StoreService {
             else if (successCount.equals(3L))
                 titleService.addTitle(member, Title.REGULAR_CUSTOMER);
 
-        }else {
+        } else {
             storeVisitCertRepository.save(StoreVisitCert.builder()
                     .store(store)
                     .member(member)
@@ -312,8 +299,7 @@ public class StoreService {
     }
 
     public Boolean checkVisitCertBy24Hours(Long storeId, Member member) {
-        Store store = storeRepository.findById(storeId)
-                .orElseThrow(() -> new CustomException(ErrorCode.STORE_NOT_FOUND));
+        Store store = findById(storeId);
 
         StoreVisitCert storeVisitCert = storeVisitCertRepository
                 .findTopByStoreAndMemberOrderByCertDateDesc(store, member)
