@@ -157,27 +157,16 @@ public class Store {
                 .build();
     }
 
-    public StoreSummaryDto toSummaryResponse(OpenPossibility openPossibility, Boolean isBookmarked, List<String> reviewPics) {
-        return StoreSummaryDto.builder()
-                .id(id)
-                .name(name)
-                .address(address)
-                .status(status)
+    public StoreMapSummaryDto toMapSummaryResponse(OpenPossibility openPossibility, Boolean isBookmarked, List<String> reviewPics) {
+        return StoreMapSummaryDto.builder()
+                .id(this.id)
+                .name(this.name)
+                .latitude(this.latitude)
+                .longitude(this.longitude)
+                .address(this.address)
                 .openPossibility(openPossibility)
                 .isBookmarked(isBookmarked)
                 .reviewPics(reviewPics)
-                .build();
-    }
-
-    public StoreSummaryDto toSummaryResponse(Boolean isBookmarked, OpenPossibility openPossibility) {
-        return StoreSummaryDto.builder()
-                .id(id)
-                .name(name)
-                .latitude(latitude)
-                .longitude(longitude)
-                .status(status)
-                .openPossibility(openPossibility)
-                .isBookmarked(isBookmarked)
                 .build();
     }
 

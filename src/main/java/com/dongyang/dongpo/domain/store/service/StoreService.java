@@ -93,6 +93,7 @@ public class StoreService {
         return storeResponse;
     }
 
+    // 현재 위치 기준 주변 점포 조회 (북마크 여부 포함)
     public List<NearbyStoresResponseDto> findStoresByCurrentLocation(final LatLong latLong, final Member member) {
         CoordinateRange coordinateRange = locationUtil.calcCoordinateRangeByCurrentLocation(latLong);
 
@@ -108,11 +109,12 @@ public class StoreService {
                 }).toList();
     }
 
-    public StoreSummaryDto getStoreSummary(final Long id, final Member member) {
+    // 점포 간략 정보 조회 (오픈 가능성, 북마크 여부, 최근 리뷰 사진 5개 반환)
+    public StoreMapSummaryDto getStoreMapSummary(final Long id, final Member member) {
         Store store = findById(id);
-        return store.toSummaryResponse(openPossibilityService.getOpenPossibility(store),
-                                    bookmarkService.isStoreBookmarkedByMember(store, member),
-                                    storeReviewService.getReviewPicsByStoreId(id));
+        return store.toMapSummaryResponse(openPossibilityService.getOpenPossibility(store),
+                bookmarkService.isStoreBookmarkedByMember(store, member),
+                storeReviewService.getLatestReviewPicsByStoreId(id));
     }
 
     public StoreDto detailStore(Long id, Member member) {

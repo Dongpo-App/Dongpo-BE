@@ -19,7 +19,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
@@ -28,11 +27,12 @@ import java.util.stream.Collectors;
 public class StoreReviewService {
 
     private final StoreReviewRepository reviewRepository;
+    private final StoreReviewPicService storeReviewPicService;
     private final StoreRepository storeRepository;
     private final TitleService titleService;
 
     @Transactional
-    public void addReview(Member member, Long storeId, ReviewDto reviewDto){
+    public void addReview(Member member, Long storeId, ReviewDto reviewDto) {
         Store store = storeRepository.findById(storeId)
                 .orElseThrow(() -> new CustomException(ErrorCode.STORE_NOT_FOUND));
 
@@ -54,11 +54,11 @@ public class StoreReviewService {
                 .toList();
     }
 
-    public List<StoreReview> findAll(){
+    public List<StoreReview> findAll() {
         return reviewRepository.findAll();
     }
 
-    public ReviewDto findOne(Long id){
+    public ReviewDto findOne(Long id) {
         StoreReview review = reviewRepository.findById(id)
                 .orElseThrow(() -> new CustomException(ErrorCode.REVIEW_NOT_FOUND));
 
@@ -76,23 +76,23 @@ public class StoreReviewService {
     }
 
     /**
-    public List<StoreReviewResponseDto> getRecentReviewsByStore(final Long storeId) {
-        // 점포 상세 정보 페이지의 가장 최근 3개 리뷰 응답 (추후 구현)
-    }
-    */
+     * public List<StoreReviewResponseDto> getRecentReviewsByStore(final Long storeId) {
+     * // 점포 상세 정보 페이지의 가장 최근 3개 리뷰 응답 (추후 구현)
+     * }
+     */
 
-    public List<String> getReviewPicsByStoreId(Long id) {
-        return reviewRepository.findByStoreId(id).stream()
-                .flatMap(storeReview -> storeReview.getReviewPics().stream())
+    // 최근 5개의 리뷰 사진 반환
+    public List<String> getLatestReviewPicsByStoreId(Long id) {
+        return storeReviewPicService.getTop5LatestReviewPics(id).stream()
                 .map(StoreReviewPic::getPicUrl)
                 .filter(Objects::nonNull)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Transactional
     public void deleteReview(Member member, Long reviewId) {
         StoreReview review = reviewRepository.findById(reviewId)
-            .orElseThrow(() -> new CustomException(ErrorCode.REVIEW_NOT_FOUND));
+                .orElseThrow(() -> new CustomException(ErrorCode.REVIEW_NOT_FOUND));
 
         Member reviewMember = review.getMember();
 
