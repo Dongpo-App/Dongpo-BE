@@ -18,7 +18,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Schema(description = "점포 정보 수정 요청 DTO")
-public class StoreUpdateDto {
+public class StoreInfoUpdateDto {
 
     @NotBlank
     @Schema(description = "점포명", example = "동포식당")

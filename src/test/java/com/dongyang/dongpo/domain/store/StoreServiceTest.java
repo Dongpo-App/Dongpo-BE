@@ -140,7 +140,7 @@ class StoreServiceTest {
     }
 
     @Test
-    void updateStore() {
+    void updateInfoStore() {
     }
 
     @Test

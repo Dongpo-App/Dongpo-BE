@@ -132,76 +132,17 @@ public class StoreService {
         log.info("Deleted Store: {} by Member: {}", store.getId(), member.getEmail());
     }
 
-    public void updateStore(Long id, StoreUpdateDto request, Member member) {
+    // 점포 정보 수정
+    public void updateStoreInfo(final Long id, final StoreInfoUpdateDto updateDto, final Member member) {
         Store store = findById(id);
 
         // 사용자가 등록한 점포인지 확인
-        if (member.getEmail().equals(store.getMember().getEmail())) {
-            store.update(request);
-            storeRepository.save(store);
+        if (!store.getMember().getId().equals(member.getId()))
+            throw new CustomException(ErrorCode.RESOURCE_NOT_OWNED_BY_USER);
 
-            if (request.getPayMethods() != null && !request.getPayMethods().isEmpty()) {
-                List<StorePayMethod> existingPayMethods = storePayMethodRepository.findByStore(store);
-                List<PayMethod> newPayMethods = request.getPayMethods();
-
-                // 기존 payMethod 목록에서 새로운 payMethod 목록에 없는 항목 삭제
-                for (StorePayMethod existingPayMethod : existingPayMethods) {
-                    if (!newPayMethods.contains(existingPayMethod.getPayMethod())) {
-                        storePayMethodRepository.delete(existingPayMethod);
-                    }
-                }
-
-                // 새로운 payMethod 목록에서 기존 payMethod 목록에 없는 항목 추가
-                for (PayMethod newPayMethod : newPayMethods) {
-                    boolean exists = existingPayMethods.stream()
-                            .anyMatch(existingPayMethod -> existingPayMethod.getPayMethod().equals(newPayMethod));
-                    if (!exists) {
-                        StorePayMethod storePayMethod = StorePayMethod.builder()
-                                .store(store)
-                                .payMethod(newPayMethod)
-                                .build();
-                        try {
-                            storePayMethodRepository.save(storePayMethod);
-                        } catch (DataIntegrityViolationException ignored) {
-                            // 중복 예외 발생 시 무시
-                        }
-                    }
-                }
-            }
-
-            if (request.getOperatingDays() != null && !request.getOperatingDays().isEmpty()) {
-                List<StoreOperatingDay> existingOperatingDays = storeOperatingDayRepository.findByStore(store);
-                List<OperatingDay> newOperatingDays = request.getOperatingDays();
-
-                // 기존 operatingDay 목록에서 새로운 operatingDay 목록에 없는 항목 삭제
-                for (StoreOperatingDay existingOperatingDay : existingOperatingDays) {
-                    if (!newOperatingDays.contains(existingOperatingDay.getOperatingDay())) {
-                        storeOperatingDayRepository.delete(existingOperatingDay);
-                    }
-                }
-
-                // 새로운 operatingDay 목록에서 기존 operatingDay 목록에 없는 항목 추가
-                for (OperatingDay newOperatingDay : newOperatingDays) {
-                    boolean exists = existingOperatingDays.stream()
-                            .anyMatch(existingOperatingDay -> existingOperatingDay.getOperatingDay().equals(newOperatingDay));
-                    if (!exists) {
-                        StoreOperatingDay storeOperatingDay = StoreOperatingDay.builder()
-                                .store(store)
-                                .operatingDay(newOperatingDay)
-                                .build();
-                        try {
-                            storeOperatingDayRepository.save(storeOperatingDay);
-                        } catch (DataIntegrityViolationException ignored) {
-                            // 중복 예외 발생 시 무시
-                        }
-                    }
-                }
-            }
-
-            log.info("member {} updated store: {}", member.getId(), store.getId());
-        } else {
-            throw new CustomException(ErrorCode.ARGUMENT_NOT_SATISFIED);
-        }
+        // 정보 업데이트
+        store.updateInfo(updateDto);
+        log.info("Member {} updated store: {}", member.getId(), store.getId());
     }
 
     public List<MyRegisteredStoresResponseDto> getMyRegisteredStores(Member member) {

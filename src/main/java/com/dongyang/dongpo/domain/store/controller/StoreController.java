@@ -64,9 +64,9 @@ public class StoreController {
     @PatchMapping("/{id}")
     @Operation(summary = "점포 정보 수정")
     public ResponseEntity<Void> updateStore(@PathVariable @Min(1) final Long id,
-                                            @Valid @RequestBody final StoreUpdateDto request,
+                                            @Valid @RequestBody final StoreInfoUpdateDto request,
                                             @AuthenticationPrincipal final Member member) {
-        storeService.updateStore(id, request, member);
+        storeService.updateStoreInfo(id, request, member);
         return ResponseEntity.ok().build();
     }
 

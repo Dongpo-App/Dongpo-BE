@@ -8,18 +8,19 @@ import com.dongyang.dongpo.domain.store.enums.PayMethod;
 import com.dongyang.dongpo.domain.store.enums.StoreStatus;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.DynamicUpdate;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Entity
 @Getter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@DynamicUpdate
 @Table(name = "store_table")
 public class Store {
     @Id
@@ -58,11 +59,11 @@ public class Store {
     @Builder.Default
     private Integer reportCount = 0;
 
-    @OneToMany(mappedBy = "store", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "store", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     private List<StorePayMethod> storePayMethods = new ArrayList<>();
 
-    @OneToMany(mappedBy = "store", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "store", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     private List<StoreOperatingDay> storeOperatingDays = new ArrayList<>();
 
@@ -74,22 +75,6 @@ public class Store {
     @Builder.Default
     private List<StoreVisitCert> storeVisitCerts = new ArrayList<>();
 
-
-    // StorePayMethod 등록
-    public void addPayMethods(List<PayMethod> payMethods) {
-        payMethods.forEach(payMethod -> storePayMethods.add(StorePayMethod.builder()
-                .store(this)
-                .payMethod(payMethod)
-                .build()));
-    }
-
-    // StoreOperatingDay 등록
-    public void addOperatingDays(List<OperatingDay> operatingDays) {
-        operatingDays.forEach(operatingDay -> storeOperatingDays.add(StoreOperatingDay.builder()
-                .store(this)
-                .operatingDay(operatingDay)
-                .build()));
-    }
 
     public StoreDto toResponse() {
         return StoreDto.builder()
@@ -183,12 +168,55 @@ public class Store {
                 .build();
     }
 
-    public void update(StoreUpdateDto updateDto) {
+    // StorePayMethod 등록
+    public void addPayMethods(List<PayMethod> payMethods) {
+        payMethods.forEach(payMethod -> storePayMethods.add(StorePayMethod.builder()
+                .store(this)
+                .payMethod(payMethod)
+                .build()));
+    }
+
+    // StoreOperatingDay 등록
+    public void addOperatingDays(List<OperatingDay> operatingDays) {
+        operatingDays.forEach(operatingDay -> storeOperatingDays.add(StoreOperatingDay.builder()
+                .store(this)
+                .operatingDay(operatingDay)
+                .build()));
+    }
+
+    // 점포 정보 업데이트
+    public void updateInfo(StoreInfoUpdateDto updateDto) {
         this.name = updateDto.getName();
         this.openTime = updateDto.getOpenTime();
         this.closeTime = updateDto.getCloseTime();
         this.isToiletValid = updateDto.getIsToiletValid();
         this.status = updateDto.getStatus();
+        updatePayMethods(updateDto.getPayMethods());
+        updateOperatingDays(updateDto.getOperatingDays());
+    }
+
+    private void updatePayMethods(List<PayMethod> newPayMethods) {
+        storePayMethods.removeIf(existingPayMethod -> !newPayMethods.contains(existingPayMethod.getPayMethod()));
+        newPayMethods.forEach(newPayMethod -> {
+            if (storePayMethods.stream().noneMatch(existingPayMethod -> existingPayMethod.getPayMethod().equals(newPayMethod))) {
+                storePayMethods.add(StorePayMethod.builder()
+                        .store(this)
+                        .payMethod(newPayMethod)
+                        .build());
+            }
+        });
+    }
+
+    private void updateOperatingDays(List<OperatingDay> newOperatingDays) {
+        storeOperatingDays.removeIf(existingOperatingDay -> !newOperatingDays.contains(existingOperatingDay.getOperatingDay()));
+        newOperatingDays.forEach(newOperatingDay -> {
+            if (storeOperatingDays.stream().noneMatch(existingOperatingDay -> existingOperatingDay.getOperatingDay().equals(newOperatingDay))) {
+                storeOperatingDays.add(StoreOperatingDay.builder()
+                        .store(this)
+                        .operatingDay(newOperatingDay)
+                        .build());
+            }
+        });
     }
 
     public void addReportCount() {
