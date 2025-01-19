@@ -1,7 +1,6 @@
 package com.dongyang.dongpo.domain.store.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
@@ -10,7 +9,7 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Tag(name = "NearbyStoresResponseDto", description = "사용자 주변 점포 응답 DTO")
+@Schema(name = "NearbyStoresResponseDto", description = "사용자 주변 점포 응답 DTO")
 public class NearbyStoresResponseDto {
 
     @NotNull
