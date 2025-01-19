@@ -199,6 +199,10 @@ public class Store {
         }
     }
 
+    public void updateStoreStatusDeleted() {
+        this.status = StoreStatus.DELETED;
+    }
+
     private void updateStoreStatusHidden() {
         this.status = StoreStatus.HIDDEN;
     }

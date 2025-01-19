@@ -34,7 +34,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
+@Transactional
 @Slf4j
 public class StoreService {
 
@@ -55,7 +55,6 @@ public class StoreService {
                 .orElseThrow(() -> new CustomException(ErrorCode.STORE_NOT_FOUND));
     }
 
-    @Transactional
     public void addStore(StoreRegisterDto registerDto, Member member) {
         // 사용자의 현재 위치와 점포 등록 위치가 범위 내에 있는지 검증
         if (!locationUtil.verifyStoreRegistration(registerDto))
@@ -124,14 +123,15 @@ public class StoreService {
         );
     }
 
-    @Transactional
-    public void deleteStore(Long id) {
-        storeRepository.deleteById(id);
+    public void deleteStore(final Long id, final Member member) {
+        Store store = findById(id);
+        if (!store.getMember().getId().equals(member.getId()))
+            throw new CustomException(ErrorCode.RESOURCE_NOT_OWNED_BY_USER);
 
-        log.info("delete store: {}", id); // 임시
+        store.updateStoreStatusDeleted();
+        log.info("Deleted Store: {} by Member: {}", store.getId(), member.getEmail());
     }
 
-    @Transactional
     public void updateStore(Long id, StoreUpdateDto request, Member member) {
         Store store = findById(id);
 

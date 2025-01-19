@@ -39,6 +39,7 @@ public enum ErrorCode {
     BOOKMARK_NOT_FOUND(400, "C006", "북마크를 찾지 못하였습니다."),
     STORE_NOT_FOUND(400, "C007", "점포를 찾지 못하였습니다."),
     REVIEW_NOT_FOUND(400, "C008", "리뷰를 찾지 못하였습니다."),
+    RESOURCE_NOT_OWNED_BY_USER(403, "C009", "권한이 없습니다."),
     ;
 
     private final int status;

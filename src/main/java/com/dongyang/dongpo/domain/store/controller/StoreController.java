@@ -55,8 +55,9 @@ public class StoreController {
 
     @DeleteMapping("/{id}")
     @Operation(summary = "점포 삭제")
-    public ResponseEntity<Void> deleteStore(@PathVariable @Min(1) final Long id) {
-        storeService.deleteStore(id);
+    public ResponseEntity<Void> deleteStore(@PathVariable @Min(1) final Long id,
+                                            @AuthenticationPrincipal final Member member) {
+        storeService.deleteStore(id, member);
         return ResponseEntity.ok().build();
     }
 
