@@ -6,7 +6,7 @@ import com.dongyang.dongpo.domain.member.dto.MyPageDto;
 import com.dongyang.dongpo.domain.member.dto.MyPageUpdateDto;
 import com.dongyang.dongpo.domain.member.entity.Member;
 import com.dongyang.dongpo.domain.store.dto.ReviewDto;
-import com.dongyang.dongpo.domain.store.dto.StoreSummaryDto;
+import com.dongyang.dongpo.domain.store.dto.MyRegisteredStoresResponseDto;
 import com.dongyang.dongpo.domain.store.service.StoreReviewService;
 import com.dongyang.dongpo.domain.store.service.StoreService;
 import lombok.RequiredArgsConstructor;
@@ -30,7 +30,7 @@ public class MyPageService {
         return memberService.getMemberInfoIndex(member);
     }
 
-    public List<StoreSummaryDto> getMyRegisteredStores(Member member) {
+    public List<MyRegisteredStoresResponseDto> getMyRegisteredStores(Member member) {
         return storeService.getMyRegisteredStores(member);
     }
 
@@ -43,7 +43,7 @@ public class MyPageService {
     }
 
     public List<ReviewDto> getMyReviews(Member member) {
-        return storeReviewService.getMyReviews(member);
+        return storeReviewService.getMyReviews(member); // TODO: 페이징 구현
     }
 
     public void updateMyPageInfo(String email, MyPageUpdateDto myPageUpdateDto) {

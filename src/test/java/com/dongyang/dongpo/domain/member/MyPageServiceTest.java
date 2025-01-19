@@ -6,7 +6,7 @@ import com.dongyang.dongpo.domain.member.service.MyPageService;
 import com.dongyang.dongpo.domain.member.dto.MyPageDto;
 import com.dongyang.dongpo.domain.member.dto.MyPageUpdateDto;
 import com.dongyang.dongpo.domain.store.dto.ReviewDto;
-import com.dongyang.dongpo.domain.store.dto.StoreSummaryDto;
+import com.dongyang.dongpo.domain.store.dto.MyRegisteredStoresResponseDto;
 import com.dongyang.dongpo.domain.bookmark.service.BookmarkService;
 import com.dongyang.dongpo.domain.member.service.MemberService;
 import com.dongyang.dongpo.domain.store.service.StoreReviewService;
@@ -77,17 +77,17 @@ class MyPageServiceTest {
     void getMyRegisteredStores() {
         // given
         Member member = mock(Member.class);
-        StoreSummaryDto store1 = mock(StoreSummaryDto.class);
-        StoreSummaryDto store2 = mock(StoreSummaryDto.class);
-        List<StoreSummaryDto> expectedStores = List.of(store1, store2);
+        MyRegisteredStoresResponseDto store1 = mock(MyRegisteredStoresResponseDto.class);
+        MyRegisteredStoresResponseDto store2 = mock(MyRegisteredStoresResponseDto.class);
+        List<MyRegisteredStoresResponseDto> expectedStores = List.of(store1, store2);
 
         when(storeService.getMyRegisteredStores(member)).thenReturn(expectedStores);
 
         // when
-        List<StoreSummaryDto> storeSummaryDtos = myPageService.getMyRegisteredStores(member);
+        List<MyRegisteredStoresResponseDto> myRegisteredStoresResponseDtos = myPageService.getMyRegisteredStores(member);
 
         // then
-        assertThat(storeSummaryDtos).isEqualTo(expectedStores);
+        assertThat(myRegisteredStoresResponseDtos).isEqualTo(expectedStores);
         verify(storeService).getMyRegisteredStores(member);
     }
 

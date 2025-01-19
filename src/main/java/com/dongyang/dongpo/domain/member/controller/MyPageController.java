@@ -7,7 +7,7 @@ import com.dongyang.dongpo.domain.member.dto.MyPageUpdateDto;
 import com.dongyang.dongpo.domain.member.entity.Member;
 import com.dongyang.dongpo.domain.member.service.MyPageService;
 import com.dongyang.dongpo.domain.store.dto.ReviewDto;
-import com.dongyang.dongpo.domain.store.dto.StoreSummaryDto;
+import com.dongyang.dongpo.domain.store.dto.MyRegisteredStoresResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -28,7 +28,7 @@ public class MyPageController {
     }
 
     @GetMapping("/stores")
-    public ResponseEntity<ApiResponse<List<StoreSummaryDto>>> getMyRegisteredStores(@AuthenticationPrincipal Member member) {
+    public ResponseEntity<ApiResponse<List<MyRegisteredStoresResponseDto>>> getMyRegisteredStores(@AuthenticationPrincipal Member member) {
         return ResponseEntity.ok(new ApiResponse<>(myPageService.getMyRegisteredStores(member)));
     }
 
@@ -42,7 +42,7 @@ public class MyPageController {
         return ResponseEntity.ok(new ApiResponse<>(myPageService.getMyBookmarks(member)));
     }
 
-    @GetMapping("/reviews")
+    @GetMapping("/reviews") // TODO: 페이징 구현
     public ResponseEntity<ApiResponse<List<ReviewDto>>> getMyReviews(@AuthenticationPrincipal Member member) {
         return ResponseEntity.ok(new ApiResponse<>(myPageService.getMyReviews(member)));
     }
