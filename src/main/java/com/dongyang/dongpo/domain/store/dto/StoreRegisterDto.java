@@ -2,6 +2,8 @@ package com.dongyang.dongpo.domain.store.dto;
 
 import com.dongyang.dongpo.domain.member.entity.Member;
 import com.dongyang.dongpo.domain.store.entity.Store;
+import com.dongyang.dongpo.domain.store.enums.OperatingDay;
+import com.dongyang.dongpo.domain.store.enums.PayMethod;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
@@ -52,12 +54,12 @@ public class StoreRegisterDto {
     @NotEmpty
     @Valid
     @Schema(description = "오픈 요일", example = "[\"MON\", \"TUE\"]")
-    private List<Store.OperatingDay> operatingDays;
+    private List<OperatingDay> operatingDays;
 
     @NotEmpty
     @Valid
     @Schema(description = "결제 수단", example = "[\"CASH\", \"CARD\"]")
-    private List<Store.PayMethod> payMethods;
+    private List<PayMethod> payMethods;
 
     @NotNull
     @DecimalMin(value = "-90.0", message = "Current latitude must be greater than or equal to -90.0")

@@ -2,6 +2,10 @@ package com.dongyang.dongpo.domain.store.entity;
 
 import com.dongyang.dongpo.domain.member.entity.Member;
 import com.dongyang.dongpo.domain.store.dto.*;
+import com.dongyang.dongpo.domain.store.enums.OpenPossibility;
+import com.dongyang.dongpo.domain.store.enums.OperatingDay;
+import com.dongyang.dongpo.domain.store.enums.PayMethod;
+import com.dongyang.dongpo.domain.store.enums.StoreStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -70,18 +74,22 @@ public class Store {
     @Builder.Default
     private List<StoreVisitCert> storeVisitCerts = new ArrayList<>();
 
-    public enum StoreStatus {
-        ACTIVE, INACTIVE, HIDDEN, CLOSED
+
+    // StorePayMethod 등록
+    public void addPayMethods(List<PayMethod> payMethods) {
+        payMethods.forEach(payMethod -> storePayMethods.add(StorePayMethod.builder()
+                .store(this)
+                .payMethod(payMethod)
+                .build()));
     }
 
-    public enum OperatingDay {
-        MON, TUE, WED, THU, FRI, SAT, SUN
+    // StoreOperatingDay 등록
+    public void addOperatingDays(List<OperatingDay> operatingDays) {
+        operatingDays.forEach(operatingDay -> storeOperatingDays.add(StoreOperatingDay.builder()
+                .store(this)
+                .operatingDay(operatingDay)
+                .build()));
     }
-
-    public enum PayMethod {
-        CASH, CARD, TRANSFER
-    }
-
 
     public StoreDto toResponse() {
         return StoreDto.builder()
@@ -97,10 +105,10 @@ public class Store {
                 .isToiletValid(isToiletValid)
                 .operatingDays(storeOperatingDays.stream()
                         .map(StoreOperatingDay::getOperatingDay)
-                        .collect(Collectors.toList()))
+                        .toList())
                 .payMethods(storePayMethods.stream()
                         .map(StorePayMethod::getPayMethod)
-                        .collect(Collectors.toList()))
+                        .toList())
                 .status(status)
                 .build();
     }

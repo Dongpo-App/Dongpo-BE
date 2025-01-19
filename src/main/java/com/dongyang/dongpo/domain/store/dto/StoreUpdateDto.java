@@ -1,6 +1,8 @@
 package com.dongyang.dongpo.domain.store.dto;
 
-import com.dongyang.dongpo.domain.store.entity.Store;
+import com.dongyang.dongpo.domain.store.enums.OperatingDay;
+import com.dongyang.dongpo.domain.store.enums.PayMethod;
+import com.dongyang.dongpo.domain.store.enums.StoreStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
@@ -36,16 +38,16 @@ public class StoreUpdateDto {
 
     @NotNull
     @Schema(description = "점포 영업 상태", example = "OPEN")
-    private Store.StoreStatus status;
+    private StoreStatus status;
 
     @NotEmpty
     @Schema(description = "오픈 요일", example = "[\"MON\", \"TUE\"]")
     @Valid
-    private List<Store.OperatingDay> operatingDays;
+    private List<OperatingDay> operatingDays;
 
     @NotEmpty
     @Schema(description = "결제 수단", example = "[\"CASH\", \"CARD\"]")
     @Valid
-    private List<Store.PayMethod> payMethods;
+    private List<PayMethod> payMethods;
 
 }

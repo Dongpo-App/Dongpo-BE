@@ -1,6 +1,7 @@
 package com.dongyang.dongpo.domain.store.entity;
 
 import com.dongyang.dongpo.domain.member.entity.Member;
+import com.dongyang.dongpo.domain.store.enums.OpenTime;
 import jakarta.persistence.*;
 import lombok.*;
 

@@ -1,6 +1,8 @@
 package com.dongyang.dongpo.domain.store.dto;
 
-import com.dongyang.dongpo.domain.store.entity.Store;
+import com.dongyang.dongpo.domain.store.enums.OpenPossibility;
+import com.dongyang.dongpo.domain.store.enums.OperatingDay;
+import com.dongyang.dongpo.domain.store.enums.PayMethod;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
@@ -34,7 +36,7 @@ public class StoreDetailInfoResponseDto extends StoreBasicInfoResponseDto {
     @Schema(description = "결제 수단", example = "[\"CASH\", \"CARD\"]")
     @NotEmpty
     @Valid
-    private List<Store.PayMethod> payMethods;
+    private List<PayMethod> payMethods;
 
     @Schema(description = "오픈 가능성", example = "OPEN")
     @NotNull
@@ -56,5 +58,5 @@ public class StoreDetailInfoResponseDto extends StoreBasicInfoResponseDto {
     @Schema(description = "영업 요일", example = "[\"MON\", \"TUE\"]")
     @NotEmpty
     @Valid
-    private List<Store.OperatingDay> operatingDays;
+    private List<OperatingDay> operatingDays;
 }

@@ -1,5 +1,6 @@
 package com.dongyang.dongpo.domain.store.entity;
 
+import com.dongyang.dongpo.domain.store.enums.OperatingDay;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -25,5 +26,5 @@ public class StoreOperatingDay {
 
     @Column(columnDefinition = "VARCHAR(255)")
     @Enumerated(EnumType.STRING)
-    private Store.OperatingDay operatingDay;
+    private OperatingDay operatingDay;
 }

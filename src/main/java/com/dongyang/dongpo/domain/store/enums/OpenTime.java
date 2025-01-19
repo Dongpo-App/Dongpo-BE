@@ -1,4 +1,4 @@
-package com.dongyang.dongpo.domain.store.entity;
+package com.dongyang.dongpo.domain.store.enums;
 
 import lombok.Getter;
 

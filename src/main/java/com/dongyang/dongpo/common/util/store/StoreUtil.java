@@ -1,6 +1,6 @@
 package com.dongyang.dongpo.common.util.store;
 
-import com.dongyang.dongpo.domain.store.entity.OpenTime;
+import com.dongyang.dongpo.domain.store.enums.OpenTime;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 

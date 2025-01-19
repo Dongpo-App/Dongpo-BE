@@ -1,7 +1,7 @@
 package com.dongyang.dongpo.domain.store.service;
 
-import com.dongyang.dongpo.domain.store.dto.OpenPossibility;
-import com.dongyang.dongpo.domain.store.entity.OpenTime;
+import com.dongyang.dongpo.domain.store.enums.OpenPossibility;
+import com.dongyang.dongpo.domain.store.enums.OpenTime;
 import com.dongyang.dongpo.domain.store.entity.Store;
 import com.dongyang.dongpo.domain.store.repository.StoreVisitCertRepository;
 import lombok.RequiredArgsConstructor;

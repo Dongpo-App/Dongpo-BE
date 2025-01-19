@@ -3,8 +3,9 @@ package com.dongyang.dongpo.domain.store;
 import com.dongyang.dongpo.domain.member.entity.Member;
 import com.dongyang.dongpo.domain.store.dto.*;
 import com.dongyang.dongpo.domain.store.entity.Store;
-import com.dongyang.dongpo.domain.store.entity.StoreOperatingDay;
-import com.dongyang.dongpo.domain.store.entity.StorePayMethod;
+import com.dongyang.dongpo.domain.store.enums.OpenPossibility;
+import com.dongyang.dongpo.domain.store.enums.OperatingDay;
+import com.dongyang.dongpo.domain.store.enums.PayMethod;
 import com.dongyang.dongpo.domain.store.repository.StoreOperatingDayRepository;
 import com.dongyang.dongpo.domain.store.repository.StorePayMethodRepository;
 import com.dongyang.dongpo.domain.store.repository.StoreRepository;
@@ -83,23 +84,19 @@ class StoreServiceTest {
         StoreRegisterDto storeDto = mock(StoreRegisterDto.class);
         Member member = mock(Member.class);
         Store store = mock(Store.class);
-        StorePayMethod storePayMethod = mock(StorePayMethod.class);
-        StoreOperatingDay storeOperatingDay = mock(StoreOperatingDay.class);
 
         when(locationUtil.verifyStoreRegistration(storeDto)).thenReturn(true);
         when(storeRepository.save(any())).thenReturn(store);
-        when(storePayMethodRepository.save(any())).thenReturn(storePayMethod);
-        when(storeOperatingDayRepository.save(any())).thenReturn(storeOperatingDay);
-        when(storeDto.getPayMethods()).thenReturn(List.of(Store.PayMethod.CASH, Store.PayMethod.CARD));
-        when(storeDto.getOperatingDays()).thenReturn(List.of(Store.OperatingDay.MON, Store.OperatingDay.TUE));
+        when(storeDto.getPayMethods()).thenReturn(List.of(PayMethod.CASH, PayMethod.CARD));
+        when(storeDto.getOperatingDays()).thenReturn(List.of(OperatingDay.MON, OperatingDay.TUE));
 
         // when
         storeService.addStore(storeDto, member);
 
         // then
         verify(storeRepository).save(any());
-        verify(storePayMethodRepository, times(2)).save(any());
-        verify(storeOperatingDayRepository, times(2)).save(any());
+        verify(store, times(1)).addPayMethods(anyList());
+        verify(store, times(1)).addOperatingDays(anyList());
     }
 
     @Test

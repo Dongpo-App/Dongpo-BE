@@ -1,5 +1,6 @@
 package com.dongyang.dongpo.domain.store.entity;
 
+import com.dongyang.dongpo.domain.store.enums.PayMethod;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -25,5 +26,5 @@ public class StorePayMethod {
 
     @Column(columnDefinition = "VARCHAR(255)")
     @Enumerated(EnumType.STRING)
-    private Store.PayMethod payMethod;
+    private PayMethod payMethod;
 }

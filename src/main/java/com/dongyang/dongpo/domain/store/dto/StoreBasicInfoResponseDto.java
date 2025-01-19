@@ -1,5 +1,6 @@
 package com.dongyang.dongpo.domain.store.dto;
 
+import com.dongyang.dongpo.domain.store.enums.OpenPossibility;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.NotBlank;

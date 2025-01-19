@@ -13,6 +13,9 @@ import com.dongyang.dongpo.domain.member.entity.Title;
 import com.dongyang.dongpo.domain.member.service.TitleService;
 import com.dongyang.dongpo.domain.store.dto.*;
 import com.dongyang.dongpo.domain.store.entity.*;
+import com.dongyang.dongpo.domain.store.enums.OpenTime;
+import com.dongyang.dongpo.domain.store.enums.OperatingDay;
+import com.dongyang.dongpo.domain.store.enums.PayMethod;
 import com.dongyang.dongpo.domain.store.repository.StoreOperatingDayRepository;
 import com.dongyang.dongpo.domain.store.repository.StorePayMethodRepository;
 import com.dongyang.dongpo.domain.store.repository.StoreRepository;
@@ -58,25 +61,11 @@ public class StoreService {
         if (!locationUtil.verifyStoreRegistration(registerDto))
             throw new CustomException(ErrorCode.DISTANCE_OUT_OF_RANGE);
 
-        Store savedStore = storeRepository.save(registerDto.toEntity(member));
+        Store store = storeRepository.save(registerDto.toEntity(member));
 
-        for (Store.PayMethod payMethod : registerDto.getPayMethods()) {
-            StorePayMethod storePayMethod = StorePayMethod.builder()
-                    .store(savedStore)
-                    .payMethod(payMethod)
-                    .build();
-            storePayMethodRepository.save(storePayMethod);
-        }
-
-        for (Store.OperatingDay operatingDay : registerDto.getOperatingDays()) {
-            StoreOperatingDay storeOperatingDay = StoreOperatingDay.builder()
-                    .store(savedStore)
-                    .operatingDay(operatingDay)
-                    .build();
-            storeOperatingDayRepository.save(storeOperatingDay);
-        }
-
-        log.info("member {} add store: {}", member.getId(), savedStore.getId());
+        store.addPayMethods(registerDto.getPayMethods());
+        store.addOperatingDays(registerDto.getOperatingDays());
+        log.info("member {} add store: {}", member.getId(), store.getId());
 
         Long count = storeRepository.countByMember(member);
         if (count.equals(3L))
@@ -153,7 +142,7 @@ public class StoreService {
 
             if (request.getPayMethods() != null && !request.getPayMethods().isEmpty()) {
                 List<StorePayMethod> existingPayMethods = storePayMethodRepository.findByStore(store);
-                List<Store.PayMethod> newPayMethods = request.getPayMethods();
+                List<PayMethod> newPayMethods = request.getPayMethods();
 
                 // 기존 payMethod 목록에서 새로운 payMethod 목록에 없는 항목 삭제
                 for (StorePayMethod existingPayMethod : existingPayMethods) {
@@ -163,7 +152,7 @@ public class StoreService {
                 }
 
                 // 새로운 payMethod 목록에서 기존 payMethod 목록에 없는 항목 추가
-                for (Store.PayMethod newPayMethod : newPayMethods) {
+                for (PayMethod newPayMethod : newPayMethods) {
                     boolean exists = existingPayMethods.stream()
                             .anyMatch(existingPayMethod -> existingPayMethod.getPayMethod().equals(newPayMethod));
                     if (!exists) {
@@ -182,7 +171,7 @@ public class StoreService {
 
             if (request.getOperatingDays() != null && !request.getOperatingDays().isEmpty()) {
                 List<StoreOperatingDay> existingOperatingDays = storeOperatingDayRepository.findByStore(store);
-                List<Store.OperatingDay> newOperatingDays = request.getOperatingDays();
+                List<OperatingDay> newOperatingDays = request.getOperatingDays();
 
                 // 기존 operatingDay 목록에서 새로운 operatingDay 목록에 없는 항목 삭제
                 for (StoreOperatingDay existingOperatingDay : existingOperatingDays) {
@@ -192,7 +181,7 @@ public class StoreService {
                 }
 
                 // 새로운 operatingDay 목록에서 기존 operatingDay 목록에 없는 항목 추가
-                for (Store.OperatingDay newOperatingDay : newOperatingDays) {
+                for (OperatingDay newOperatingDay : newOperatingDays) {
                     boolean exists = existingOperatingDays.stream()
                             .anyMatch(existingOperatingDay -> existingOperatingDay.getOperatingDay().equals(newOperatingDay));
                     if (!exists) {
