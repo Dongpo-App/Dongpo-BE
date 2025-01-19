@@ -5,15 +5,16 @@ import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 import java.util.List;
 
 @Getter
-@Builder
+@SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-@Schema(description = "점포 간략 정보 조회 DTO")
-public class StoreMapSummaryDto {
+@Schema(description = "점포 기본 정보 조회 DTO")
+public class StoreBasicInfoResponseDto {
 
     @Schema(description = "점포 ID", example = "1")
     @NotNull
