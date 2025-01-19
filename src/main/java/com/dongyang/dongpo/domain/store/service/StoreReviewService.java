@@ -10,7 +10,7 @@ import com.dongyang.dongpo.domain.store.dto.StoreReviewResponseDto;
 import com.dongyang.dongpo.domain.store.entity.Store;
 import com.dongyang.dongpo.domain.store.entity.StoreReview;
 import com.dongyang.dongpo.domain.store.entity.StoreReviewPic;
-import com.dongyang.dongpo.domain.store.repository.StoreRepository;
+import com.dongyang.dongpo.domain.store.repository.ReadOnlyStoreRepository;
 import com.dongyang.dongpo.domain.store.repository.StoreReviewRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,20 +22,18 @@ import java.util.List;
 import java.util.Objects;
 
 @Service
-@Transactional(readOnly = true)
+@Transactional
 @RequiredArgsConstructor
 @Slf4j
 public class StoreReviewService {
 
     private final StoreReviewRepository reviewRepository;
     private final StoreReviewPicService storeReviewPicService;
-    private final StoreRepository storeRepository;
+    private final ReadOnlyStoreRepository storeRepository;
     private final TitleService titleService;
 
-    @Transactional
     public void addReview(Member member, Long storeId, ReviewDto reviewDto) {
-        Store store = storeRepository.findById(storeId)
-                .orElseThrow(() -> new CustomException(ErrorCode.STORE_NOT_FOUND));
+        Store store = findStoreById(storeId);
 
         StoreReview storeReview = reviewDto.toEntity(store, member);
         reviewRepository.save(storeReview);
@@ -60,10 +58,7 @@ public class StoreReviewService {
     }
 
     public ReviewDto findOne(Long id) {
-        StoreReview review = reviewRepository.findById(id)
-                .orElseThrow(() -> new CustomException(ErrorCode.REVIEW_NOT_FOUND));
-
-        return review.toResponse();
+        return findReviewById(id).toResponse();
     }
 
     public List<StoreReviewResponseDto> getReviewsByStore(final Long storeId) {
@@ -78,7 +73,9 @@ public class StoreReviewService {
 
     // 최신 3개의 리뷰 반환
     public List<StoreReviewResponseDto> getLatestReviewsByStoreId(final Long storeId) {
-        final List<Long> top3LatestReviewsByStoreId = reviewRepository.findTop3LatestReviewIdsByStoreId(storeId, PageRequest.ofSize(3));
+        final Store store = findStoreById(storeId);
+
+        final List<Long> top3LatestReviewsByStoreId = reviewRepository.findTop3LatestReviewIdsByStore(store, PageRequest.ofSize(3));
         if (top3LatestReviewsByStoreId.isEmpty())
             throw new CustomException(ErrorCode.REVIEW_NOT_FOUND);
 
@@ -95,18 +92,25 @@ public class StoreReviewService {
                 .toList();
     }
 
-    @Transactional
-    public void deleteReview(Member member, Long reviewId) {
-        StoreReview review = reviewRepository.findById(reviewId)
-                .orElseThrow(() -> new CustomException(ErrorCode.REVIEW_NOT_FOUND));
+    public void deleteReview(final Long storeId, final Long reviewId, final Member member) {
+        findStoreById(storeId);
 
-        Member reviewMember = review.getMember();
-
-        if (!reviewMember.getId().equals(member.getId()))
+        StoreReview review = findReviewById(reviewId);
+        if (!review.getMember().getId().equals(member.getId()))
             throw new CustomException(ErrorCode.REVIEW_NOT_OWNED_BY_USER);
 
         review.delete();
         log.info("Deleted Review: {} by Member: {}", reviewId, member.getEmail());
+    }
+
+    private StoreReview findReviewById(Long reviewId) {
+        return reviewRepository.findById(reviewId)
+                .orElseThrow(() -> new CustomException(ErrorCode.REVIEW_NOT_FOUND));
+    }
+
+    private Store findStoreById(Long storeId) {
+        return storeRepository.findById(storeId)
+                .orElseThrow(() -> new CustomException(ErrorCode.STORE_NOT_FOUND));
     }
 
 }

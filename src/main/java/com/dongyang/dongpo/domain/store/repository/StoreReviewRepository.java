@@ -1,6 +1,7 @@
 package com.dongyang.dongpo.domain.store.repository;
 
 import com.dongyang.dongpo.domain.member.entity.Member;
+import com.dongyang.dongpo.domain.store.entity.Store;
 import com.dongyang.dongpo.domain.store.entity.StoreReview;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -35,8 +36,8 @@ public interface StoreReviewRepository extends JpaRepository<StoreReview, Long> 
     @Query("SELECT sr FROM StoreReview sr LEFT JOIN FETCH sr.reviewPics LEFT JOIN FETCH sr.store WHERE sr.member = :member")
     List<StoreReview> findByMemberWithReviewPicsAndStore(@Param("member") Member member);
 
-    @Query("SELECT sr.id FROM StoreReview sr WHERE sr.store.id = :storeId ORDER BY sr.id DESC")
-    List<Long> findTop3LatestReviewIdsByStoreId(@Param("storeId") Long storeId, Pageable pageable);
+    @Query("SELECT sr.id FROM StoreReview sr WHERE sr.store = :store ORDER BY sr.id DESC")
+    List<Long> findTop3LatestReviewIdsByStore(@Param("store") Store store, Pageable pageable);
 
     @Query("SELECT sr FROM StoreReview sr JOIN FETCH sr.member m LEFT JOIN FETCH sr.reviewPics rp " +
             "WHERE sr.id IN :reviewIds ORDER BY sr.id DESC")
