@@ -35,6 +35,12 @@ public class StoreReviewController {
         return ResponseEntity.ok(new ApiResponse<>(reviewService.getReviewsByStore(storeId)));
     }
 
+    @GetMapping("/{storeId}/latest")
+    @Operation(summary = "점포 리뷰 가장 최신 3건 조회")
+    public ResponseEntity<ApiResponse<List<StoreReviewResponseDto>>> getLatestReviewsByStoreId(@PathVariable final Long storeId) {
+        return ResponseEntity.ok(new ApiResponse<>(reviewService.getLatestReviewsByStoreId(storeId)));
+    }
+
     @DeleteMapping("/{reviewId}")
     @Operation(summary = "리뷰 삭제")
     public ResponseEntity<ApiResponse<String>> deleteReview(@AuthenticationPrincipal Member member,

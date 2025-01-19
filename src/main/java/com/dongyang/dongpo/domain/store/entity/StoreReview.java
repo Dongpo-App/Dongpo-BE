@@ -2,6 +2,7 @@ package com.dongyang.dongpo.domain.store.entity;
 
 import com.dongyang.dongpo.domain.member.entity.Member;
 import com.dongyang.dongpo.domain.store.dto.ReviewDto;
+import com.dongyang.dongpo.domain.store.dto.ReviewRegisteredBy;
 import com.dongyang.dongpo.domain.store.dto.StoreReviewResponseDto;
 import jakarta.persistence.*;
 import lombok.*;
@@ -86,17 +87,19 @@ public class StoreReview {
 
     public StoreReviewResponseDto toStoreReviewResponse() {
         return StoreReviewResponseDto.builder()
-                .id(id)
-                .memberId(member.getId())
-                .memberNickname(member.getNickname())
-                .memberMainTitle(member.getMainTitle().getDescription())
-                .memberProfilePic(member.getProfilePic())
-                .reviewStar(reviewStar)
-                .reviewText(text)
-                .reviewPics(reviewPics.stream()
+                .id(this.id)
+                .registeredBy(ReviewRegisteredBy.builder()
+                        .memberId(this.member.getId())
+                        .memberNickname(this.member.getNickname())
+                        .memberMainTitle(this.member.getMainTitle().getDescription())
+                        .memberProfilePic(this.member.getProfilePic())
+                        .build())
+                .reviewStar(this.reviewStar)
+                .reviewText(this.text)
+                .reviewPics(this.reviewPics.stream()
                         .map(StoreReviewPic::getPicUrl)
                         .toList())
-                .registerDate(registerDate)
+                .registerDate(this.registerDate)
                 .build();
     }
 

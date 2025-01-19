@@ -14,6 +14,7 @@ import com.dongyang.dongpo.domain.store.repository.StoreRepository;
 import com.dongyang.dongpo.domain.store.repository.StoreReviewRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -47,7 +48,7 @@ public class StoreReviewService {
 
     }
 
-    public List<ReviewDto> getMyReviews(Member member) {
+    public List<ReviewDto> getMyReviews(Member member) { // TODO: 페이징 구현
         return reviewRepository.findByMemberWithReviewPicsAndStore(member).stream()
                 .filter(r -> r.getStatus().equals(StoreReview.ReviewStatus.VISIBLE))
                 .map(StoreReview::toMyPageResponse)
@@ -75,11 +76,16 @@ public class StoreReviewService {
                 .toList();
     }
 
-    /**
-     * public List<StoreReviewResponseDto> getRecentReviewsByStore(final Long storeId) {
-     * // 점포 상세 정보 페이지의 가장 최근 3개 리뷰 응답 (추후 구현)
-     * }
-     */
+    // 최신 3개의 리뷰 반환
+    public List<StoreReviewResponseDto> getLatestReviewsByStoreId(final Long storeId) {
+        final List<Long> top3LatestReviewsByStoreId = reviewRepository.findTop3LatestReviewIdsByStoreId(storeId, PageRequest.ofSize(3));
+        if (top3LatestReviewsByStoreId.isEmpty())
+            throw new CustomException(ErrorCode.REVIEW_NOT_FOUND);
+
+        return reviewRepository.findReviewsWithPicsByIds(top3LatestReviewsByStoreId).stream()
+                .map(StoreReview::toStoreReviewResponse)
+                .toList();
+    }
 
     // 최근 5개의 리뷰 사진 반환
     public List<String> getLatestReviewPicsByStoreId(Long id) {
