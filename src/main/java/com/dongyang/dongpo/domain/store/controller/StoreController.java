@@ -18,8 +18,8 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@Tag(name = "Store", description = "점포 관련 API")
-@RequestMapping("/api/store")
+@Tag(name = "Store API", description = "점포 관련 API")
+@RequestMapping("/api/stores")
 public class StoreController {
 
     private final StoreService storeService;
