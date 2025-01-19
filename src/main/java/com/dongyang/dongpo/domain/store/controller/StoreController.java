@@ -33,16 +33,16 @@ public class StoreController {
 
     @GetMapping("/{id}/summary")
     @Operation(summary = "점포 간략 정보 조회")
-    public ResponseEntity<ApiResponse<StoreMapSummaryDto>> getStoreSummary(@PathVariable @Min(1) final Long id,
-                                                                           @AuthenticationPrincipal final Member member) {
-        return ResponseEntity.ok(new ApiResponse<>(storeService.getStoreMapSummary(id, member)));
+    public ResponseEntity<ApiResponse<StoreBasicInfoResponseDto>> getStoreBasicInfo(@PathVariable @Min(1) final Long id,
+                                                                                    @AuthenticationPrincipal final Member member) {
+        return ResponseEntity.ok(new ApiResponse<>(storeService.getStoreBasicInfo(id, member)));
     }
 
     @GetMapping("/{id}")
     @Operation(summary = "점포 상세 조회")
-    public ResponseEntity<ApiResponse<StoreDto>> detailStore(@PathVariable @Min(1) final Long id,
-                                                             @AuthenticationPrincipal final Member member) {
-        return ResponseEntity.ok(new ApiResponse<>(storeService.detailStore(id, member)));
+    public ResponseEntity<ApiResponse<StoreDetailInfoResponseDto>> getStoreDetailInfo(@PathVariable @Min(1) final Long id,
+                                                                                      @AuthenticationPrincipal final Member member) {
+        return ResponseEntity.ok(new ApiResponse<>(storeService.getStoreDetailInfo(id, member)));
     }
 
     @PostMapping("")

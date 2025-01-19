@@ -83,7 +83,6 @@ public class Store {
     }
 
 
-
     public StoreDto toResponse() {
         return StoreDto.builder()
                 .id(id)
@@ -106,32 +105,38 @@ public class Store {
                 .build();
     }
 
-    public StoreDto toResponse(OpenPossibility openPossibility, boolean isBookmarked, Long bookmarkCount) {
-        return StoreDto.builder()
-                .id(id)
-                .name(name)
-                .address(address)
-                .latitude(latitude)
-                .longitude(longitude)
-                .reportCount(reportCount)
-                .memberId(member.getId())
-                .memberNickname(member.getNickname())
-                .openTime(openTime)
-                .closeTime(closeTime)
-                .isToiletValid(isToiletValid)
-                .operatingDays(storeOperatingDays.stream()
-                        .map(StoreOperatingDay::getOperatingDay)
-                        .collect(Collectors.toList()))
-                .payMethods(storePayMethods.stream()
-                        .map(StorePayMethod::getPayMethod)
-                        .collect(Collectors.toList()))
-                .status(status)
+    public StoreDetailInfoResponseDto toDetailInfoResponse(final OpenPossibility openPossibility,
+                                                           final boolean isBookmarked,
+                                                           final Long bookmarkCount,
+                                                           final List<String> reviewPics) {
+        return StoreDetailInfoResponseDto.builder()
+                .id(this.id)
+                .name(this.name)
+                .latitude(this.latitude)
+                .longitude(this.longitude)
+                .address(this.address)
                 .openPossibility(openPossibility)
                 .isBookmarked(isBookmarked)
-                .visitSuccessfulCount(storeVisitCerts.stream()
+                .reviewPics(reviewPics)
+                .registeredBy(RegisteredBy.builder()
+                        .memberId(this.member.getId())
+                        .memberNickname(this.member.getNickname())
+                        .build())
+                .operatingTime(OperatingTime.builder()
+                        .openTime(this.openTime)
+                        .closeTime(this.closeTime)
+                        .build())
+                .isToiletValid(this.isToiletValid)
+                .operatingDays(this.storeOperatingDays.stream()
+                        .map(StoreOperatingDay::getOperatingDay)
+                        .toList())
+                .payMethods(this.storePayMethods.stream()
+                        .map(StorePayMethod::getPayMethod)
+                        .toList())
+                .visitSuccessCount(this.storeVisitCerts.stream()
                         .filter(StoreVisitCert::getIsVisitSuccessful)
                         .count())
-                .visitFailCount(storeVisitCerts.stream()
+                .visitFailCount(this.storeVisitCerts.stream()
                         .filter(cert -> !cert.getIsVisitSuccessful())
                         .count())
                 .bookmarkCount(bookmarkCount)
@@ -148,17 +153,17 @@ public class Store {
                 .build();
     }
 
-    public StoreSummaryDto toSummaryResponse() {
-        return StoreSummaryDto.builder()
-                .id(id)
-                .name(name)
-                .address(address)
-                .registerDate(registerDate)
+    public MyRegisteredStoresResponseDto toMyRegisteredStoresResponse() {
+        return MyRegisteredStoresResponseDto.builder()
+                .id(this.id)
+                .name(this.name)
+                .address(this.address)
+                .registerDate(this.registerDate)
                 .build();
     }
 
-    public StoreMapSummaryDto toMapSummaryResponse(OpenPossibility openPossibility, Boolean isBookmarked, List<String> reviewPics) {
-        return StoreMapSummaryDto.builder()
+    public StoreBasicInfoResponseDto toBasicInfoResponse(OpenPossibility openPossibility, Boolean isBookmarked, List<String> reviewPics) {
+        return StoreBasicInfoResponseDto.builder()
                 .id(this.id)
                 .name(this.name)
                 .latitude(this.latitude)
@@ -170,7 +175,7 @@ public class Store {
                 .build();
     }
 
-    public void update(StoreUpdateDto updateDto){
+    public void update(StoreUpdateDto updateDto) {
         this.name = updateDto.getName();
         this.openTime = updateDto.getOpenTime();
         this.closeTime = updateDto.getCloseTime();

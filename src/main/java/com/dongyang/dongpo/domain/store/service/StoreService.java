@@ -110,29 +110,29 @@ public class StoreService {
     }
 
     // 점포 간략 정보 조회 (오픈 가능성, 북마크 여부, 최근 리뷰 사진 5개 반환)
-    public StoreMapSummaryDto getStoreMapSummary(final Long id, final Member member) {
+    public StoreBasicInfoResponseDto getStoreBasicInfo(final Long id, final Member member) {
         Store store = findById(id);
-        return store.toMapSummaryResponse(openPossibilityService.getOpenPossibility(store),
+        return store.toBasicInfoResponse(
+                openPossibilityService.getOpenPossibility(store),
                 bookmarkService.isStoreBookmarkedByMember(store, member),
                 storeReviewService.getLatestReviewPicsByStoreId(id));
     }
 
-    public StoreDto detailStore(Long id, Member member) {
+    // 점포 상세 정보 조회
+    public StoreDetailInfoResponseDto getStoreDetailInfo(final Long id, final Member member) {
         Store store = findById(id);
 
-        List<Member> mostVisitMembers = storeVisitCertRepository.findTopVisitorsByStore(store);
+//        List<Member> mostVisitMembers = storeVisitCertRepository.findTopVisitorsByStore(store);
+        //        response.setMostVisitMembers(mostVisitMembers.stream()
+//                .map(m -> MostVisitMemberResponse.of(m.getId(), m.getNickname(), m.getMainTitle(), m.getProfilePic()))
+//                .toList());
 
-        StoreDto response = store.toResponse(
+        return store.toDetailInfoResponse(
                 openPossibilityService.getOpenPossibility(store),
                 bookmarkService.isStoreBookmarkedByMember(store, member),
-                bookmarkService.getBookmarkCountByStore(store)
+                bookmarkService.getBookmarkCountByStore(store),
+                storeReviewService.getLatestReviewPicsByStoreId(id)
         );
-
-        response.setMostVisitMembers(mostVisitMembers.stream()
-                .map(m -> MostVisitMemberResponse.of(m.getId(), m.getNickname(), m.getMainTitle(), m.getProfilePic()))
-                .toList());
-
-        return response;
     }
 
     @Transactional
@@ -215,8 +215,8 @@ public class StoreService {
         }
     }
 
-    public List<StoreSummaryDto> getMyRegisteredStores(Member member) {
-        return storeRepository.findByMember(member).stream().map(Store::toSummaryResponse).toList();
+    public List<MyRegisteredStoresResponseDto> getMyRegisteredStores(Member member) {
+        return storeRepository.findByMember(member).stream().map(Store::toMyRegisteredStoresResponse).toList();
     }
 
     public Long getMyRegisteredStoreCount(Member member) {
