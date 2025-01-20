@@ -13,7 +13,9 @@ import org.hibernate.annotations.DynamicUpdate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -61,11 +63,11 @@ public class Store {
 
     @OneToMany(mappedBy = "store", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
-    private List<StorePayMethod> storePayMethods = new ArrayList<>();
+    private Set<StorePayMethod> storePayMethods = new HashSet<>();
 
     @OneToMany(mappedBy = "store", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
-    private List<StoreOperatingDay> storeOperatingDays = new ArrayList<>();
+    private Set<StoreOperatingDay> storeOperatingDays = new HashSet<>();
 
     @OneToMany(mappedBy = "store", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @Builder.Default
@@ -170,18 +172,18 @@ public class Store {
 
     // StorePayMethod 등록
     public void addPayMethods(List<PayMethod> payMethods) {
-        payMethods.forEach(payMethod -> storePayMethods.add(StorePayMethod.builder()
-                .store(this)
-                .payMethod(payMethod)
-                .build()));
+        payMethods.forEach(payMethod -> {
+            StorePayMethod storePayMethod = new StorePayMethod(this, payMethod);
+            storePayMethods.add(storePayMethod);
+        });
     }
 
     // StoreOperatingDay 등록
     public void addOperatingDays(List<OperatingDay> operatingDays) {
-        operatingDays.forEach(operatingDay -> storeOperatingDays.add(StoreOperatingDay.builder()
-                .store(this)
-                .operatingDay(operatingDay)
-                .build()));
+        operatingDays.forEach(operatingDay -> {
+            StoreOperatingDay storeOperatingDay = new StoreOperatingDay(this, operatingDay);
+            storeOperatingDays.add(storeOperatingDay);
+        });
     }
 
     // 점포 정보 업데이트
@@ -196,25 +198,23 @@ public class Store {
     }
 
     private void updatePayMethods(List<PayMethod> newPayMethods) {
-        storePayMethods.removeIf(existingPayMethod -> !newPayMethods.contains(existingPayMethod.getPayMethod()));
+        Set<PayMethod> newPayMethodSet = new HashSet<>(newPayMethods);
+        storePayMethods.removeIf(existingPayMethod -> !newPayMethodSet.contains(existingPayMethod.getPayMethod()));
         newPayMethods.forEach(newPayMethod -> {
             if (storePayMethods.stream().noneMatch(existingPayMethod -> existingPayMethod.getPayMethod().equals(newPayMethod))) {
-                storePayMethods.add(StorePayMethod.builder()
-                        .store(this)
-                        .payMethod(newPayMethod)
-                        .build());
+                StorePayMethod storePayMethod = new StorePayMethod(this, newPayMethod);
+                storePayMethods.add(storePayMethod);
             }
         });
     }
 
     private void updateOperatingDays(List<OperatingDay> newOperatingDays) {
-        storeOperatingDays.removeIf(existingOperatingDay -> !newOperatingDays.contains(existingOperatingDay.getOperatingDay()));
+        Set<OperatingDay> newOperatingDaySet = new HashSet<>(newOperatingDays);
+        storeOperatingDays.removeIf(existingOperatingDay -> !newOperatingDaySet.contains(existingOperatingDay.getOperatingDay()));
         newOperatingDays.forEach(newOperatingDay -> {
             if (storeOperatingDays.stream().noneMatch(existingOperatingDay -> existingOperatingDay.getOperatingDay().equals(newOperatingDay))) {
-                storeOperatingDays.add(StoreOperatingDay.builder()
-                        .store(this)
-                        .operatingDay(newOperatingDay)
-                        .build());
+                StoreOperatingDay storeOperatingDay = new StoreOperatingDay(this, newOperatingDay);
+                storeOperatingDays.add(storeOperatingDay);
             }
         });
     }

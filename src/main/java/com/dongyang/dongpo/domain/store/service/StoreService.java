@@ -14,15 +14,10 @@ import com.dongyang.dongpo.domain.member.service.TitleService;
 import com.dongyang.dongpo.domain.store.dto.*;
 import com.dongyang.dongpo.domain.store.entity.*;
 import com.dongyang.dongpo.domain.store.enums.OpenTime;
-import com.dongyang.dongpo.domain.store.enums.OperatingDay;
-import com.dongyang.dongpo.domain.store.enums.PayMethod;
-import com.dongyang.dongpo.domain.store.repository.StoreOperatingDayRepository;
-import com.dongyang.dongpo.domain.store.repository.StorePayMethodRepository;
 import com.dongyang.dongpo.domain.store.repository.StoreRepository;
 import com.dongyang.dongpo.domain.store.repository.StoreVisitCertRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -40,8 +35,6 @@ public class StoreService {
 
     private final StoreRepository storeRepository;
     private final StoreVisitCertRepository storeVisitCertRepository;
-    private final StorePayMethodRepository storePayMethodRepository;
-    private final StoreOperatingDayRepository storeOperatingDayRepository;
     private final TitleService titleService;
     private final OpenPossibilityService openPossibilityService;
     private final BookmarkService bookmarkService;
@@ -173,7 +166,7 @@ public class StoreService {
     }
 
     // 비교 대상 점포의 좌표 반환
-    public LatLong getStoreCoordinates(Long storeId) {
+    private LatLong getStoreCoordinates(Long storeId) {
         Store targetStore = findById(storeId);
         return LatLong.builder()
                 .latitude(targetStore.getLatitude())
@@ -182,7 +175,6 @@ public class StoreService {
     }
 
     // 신규 좌표가 기존 좌표의 오차범위 내에 위치하는지 검증 (방문 인증 검증)
-    @Transactional
     public void visitCert(StoreVisitCertDto storeVisitCertDto, Member member) {
         LatLong newCoordinate = LatLong.builder()
                 .latitude(storeVisitCertDto.getLatitude())
