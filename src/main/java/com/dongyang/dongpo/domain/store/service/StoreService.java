@@ -166,7 +166,7 @@ public class StoreService {
     }
 
     // 비교 대상 점포의 좌표 반환
-    private LatLong getStoreCoordinates(Long storeId) {
+    private LatLong getStoreCoordinates(final Long storeId) {
         Store targetStore = findById(storeId);
         return LatLong.builder()
                 .latitude(targetStore.getLatitude())
@@ -175,32 +175,37 @@ public class StoreService {
     }
 
     // 신규 좌표가 기존 좌표의 오차범위 내에 위치하는지 검증 (방문 인증 검증)
-    public void visitCert(StoreVisitCertDto storeVisitCertDto, Member member) {
-        LatLong newCoordinate = LatLong.builder()
+    public void visitCert(final Long storeId, final StoreVisitCertDto storeVisitCertDto, final Member member) {
+        final LatLong requestCoordinate = LatLong.builder()
                 .latitude(storeVisitCertDto.getLatitude())
                 .longitude(storeVisitCertDto.getLongitude())
                 .build();
 
+        // 점포 조회 (점포가 존재하지 않을 경우 예외 발생)
+        final Store store = findById(storeId);
+
+        // 24시간 이내 해당 점포에 방문 인증한 기록이 있을 경우 예외 발생
+        if (checkVisitCertBy24Hours(storeId, member))
+            throw new CustomException(ErrorCode.STORE_VISIT_CERT_NOT_AVAILABLE);
+
         // 방문 인증 거리 검증 (100m 초과 시 예외 발생)
-        if (locationUtil.calcDistance(newCoordinate, getStoreCoordinates(storeVisitCertDto.getStoreId())) >= 100)
+        if (locationUtil.calcDistance(requestCoordinate, getStoreCoordinates(store.getId())) >= 100)
             throw new CustomException(ErrorCode.DISTANCE_OUT_OF_RANGE);
 
-        Store store = findById(storeVisitCertDto.getStoreId());
-
-        LocalDateTime now = LocalDateTime.now();
-        OpenTime openTime = storeUtil.getOpenTime(now);
+        final LocalDateTime now = LocalDateTime.now();
+        final OpenTime openTime = storeUtil.getOpenTime(now);
         if (storeVisitCertDto.getIsVisitSuccessful()) { // 방문 인증 성공
             storeVisitCertRepository.save(StoreVisitCert.builder()
                     .store(store)
                     .member(member)
                     .isVisitSuccessful(true)
                     .certDate(now)
-                    .openDay(now.getDayOfWeek())
-                    .openTime(openTime)
+                    .certDay(now.getDayOfWeek())
+                    .certTimeRange(openTime)
                     .build());
 
-            Long successCount = storeVisitCertRepository.countByMemberAndIsVisitSuccessfulIsTrue(member);
-            Long firstStoreVisitCount = storeVisitCertRepository.countByStoreAndIsVisitSuccessfulTrue(store);
+            final Long successCount = storeVisitCertRepository.countByMemberAndIsVisitSuccessfulIsTrue(member);
+            final Long firstStoreVisitCount = storeVisitCertRepository.countByStoreAndIsVisitSuccessfulTrue(store);
             if (firstStoreVisitCount.equals(1L))
                 titleService.addTitle(member, Title.FIRST_VISIT_CERT);
             else if (successCount.equals(3L))
@@ -212,11 +217,11 @@ public class StoreService {
                     .member(member)
                     .isVisitSuccessful(false)
                     .certDate(now)
-                    .openDay(now.getDayOfWeek())
-                    .openTime(openTime)
+                    .certDay(now.getDayOfWeek())
+                    .certTimeRange(openTime)
                     .build());
 
-            Long failCount = storeVisitCertRepository.countByMemberAndIsVisitSuccessfulIsFalse(member);
+            final Long failCount = storeVisitCertRepository.countByMemberAndIsVisitSuccessfulIsFalse(member);
             if (failCount.equals(3L))
                 titleService.addTitle(member, Title.FAILED_TO_VISIT);
         }

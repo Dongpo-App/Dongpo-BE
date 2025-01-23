@@ -32,18 +32,16 @@ public class StoreVisitCert {
     @Column(length = 24)
     private String certIp;
 
-    private int certTimeRange;
-
     @Column(columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP")
     private LocalDateTime certDate;
 
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "VARCHAR(255)")
-    private DayOfWeek openDay;
+    private DayOfWeek certDay;
 
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "VARCHAR(255)")
-    private OpenTime openTime;
+    private OpenTime certTimeRange;
 
     // 현재 시간이 방문 인증 후 24시간 이내인지 확인
     // 24시간 이내라면 True, 아니라면 False

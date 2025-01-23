@@ -24,7 +24,7 @@ public class OpenPossibilityService {
         // 현재 시간대, 요일에 방문인증 성공한 데이터만 필터링
         boolean possibilities = storeVisitCertRepository.findByStoreAndAndIsVisitSuccessfulTrue(store)
                 .stream()
-                .anyMatch(s -> s.getOpenTime().equals(openTime) && s.getOpenDay().equals(dayOfWeek));
+                .anyMatch(s -> s.getCertTimeRange().equals(openTime) && s.getCertDay().equals(dayOfWeek));
 
         return possibilities ? OpenPossibility.HIGH : OpenPossibility.NONE;
 

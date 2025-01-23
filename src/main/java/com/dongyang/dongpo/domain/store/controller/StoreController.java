@@ -82,11 +82,12 @@ public class StoreController {
         return ResponseEntity.ok(new ApiResponse<>(storeService.recommendStoreByGender(member)));
     }
 
-    @PostMapping("/visit-cert")
+    @PostMapping("/{storeId}/visit-cert")
     @Operation(summary = "점포 방문 인증")
-    public ResponseEntity<Void> visitCert(@RequestBody StoreVisitCertDto storeVisitCertDto,
-                                          @AuthenticationPrincipal Member member) {
-        storeService.visitCert(storeVisitCertDto, member);
+    public ResponseEntity<Void> visitCert(@PathVariable @Min(1) final Long storeId,
+                                          @RequestBody final StoreVisitCertDto storeVisitCertDto,
+                                          @AuthenticationPrincipal final Member member) {
+        storeService.visitCert(storeId, storeVisitCertDto, member);
         return ResponseEntity.ok().build();
     }
 
