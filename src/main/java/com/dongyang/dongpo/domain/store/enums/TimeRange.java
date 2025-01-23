@@ -3,7 +3,7 @@ package com.dongyang.dongpo.domain.store.enums;
 import lombok.Getter;
 
 @Getter
-public enum OpenTime {
+public enum TimeRange {
 
     MIDNIGHT_TO_3AM("00:00 - 03:00"),
     THREE_AM_TO_6AM("03:00 - 06:00"),
@@ -16,7 +16,7 @@ public enum OpenTime {
 
     private final String timeRange;
 
-    OpenTime(String timeRange) {
+    TimeRange(String timeRange) {
         this.timeRange = timeRange;
     }
 
