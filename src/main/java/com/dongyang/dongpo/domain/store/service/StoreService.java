@@ -6,16 +6,13 @@ import com.dongyang.dongpo.common.exception.CustomException;
 import com.dongyang.dongpo.common.exception.ErrorCode;
 import com.dongyang.dongpo.common.util.location.LocationUtil;
 import com.dongyang.dongpo.common.util.member.MemberUtil;
-import com.dongyang.dongpo.common.util.store.StoreUtil;
 import com.dongyang.dongpo.domain.bookmark.service.BookmarkService;
 import com.dongyang.dongpo.domain.member.entity.Member;
 import com.dongyang.dongpo.domain.member.entity.Title;
 import com.dongyang.dongpo.domain.member.service.TitleService;
 import com.dongyang.dongpo.domain.store.dto.*;
 import com.dongyang.dongpo.domain.store.entity.*;
-import com.dongyang.dongpo.domain.store.enums.OpenTime;
 import com.dongyang.dongpo.domain.store.repository.StoreRepository;
-import com.dongyang.dongpo.domain.store.repository.StoreVisitCertRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -23,7 +20,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,13 +30,12 @@ import java.util.List;
 public class StoreService {
 
     private final StoreRepository storeRepository;
-    private final StoreVisitCertRepository storeVisitCertRepository;
+    private final StoreVisitCertService storeVisitCertService;
     private final TitleService titleService;
     private final OpenPossibilityService openPossibilityService;
     private final BookmarkService bookmarkService;
     private final StoreReviewService storeReviewService;
     private final LocationUtil locationUtil;
-    private final StoreUtil storeUtil;
     private final MemberUtil memberUtil;
 
     public Store findById(Long id) {
@@ -192,51 +187,26 @@ public class StoreService {
         if (locationUtil.calcDistance(requestCoordinate, getStoreCoordinates(store.getId())) >= 100)
             throw new CustomException(ErrorCode.DISTANCE_OUT_OF_RANGE);
 
-        final LocalDateTime now = LocalDateTime.now();
-        final OpenTime openTime = storeUtil.getOpenTime(now);
         if (storeVisitCertDto.getIsVisitSuccessful()) { // 방문 인증 성공
-            storeVisitCertRepository.save(StoreVisitCert.builder()
-                    .store(store)
-                    .member(member)
-                    .isVisitSuccessful(true)
-                    .certDate(now)
-                    .certDay(now.getDayOfWeek())
-                    .certTimeRange(openTime)
-                    .build());
+            storeVisitCertService.addStoreVisitCert(store, member, true);
 
-            final Long successCount = storeVisitCertRepository.countByMemberAndIsVisitSuccessfulIsTrue(member);
-            final Long firstStoreVisitCount = storeVisitCertRepository.countByStoreAndIsVisitSuccessfulTrue(store);
-            if (firstStoreVisitCount.equals(1L))
+            final Long successCount = storeVisitCertService.getStoreVisitCertSuccessCount(member);
+            if (successCount.equals(1L))
                 titleService.addTitle(member, Title.FIRST_VISIT_CERT);
             else if (successCount.equals(3L))
                 titleService.addTitle(member, Title.REGULAR_CUSTOMER);
 
         } else {
-            storeVisitCertRepository.save(StoreVisitCert.builder()
-                    .store(store)
-                    .member(member)
-                    .isVisitSuccessful(false)
-                    .certDate(now)
-                    .certDay(now.getDayOfWeek())
-                    .certTimeRange(openTime)
-                    .build());
+            storeVisitCertService.addStoreVisitCert(store, member, false);
 
-            final Long failCount = storeVisitCertRepository.countByMemberAndIsVisitSuccessfulIsFalse(member);
+            final Long failCount = storeVisitCertService.getStoreVisitCertFailCount(member);
             if (failCount.equals(3L))
                 titleService.addTitle(member, Title.FAILED_TO_VISIT);
         }
     }
 
-    public Boolean checkVisitCertBy24Hours(Long storeId, Member member) {
-        Store store = findById(storeId);
-
-        StoreVisitCert storeVisitCert = storeVisitCertRepository
-                .findTopByStoreAndMemberOrderByCertDateDesc(store, member)
-                .orElse(null);
-
-        if (storeVisitCert == null)
-            return false;
-
-        return storeVisitCert.is24HoursCheck();
+    // 24시간 이내 방문 인증 여부 조회
+    public Boolean checkVisitCertBy24Hours(final Long storeId, final Member member) {
+        return storeVisitCertService.checkStoreVisitCertBy24Hours(findById(storeId), member);
     }
 }

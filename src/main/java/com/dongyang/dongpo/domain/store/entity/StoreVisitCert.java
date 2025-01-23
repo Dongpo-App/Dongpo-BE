@@ -1,7 +1,7 @@
 package com.dongyang.dongpo.domain.store.entity;
 
 import com.dongyang.dongpo.domain.member.entity.Member;
-import com.dongyang.dongpo.domain.store.enums.OpenTime;
+import com.dongyang.dongpo.domain.store.enums.TimeRange;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -41,12 +41,6 @@ public class StoreVisitCert {
 
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "VARCHAR(255)")
-    private OpenTime certTimeRange;
+    private TimeRange certTimeRange;
 
-    // 현재 시간이 방문 인증 후 24시간 이내인지 확인
-    // 24시간 이내라면 True, 아니라면 False
-    public boolean is24HoursCheck() {
-        LocalDateTime now = LocalDateTime.now();
-		return now.isBefore(certDate.plusHours(24));
-	}
 }

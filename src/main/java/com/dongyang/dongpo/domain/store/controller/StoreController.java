@@ -91,10 +91,10 @@ public class StoreController {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/visit-cert/{storeId}/check")
+    @GetMapping("/{storeId}/visit-cert/check")
     @Operation(summary = "24시간 이내 방문 인증 여부 조회")
-    public ResponseEntity<ApiResponse<Boolean>> checkVisitCertBy24Hours(@PathVariable @Min(1) Long storeId,
-                                                                        @AuthenticationPrincipal Member member) {
+    public ResponseEntity<ApiResponse<Boolean>> checkVisitCertBy24Hours(@PathVariable @Min(1) final Long storeId,
+                                                                        @AuthenticationPrincipal final Member member) {
         return ResponseEntity.ok(new ApiResponse<>(storeService.checkVisitCertBy24Hours(storeId, member)));
     }
 }
