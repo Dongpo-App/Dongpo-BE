@@ -10,6 +10,6 @@ import java.util.List;
 
 public interface StoreReviewPicRepository extends JpaRepository<StoreReviewPic, Long> {
 
-    @Query("SELECT rp FROM StoreReviewPic rp JOIN rp.reviewId r JOIN r.store s WHERE s.id = :storeId ORDER BY rp.registerDate DESC")
+    @Query("SELECT rp FROM StoreReviewPic rp JOIN rp.storeReview r JOIN r.store s WHERE s.id = :storeId ORDER BY rp.registerDate DESC")
     List<StoreReviewPic> findTop5ByStoreIdOrderByRegisterDateDesc(@Param("storeId") Long storeId, Pageable pageable);
 }
