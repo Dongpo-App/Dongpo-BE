@@ -6,10 +6,12 @@ import com.dongyang.dongpo.domain.member.entity.Member;
 import com.dongyang.dongpo.domain.member.entity.Title;
 import com.dongyang.dongpo.domain.member.service.TitleService;
 import com.dongyang.dongpo.domain.store.dto.ReviewDto;
+import com.dongyang.dongpo.domain.store.dto.ReviewRegisterRequestDto;
 import com.dongyang.dongpo.domain.store.dto.StoreReviewResponseDto;
 import com.dongyang.dongpo.domain.store.entity.Store;
 import com.dongyang.dongpo.domain.store.entity.StoreReview;
 import com.dongyang.dongpo.domain.store.entity.StoreReviewPic;
+import com.dongyang.dongpo.domain.store.enums.ReviewStatus;
 import com.dongyang.dongpo.domain.store.repository.ReadOnlyStoreRepository;
 import com.dongyang.dongpo.domain.store.repository.StoreReviewRepository;
 import lombok.RequiredArgsConstructor;
@@ -32,23 +34,24 @@ public class StoreReviewService {
     private final ReadOnlyStoreRepository storeRepository;
     private final TitleService titleService;
 
-    public void addReview(Member member, Long storeId, ReviewDto reviewDto) {
+    public void addReview(final Member member, final Long storeId, final ReviewRegisterRequestDto reviewDto) {
         Store store = findStoreById(storeId);
 
-        StoreReview storeReview = reviewDto.toEntity(store, member);
-        reviewRepository.save(storeReview);
+        StoreReview storeReview = reviewRepository.save(reviewDto.toEntity(store, member));
 
-        log.info("member {} add review store ID : {}", member.getId(), store.getId());
+        if (reviewDto.getReviewPics() != null && !reviewDto.getReviewPics().isEmpty())
+            storeReview.addReviewPics(reviewDto.getReviewPics());
+
+        log.info("Member {} - added review on Store ID : {}", member.getEmail(), store.getId());
 
         Long count = reviewRepository.countByMember(member);
         if (count.equals(3L))
             titleService.addTitle(member, Title.REVIEW_PRO);
-
     }
 
     public List<ReviewDto> getMyReviews(Member member) { // TODO: 페이징 구현
         return reviewRepository.findByMemberWithReviewPicsAndStore(member).stream()
-                .filter(r -> r.getStatus().equals(StoreReview.ReviewStatus.VISIBLE))
+                .filter(r -> r.getStatus().equals(ReviewStatus.VISIBLE))
                 .map(StoreReview::toMyPageResponse)
                 .toList();
     }
