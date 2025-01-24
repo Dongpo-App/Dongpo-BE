@@ -16,6 +16,8 @@ import com.dongyang.dongpo.domain.store.repository.ReadOnlyStoreRepository;
 import com.dongyang.dongpo.domain.store.repository.StoreReviewRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -64,27 +66,19 @@ public class StoreReviewService {
         return findReviewById(id).toResponse();
     }
 
-    public List<StoreReviewResponseDto> getReviewsByStore(final Long storeId) {
-        if (!storeRepository.existsById(storeId))
-            throw new CustomException(ErrorCode.STORE_NOT_FOUND); // 추후 의존성 수정
+    // 특정 점포의 리뷰들을 반환
+    public Page<StoreReviewResponseDto> getReviewsByStore(final Long storeId, final int page, final int size) {
+        // 페이지 크기에 맞게 리뷰 Id 리스트를 페이징하여 조회 후, 해당 Id 리스트를 바탕으로 리뷰들을 상세 조회
+        final Page<Long> reviewIds = reviewRepository.findReviewIdsByStoreAndPageRequest(
+                findStoreById(storeId), PageRequest.of(page, size));
 
-        // 추후 페이징 구현
-        return reviewRepository.findReviewWithDetailsByStoreDesc(storeId).stream()
-                .map(StoreReview::toStoreReviewResponse)
-                .toList();
-    }
-
-    // 최신 3개의 리뷰 반환
-    public List<StoreReviewResponseDto> getLatestReviewsByStoreId(final Long storeId) {
-        final Store store = findStoreById(storeId);
-
-        final List<Long> top3LatestReviewsByStoreId = reviewRepository.findTop3LatestReviewIdsByStore(store, PageRequest.ofSize(3));
-        if (top3LatestReviewsByStoreId.isEmpty())
+        if (reviewIds.isEmpty())
             throw new CustomException(ErrorCode.REVIEW_NOT_FOUND);
 
-        return reviewRepository.findReviewsWithPicsByIds(top3LatestReviewsByStoreId).stream()
+        return new PageImpl<>(reviewRepository.findReviewsWithDetailsByIdsDesc(reviewIds.getContent())
+                .stream()
                 .map(StoreReview::toStoreReviewResponse)
-                .toList();
+                .toList(), reviewIds.getPageable(), reviewIds.getTotalElements());
     }
 
     // 최근 5개의 리뷰 사진 반환
