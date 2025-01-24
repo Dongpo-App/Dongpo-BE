@@ -2,6 +2,8 @@ package com.dongyang.dongpo.domain.store.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 
@@ -11,25 +13,29 @@ import java.time.LocalDateTime;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Table(name = "store_review_pic")
+@EntityListeners(AuditingEntityListener.class)
 public class StoreReviewPic {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "review_id")
-    private StoreReview reviewId;
+    @JoinColumn(name = "store_review_id")
+    private StoreReview storeReview;
 
     @Column(length = 128)
     private String picUrl;
 
-    @Column(columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP")
+    @CreatedDate
     private LocalDateTime registerDate;
 
     @Column(length = 24)
     private String registerIp;
 
-    public void addReview(StoreReview review) {
-        this.reviewId = review;
+    public StoreReviewPic(final StoreReview storeReview, final String picUrl) {
+        this.picUrl = picUrl;
+        this.storeReview = storeReview;
+        storeReview.getReviewPics().add(this);
     }
+
 }

@@ -4,8 +4,11 @@ import com.dongyang.dongpo.domain.member.entity.Member;
 import com.dongyang.dongpo.domain.store.dto.ReviewDto;
 import com.dongyang.dongpo.domain.store.dto.ReviewRegisteredBy;
 import com.dongyang.dongpo.domain.store.dto.StoreReviewResponseDto;
+import com.dongyang.dongpo.domain.store.enums.ReviewStatus;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -17,6 +20,7 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Table(name = "store_review")
+@EntityListeners(AuditingEntityListener.class)
 public class StoreReview {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -35,9 +39,8 @@ public class StoreReview {
     @Column(columnDefinition = "TEXT")
     private String text;
 
-    @Column(columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP")
-    @Builder.Default
-    private LocalDateTime registerDate = LocalDateTime.now();
+    @CreatedDate
+    private LocalDateTime registerDate;
 
     @Column(length = 24)
     private String registerIp;
@@ -50,7 +53,7 @@ public class StoreReview {
     @Builder.Default
     private Integer reportCount = 0;
 
-    @OneToMany(mappedBy = "reviewId", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "storeReview", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     private List<StoreReviewPic> reviewPics = new ArrayList<>();
 
@@ -58,16 +61,13 @@ public class StoreReview {
         this.status = ReviewStatus.DELETED;
     }
 
-    public enum ReviewStatus {
-        VISIBLE, HIDDEN, DELETED
+    public void addReviewPics(List<String> reviewPics) {
+        reviewPics.forEach(picUrl -> {
+            this.reviewPics.add(new StoreReviewPic(this, picUrl));
+        });
     }
 
-    public void addReviewPic(StoreReviewPic reviewPic) {
-        reviewPics.add(reviewPic);
-        reviewPic.addReview(this);
-    }
-
-    public ReviewDto toResponse(){
+    public ReviewDto toResponse() {
         List<String> reviewOnlyPic = reviewPics.stream().map(StoreReviewPic::getPicUrl).toList();
 
         return ReviewDto.builder()
@@ -103,7 +103,7 @@ public class StoreReview {
                 .build();
     }
 
-    public ReviewDto toMyPageResponse(){
+    public ReviewDto toMyPageResponse() {
         List<String> reviewOnlyPic = reviewPics.stream().map(StoreReviewPic::getPicUrl).toList();
 
         return ReviewDto.builder()
