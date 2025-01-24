@@ -1,9 +1,6 @@
 package com.dongyang.dongpo.domain.store.dto;
 
-import com.dongyang.dongpo.domain.member.entity.Member;
-import com.dongyang.dongpo.domain.store.entity.Store;
-import com.dongyang.dongpo.domain.store.entity.StoreReview;
-import com.dongyang.dongpo.domain.store.entity.StoreReviewPic;
+import com.dongyang.dongpo.domain.store.enums.ReviewStatus;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -30,27 +27,6 @@ public class ReviewDto {
     private String reviewText;
     private List<String> reviewPics;
     private LocalDateTime registerDate;
-    private StoreReview.ReviewStatus status;
+    private ReviewStatus status;
     private Integer reportCount;
-
-    public StoreReview toEntity(Store store, Member member) {
-        StoreReview storeReview = StoreReview.builder()
-            .member(member)
-            .store(store)
-            .text(reviewText)
-            .reviewStar(reviewStar)
-            .build();
-
-        if (reviewPics == null || reviewPics.isEmpty()) // 리뷰 사진이 첨부 되지 않았을 경우
-            return storeReview;
-
-        reviewPics.forEach(picUrl -> {
-            StoreReviewPic pic = StoreReviewPic.builder()
-                .picUrl(picUrl)
-                .build();
-            storeReview.addReviewPic(pic);
-        });
-
-        return storeReview;
-    }
 }
