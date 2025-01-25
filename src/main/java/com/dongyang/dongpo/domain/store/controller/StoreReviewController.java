@@ -25,7 +25,7 @@ public class StoreReviewController {
 
     @PostMapping
     @Operation(summary = "리뷰 등록")
-    public ResponseEntity<ApiResponse<String>> addReview(
+    public ResponseEntity<Void> addReview(
             @AuthenticationPrincipal final Member member,
             @PathVariable @Min(1) final Long storeId,
             @Valid @RequestBody final ReviewRegisterRequestDto reviewDto) {
@@ -44,7 +44,7 @@ public class StoreReviewController {
 
     @DeleteMapping("/{reviewId}")
     @Operation(summary = "리뷰 삭제")
-    public ResponseEntity<ApiResponse<String>> deleteReview(
+    public ResponseEntity<Void> deleteReview(
             @PathVariable("storeId") @Min(1) final Long storeId,
             @PathVariable("reviewId") @Min(1) final Long reviewId,
             @AuthenticationPrincipal final Member member) {

@@ -82,19 +82,19 @@ public class StoreController {
         return ResponseEntity.ok(new ApiResponse<>(storeService.recommendStoreByGender(member)));
     }
 
-    @PostMapping("/{storeId}/visit-cert")
+    @PostMapping("/{id}/visit-cert")
     @Operation(summary = "점포 방문 인증")
-    public ResponseEntity<Void> visitCert(@PathVariable @Min(1) final Long storeId,
+    public ResponseEntity<Void> visitCert(@PathVariable @Min(1) final Long id,
                                           @RequestBody final StoreVisitCertDto storeVisitCertDto,
                                           @AuthenticationPrincipal final Member member) {
-        storeService.visitCert(storeId, storeVisitCertDto, member);
+        storeService.visitCert(id, storeVisitCertDto, member);
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/{storeId}/visit-cert/check")
+    @GetMapping("/{id}/visit-cert/check")
     @Operation(summary = "24시간 이내 방문 인증 여부 조회")
-    public ResponseEntity<ApiResponse<Boolean>> checkVisitCertBy24Hours(@PathVariable @Min(1) final Long storeId,
+    public ResponseEntity<ApiResponse<Boolean>> checkVisitCertBy24Hours(@PathVariable @Min(1) final Long id,
                                                                         @AuthenticationPrincipal final Member member) {
-        return ResponseEntity.ok(new ApiResponse<>(storeService.checkVisitCertBy24Hours(storeId, member)));
+        return ResponseEntity.ok(new ApiResponse<>(storeService.checkVisitCertBy24Hours(id, member)));
     }
 }
