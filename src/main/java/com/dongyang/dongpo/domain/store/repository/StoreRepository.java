@@ -13,12 +13,14 @@ public interface StoreRepository extends JpaRepository<Store, Long> {
 
     List<Store> findByMember(Member member);
 
-    @Query("SELECT s FROM Store s WHERE (s.latitude BETWEEN :minLat AND :maxLat) " +
-            "AND (s.longitude BETWEEN :minLong AND :maxLong) AND s.status = 'ACTIVE'")
-    List<Store> findStoresWithinRange(@Param("minLat") double minLat,
-                                      @Param("maxLat") double maxLat,
-                                      @Param("minLong") double minLong,
-                                      @Param("maxLong") double maxLong);
+    @Query("SELECT s, sb FROM Store s LEFT JOIN StoreBookmark sb " +
+            "ON s.id = sb.store.id AND sb.member.id = :memberId " +
+            "WHERE s.latitude BETWEEN :minLat AND :maxLat " +
+            "AND s.longitude BETWEEN :minLong AND :maxLong " +
+            "AND s.status = 'ACTIVE'")
+    List<Object[]> findStoresWithBookmarksWithinRange(@Param("minLat") double minLat, @Param("maxLat") double maxLat,
+                                                      @Param("minLong") double minLong, @Param("maxLong") double maxLong,
+                                                      @Param("memberId") Long memberId);
 
     @Query("SELECT s.member, COUNT(s) as storeCount " +
             "FROM Store s " +

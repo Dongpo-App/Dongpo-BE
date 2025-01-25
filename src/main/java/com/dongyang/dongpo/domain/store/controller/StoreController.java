@@ -6,6 +6,9 @@ import com.dongyang.dongpo.domain.member.entity.Member;
 import com.dongyang.dongpo.domain.store.dto.*;
 import com.dongyang.dongpo.domain.store.service.StoreService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -15,52 +18,56 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/store")
+@Tag(name = "Store API", description = "점포 관련 API")
+@RequestMapping("/api/stores")
 public class StoreController {
 
     private final StoreService storeService;
 
     @GetMapping("")
     @Operation(summary = "현재 위치 기준 주변 점포 조회")
-    public ResponseEntity<ApiResponse<List<StoreSummaryDto>>> getStoresByCurrentLocation(@ModelAttribute LatLong latLong,
-                                                                                         @AuthenticationPrincipal Member member) {
+    public ResponseEntity<ApiResponse<List<NearbyStoresResponseDto>>> getStoresByCurrentLocation(@Valid @ModelAttribute final LatLong latLong,
+                                                                                                 @AuthenticationPrincipal final Member member) {
         return ResponseEntity.ok(new ApiResponse<>(storeService.findStoresByCurrentLocation(latLong, member)));
     }
 
     @GetMapping("/{id}/summary")
     @Operation(summary = "점포 간략 정보 조회")
-    public ResponseEntity<ApiResponse<StoreSummaryDto>> getStoreSummary(@PathVariable Long id, @AuthenticationPrincipal Member member) {
-        return ResponseEntity.ok(new ApiResponse<>(storeService.getStoreSummary(id, member)));
+    public ResponseEntity<ApiResponse<StoreBasicInfoResponseDto>> getStoreBasicInfo(@PathVariable @Min(1) final Long id,
+                                                                                    @AuthenticationPrincipal final Member member) {
+        return ResponseEntity.ok(new ApiResponse<>(storeService.getStoreBasicInfo(id, member)));
     }
 
     @GetMapping("/{id}")
     @Operation(summary = "점포 상세 조회")
-    public ResponseEntity<ApiResponse<StoreDto>> detailStore(@PathVariable Long id, @AuthenticationPrincipal Member member) {
-        return ResponseEntity.ok(new ApiResponse<>(storeService.detailStore(id, member)));
+    public ResponseEntity<ApiResponse<StoreDetailInfoResponseDto>> getStoreDetailInfo(@PathVariable @Min(1) final Long id,
+                                                                                      @AuthenticationPrincipal final Member member) {
+        return ResponseEntity.ok(new ApiResponse<>(storeService.getStoreDetailInfo(id, member)));
     }
 
     @PostMapping("")
     @Operation(summary = "점포 등록")
-    public ResponseEntity<ApiResponse<String>> addStore(@RequestBody StoreRegisterDto request,
-                                                        @AuthenticationPrincipal Member member) {
+    public ResponseEntity<Void> addStore(@Valid @RequestBody final StoreRegisterDto request,
+                                         @AuthenticationPrincipal final Member member) {
         storeService.addStore(request, member);
-        return ResponseEntity.ok(new ApiResponse<>("success"));
+        return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{id}")
     @Operation(summary = "점포 삭제")
-    public ResponseEntity<ApiResponse<String>> deleteStore(@PathVariable Long id){
-        storeService.deleteStore(id);
-        return ResponseEntity.ok(new ApiResponse<>("success"));
+    public ResponseEntity<Void> deleteStore(@PathVariable @Min(1) final Long id,
+                                            @AuthenticationPrincipal final Member member) {
+        storeService.deleteStore(id, member);
+        return ResponseEntity.ok().build();
     }
 
     @PatchMapping("/{id}")
     @Operation(summary = "점포 정보 수정")
-    public ResponseEntity<ApiResponse<String>> updateStore(@PathVariable Long id,
-                                                           @RequestBody StoreUpdateDto request,
-                                                           @AuthenticationPrincipal Member member) {
-        storeService.updateStore(id, request, member);
-        return ResponseEntity.ok(new ApiResponse<>("success"));
+    public ResponseEntity<Void> updateStore(@PathVariable @Min(1) final Long id,
+                                            @Valid @RequestBody final StoreInfoUpdateDto request,
+                                            @AuthenticationPrincipal final Member member) {
+        storeService.updateStoreInfo(id, request, member);
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/recommend/age")
@@ -75,18 +82,19 @@ public class StoreController {
         return ResponseEntity.ok(new ApiResponse<>(storeService.recommendStoreByGender(member)));
     }
 
-    @PostMapping("/visit-cert")
+    @PostMapping("/{id}/visit-cert")
     @Operation(summary = "점포 방문 인증")
-    public ResponseEntity<ApiResponse<String>> visitCert(@RequestBody StoreVisitCertDto storeVisitCertDto,
-                                                         @AuthenticationPrincipal Member member) {
-        storeService.visitCert(storeVisitCertDto, member);
-        return ResponseEntity.ok(new ApiResponse<>("success"));
+    public ResponseEntity<Void> visitCert(@PathVariable @Min(1) final Long id,
+                                          @RequestBody final StoreVisitCertDto storeVisitCertDto,
+                                          @AuthenticationPrincipal final Member member) {
+        storeService.visitCert(id, storeVisitCertDto, member);
+        return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/visit-cert/{storeId}/check")
+    @GetMapping("/{id}/visit-cert/check")
     @Operation(summary = "24시간 이내 방문 인증 여부 조회")
-    public ResponseEntity<ApiResponse<Boolean>> checkVisitCertBy24Hours(@PathVariable Long storeId,
-                                                                        @AuthenticationPrincipal Member member) {
-        return ResponseEntity.ok(new ApiResponse<>(storeService.checkVisitCertBy24Hours(storeId, member)));
+    public ResponseEntity<ApiResponse<Boolean>> checkVisitCertBy24Hours(@PathVariable @Min(1) final Long id,
+                                                                        @AuthenticationPrincipal final Member member) {
+        return ResponseEntity.ok(new ApiResponse<>(storeService.checkVisitCertBy24Hours(id, member)));
     }
 }

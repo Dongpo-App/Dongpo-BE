@@ -1,14 +1,13 @@
 package com.dongyang.dongpo.domain.store.entity;
 
+import com.dongyang.dongpo.domain.store.enums.OperatingDay;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(uniqueConstraints = {
@@ -25,5 +24,11 @@ public class StoreOperatingDay {
 
     @Column(columnDefinition = "VARCHAR(255)")
     @Enumerated(EnumType.STRING)
-    private Store.OperatingDay operatingDay;
+    private OperatingDay operatingDay;
+
+    public StoreOperatingDay(Store store, OperatingDay operatingDay) {
+        this.operatingDay = operatingDay;
+        this.store = store;
+        store.getStoreOperatingDays().add(this);
+    }
 }

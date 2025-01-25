@@ -1,14 +1,13 @@
 package com.dongyang.dongpo.domain.store.entity;
 
+import com.dongyang.dongpo.domain.store.enums.PayMethod;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(uniqueConstraints = {
@@ -25,5 +24,11 @@ public class StorePayMethod {
 
     @Column(columnDefinition = "VARCHAR(255)")
     @Enumerated(EnumType.STRING)
-    private Store.PayMethod payMethod;
+    private PayMethod payMethod;
+
+    public StorePayMethod(Store store, PayMethod payMethod) {
+        this.payMethod = payMethod;
+        this.store = store;
+        store.getStorePayMethods().add(this);
+    }
 }

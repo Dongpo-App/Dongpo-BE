@@ -1,6 +1,9 @@
 package com.dongyang.dongpo.domain.store.dto;
 
-import com.dongyang.dongpo.domain.store.entity.Store;
+import com.dongyang.dongpo.domain.store.enums.OpenPossibility;
+import com.dongyang.dongpo.domain.store.enums.OperatingDay;
+import com.dongyang.dongpo.domain.store.enums.PayMethod;
+import com.dongyang.dongpo.domain.store.enums.StoreStatus;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -27,9 +30,9 @@ public class StoreDto {
     private String memberNickname;
     private int reportCount;
     private Boolean isToiletValid;
-    private Store.StoreStatus status;
-    private List<Store.OperatingDay> operatingDays;
-    private List<Store.PayMethod> payMethods;
+    private StoreStatus status;
+    private List<OperatingDay> operatingDays;
+    private List<PayMethod> payMethods;
     private OpenPossibility openPossibility;
     private Boolean isBookmarked;
     private Long visitSuccessfulCount;

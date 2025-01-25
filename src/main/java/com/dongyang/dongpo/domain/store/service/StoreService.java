@@ -6,84 +6,57 @@ import com.dongyang.dongpo.common.exception.CustomException;
 import com.dongyang.dongpo.common.exception.ErrorCode;
 import com.dongyang.dongpo.common.util.location.LocationUtil;
 import com.dongyang.dongpo.common.util.member.MemberUtil;
-import com.dongyang.dongpo.common.util.store.StoreUtil;
-import com.dongyang.dongpo.domain.bookmark.dto.BookmarkDto;
 import com.dongyang.dongpo.domain.bookmark.service.BookmarkService;
 import com.dongyang.dongpo.domain.member.entity.Member;
 import com.dongyang.dongpo.domain.member.entity.Title;
 import com.dongyang.dongpo.domain.member.service.TitleService;
 import com.dongyang.dongpo.domain.store.dto.*;
 import com.dongyang.dongpo.domain.store.entity.*;
-import com.dongyang.dongpo.domain.store.repository.StoreOperatingDayRepository;
-import com.dongyang.dongpo.domain.store.repository.StorePayMethodRepository;
 import com.dongyang.dongpo.domain.store.repository.StoreRepository;
-import com.dongyang.dongpo.domain.store.repository.StoreVisitCertRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import static java.util.stream.Collectors.toList;
-
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
+@Transactional
 @Slf4j
 public class StoreService {
 
     private final StoreRepository storeRepository;
-    private final StoreVisitCertRepository storeVisitCertRepository;
-    private final StorePayMethodRepository storePayMethodRepository;
-    private final StoreOperatingDayRepository storeOperatingDayRepository;
+    private final StoreVisitCertService storeVisitCertService;
     private final TitleService titleService;
     private final OpenPossibilityService openPossibilityService;
     private final BookmarkService bookmarkService;
     private final StoreReviewService storeReviewService;
     private final LocationUtil locationUtil;
-    private final StoreUtil storeUtil;
     private final MemberUtil memberUtil;
 
-    @Transactional
+    public Store findById(Long id) {
+        return storeRepository.findById(id)
+                .orElseThrow(() -> new CustomException(ErrorCode.STORE_NOT_FOUND));
+    }
+
     public void addStore(StoreRegisterDto registerDto, Member member) {
         // 사용자의 현재 위치와 점포 등록 위치가 범위 내에 있는지 검증
         if (!locationUtil.verifyStoreRegistration(registerDto))
             throw new CustomException(ErrorCode.DISTANCE_OUT_OF_RANGE);
 
-        Store savedStore = storeRepository.save(registerDto.toStore(member));
+        Store store = storeRepository.save(registerDto.toEntity(member));
 
-        for (Store.PayMethod payMethod : registerDto.getPayMethods()) {
-            StorePayMethod storePayMethod = StorePayMethod.builder()
-                    .store(savedStore)
-                    .payMethod(payMethod)
-                    .build();
-            storePayMethodRepository.save(storePayMethod);
-        }
-
-        for (Store.OperatingDay operatingDay : registerDto.getOperatingDays()) {
-            StoreOperatingDay storeOperatingDay = StoreOperatingDay.builder()
-                    .store(savedStore)
-                    .operatingDay(operatingDay)
-                    .build();
-            storeOperatingDayRepository.save(storeOperatingDay);
-        }
-
-        log.info("member {} add store: {}", member.getId(), savedStore.getId());
+        store.addPayMethods(registerDto.getPayMethods());
+        store.addOperatingDays(registerDto.getOperatingDays());
+        log.info("member {} add store: {}", member.getId(), store.getId());
 
         Long count = storeRepository.countByMember(member);
         if (count.equals(3L))
             titleService.addTitle(member, Title.REGISTER_PRO);
-    }
-
-    public void existsById(final Long storeId) {
-        if (!storeRepository.existsById(storeId))
-            throw new CustomException(ErrorCode.STORE_NOT_FOUND);
     }
 
     public List<StoreDto> findAll() {
@@ -96,134 +69,72 @@ public class StoreService {
         return storeResponse;
     }
 
-    public List<StoreSummaryDto> findStoresByCurrentLocation(LatLong latLong, Member member) {
+    // 현재 위치 기준 주변 점포 조회 (북마크 여부 포함)
+    public List<NearbyStoresResponseDto> findStoresByCurrentLocation(final LatLong latLong, final Member member) {
         CoordinateRange coordinateRange = locationUtil.calcCoordinateRangeByCurrentLocation(latLong);
 
-        List<BookmarkDto> myBookmarks = bookmarkService.getMyBookmarks(member);
-
-        return storeRepository.findStoresWithinRange(coordinateRange.getMinLat(), coordinateRange.getMaxLat(),
-                                                     coordinateRange.getMinLong(), coordinateRange.getMaxLong())
+        return storeRepository.findStoresWithBookmarksWithinRange(
+                        coordinateRange.getMinLat(), coordinateRange.getMaxLat(),
+                        coordinateRange.getMinLong(), coordinateRange.getMaxLong(),
+                        member.getId())
                 .stream()
-                .map(store -> {
-                    boolean isBookmarked = myBookmarks.stream()
-                            .anyMatch(bookmark -> store.getId().equals(bookmark.getStoreId()));
-
-                    return store.toSummaryResponse(isBookmarked, openPossibilityService.getOpenPossibility(store));
-                })
-                .collect(toList());
+                .map(result -> {
+                    Store store = (Store) result[0];
+                    boolean isBookmarked = result[1] != null;
+                    return store.toNearbyStoresResponse(isBookmarked);
+                }).toList();
     }
 
-    public StoreSummaryDto getStoreSummary(Long id, Member member) {
-        Store store = storeRepository.findById(id)
-                .orElseThrow(() -> new CustomException(ErrorCode.STORE_NOT_FOUND));
-
-        return store.toSummaryResponse(openPossibilityService.getOpenPossibility(store),
-                                    bookmarkService.isStoreBookmarkedByMember(store, member),
-                                    storeReviewService.getReviewPicsByStoreId(id));
-    }
-
-    public StoreDto detailStore(Long id, Member member) {
-        Store store = storeRepository.findById(id)
-                .orElseThrow(() -> new CustomException(ErrorCode.STORE_NOT_FOUND));
-
-        List<Member> mostVisitMembers = storeVisitCertRepository.findTopVisitorsByStore(store);
-
-        StoreDto response = store.toResponse(
+    // 점포 간략 정보 조회 (오픈 가능성, 북마크 여부, 최근 리뷰 사진 5개 반환)
+    public StoreBasicInfoResponseDto getStoreBasicInfo(final Long id, final Member member) {
+        Store store = findById(id);
+        return store.toBasicInfoResponse(
                 openPossibilityService.getOpenPossibility(store),
                 bookmarkService.isStoreBookmarkedByMember(store, member),
-                bookmarkService.getBookmarkCountByStore(store)
+                storeReviewService.getLatestReviewPicsByStoreId(id));
+    }
+
+    // 점포 상세 정보 조회
+    public StoreDetailInfoResponseDto getStoreDetailInfo(final Long id, final Member member) {
+        Store store = findById(id);
+
+//        List<Member> mostVisitMembers = storeVisitCertRepository.findTopVisitorsByStore(store);
+        //        response.setMostVisitMembers(mostVisitMembers.stream()
+//                .map(m -> MostVisitMemberResponse.of(m.getId(), m.getNickname(), m.getMainTitle(), m.getProfilePic()))
+//                .toList());
+
+        return store.toDetailInfoResponse(
+                openPossibilityService.getOpenPossibility(store),
+                bookmarkService.isStoreBookmarkedByMember(store, member),
+                bookmarkService.getBookmarkCountByStore(store),
+                storeReviewService.getLatestReviewPicsByStoreId(id)
         );
-
-        response.setMostVisitMembers(mostVisitMembers.stream()
-            .map(m -> MostVisitMemberResponse.of(m.getId(), m.getNickname(), m.getMainTitle(), m.getProfilePic()))
-            .toList());
-
-        return response;
     }
 
-    @Transactional
-    public void deleteStore(Long id) {
-        storeRepository.deleteById(id);
+    public void deleteStore(final Long id, final Member member) {
+        Store store = findById(id);
+        if (!store.getMember().getId().equals(member.getId()))
+            throw new CustomException(ErrorCode.RESOURCE_NOT_OWNED_BY_USER);
 
-        log.info("delete store: {}", id); // 임시
+        store.updateStoreStatusDeleted();
+        log.info("Deleted Store: {} by Member: {}", store.getId(), member.getEmail());
     }
 
-    @Transactional
-    public void updateStore(Long id, StoreUpdateDto request, Member member) {
-        Store store = storeRepository.findById(id)
-                .orElseThrow(() -> new CustomException(ErrorCode.STORE_NOT_FOUND));
+    // 점포 정보 수정
+    public void updateStoreInfo(final Long id, final StoreInfoUpdateDto updateDto, final Member member) {
+        Store store = findById(id);
 
         // 사용자가 등록한 점포인지 확인
-        if (member.getEmail().equals(store.getMember().getEmail())) {
-            store.update(request);
-            storeRepository.save(store);
+        if (!store.getMember().getId().equals(member.getId()))
+            throw new CustomException(ErrorCode.RESOURCE_NOT_OWNED_BY_USER);
 
-            if (request.getPayMethods() != null && !request.getPayMethods().isEmpty()) {
-                List<StorePayMethod> existingPayMethods = storePayMethodRepository.findByStore(store);
-                List<Store.PayMethod> newPayMethods = request.getPayMethods();
-
-                // 기존 payMethod 목록에서 새로운 payMethod 목록에 없는 항목 삭제
-                for (StorePayMethod existingPayMethod : existingPayMethods) {
-                    if (!newPayMethods.contains(existingPayMethod.getPayMethod())) {
-                        storePayMethodRepository.delete(existingPayMethod);
-                    }
-                }
-
-                // 새로운 payMethod 목록에서 기존 payMethod 목록에 없는 항목 추가
-                for (Store.PayMethod newPayMethod : newPayMethods) {
-                    boolean exists = existingPayMethods.stream()
-                            .anyMatch(existingPayMethod -> existingPayMethod.getPayMethod().equals(newPayMethod));
-                    if (!exists) {
-                        StorePayMethod storePayMethod = StorePayMethod.builder()
-                                .store(store)
-                                .payMethod(newPayMethod)
-                                .build();
-                        try {
-                            storePayMethodRepository.save(storePayMethod);
-                        } catch (DataIntegrityViolationException ignored) {
-                            // 중복 예외 발생 시 무시
-                        }
-                    }
-                }
-            }
-
-            if (request.getOperatingDays() != null && !request.getOperatingDays().isEmpty()) {
-                List<StoreOperatingDay> existingOperatingDays = storeOperatingDayRepository.findByStore(store);
-                List<Store.OperatingDay> newOperatingDays = request.getOperatingDays();
-
-                // 기존 operatingDay 목록에서 새로운 operatingDay 목록에 없는 항목 삭제
-                for (StoreOperatingDay existingOperatingDay : existingOperatingDays) {
-                    if (!newOperatingDays.contains(existingOperatingDay.getOperatingDay())) {
-                        storeOperatingDayRepository.delete(existingOperatingDay);
-                    }
-                }
-
-                // 새로운 operatingDay 목록에서 기존 operatingDay 목록에 없는 항목 추가
-                for (Store.OperatingDay newOperatingDay : newOperatingDays) {
-                    boolean exists = existingOperatingDays.stream()
-                            .anyMatch(existingOperatingDay -> existingOperatingDay.getOperatingDay().equals(newOperatingDay));
-                    if (!exists) {
-                        StoreOperatingDay storeOperatingDay = StoreOperatingDay.builder()
-                                .store(store)
-                                .operatingDay(newOperatingDay)
-                                .build();
-                        try {
-                            storeOperatingDayRepository.save(storeOperatingDay);
-                        } catch (DataIntegrityViolationException ignored) {
-                            // 중복 예외 발생 시 무시
-                        }
-                    }
-                }
-            }
-
-            log.info("member {} updated store: {}", member.getId(), store.getId());
-        } else {
-            throw new CustomException(ErrorCode.ARGUMENT_NOT_SATISFIED);
-        }
+        // 정보 업데이트
+        store.updateInfo(updateDto);
+        log.info("Member {} updated store: {}", member.getId(), store.getId());
     }
 
-    public List<StoreSummaryDto> getMyRegisteredStores(Member member) {
-        return storeRepository.findByMember(member).stream().map(Store::toSummaryResponse).toList();
+    public List<MyRegisteredStoresResponseDto> getMyRegisteredStores(Member member) {
+        return storeRepository.findByMember(member).stream().map(Store::toMyRegisteredStoresResponse).toList();
     }
 
     public Long getMyRegisteredStoreCount(Member member) {
@@ -231,10 +142,7 @@ public class StoreService {
     }
 
     public StoreDto findOne(Long id) {
-        Store store = storeRepository.findById(id)
-                .orElseThrow(() -> new CustomException(ErrorCode.STORE_NOT_FOUND));
-
-        return store.toResponse();
+        return findById(id).toResponse();
     }
 
     public RecommendResponse recommendStoreByAge(Member member) {
@@ -253,9 +161,8 @@ public class StoreService {
     }
 
     // 비교 대상 점포의 좌표 반환
-    public LatLong getStoreCoordinates(Long storeId) {
-        Store targetStore = storeRepository.findById(storeId)
-                .orElseThrow(() -> new CustomException(ErrorCode.STORE_NOT_FOUND));
+    private LatLong getStoreCoordinates(final Long storeId) {
+        Store targetStore = findById(storeId);
         return LatLong.builder()
                 .latitude(targetStore.getLatitude())
                 .longitude(targetStore.getLongitude())
@@ -263,65 +170,43 @@ public class StoreService {
     }
 
     // 신규 좌표가 기존 좌표의 오차범위 내에 위치하는지 검증 (방문 인증 검증)
-    @Transactional
-    public void visitCert(StoreVisitCertDto storeVisitCertDto, Member member) {
-        LatLong newCoordinate = LatLong.builder()
+    public void visitCert(final Long storeId, final StoreVisitCertDto storeVisitCertDto, final Member member) {
+        final LatLong requestCoordinate = LatLong.builder()
                 .latitude(storeVisitCertDto.getLatitude())
                 .longitude(storeVisitCertDto.getLongitude())
                 .build();
 
+        // 점포 조회 (점포가 존재하지 않을 경우 예외 발생)
+        final Store store = findById(storeId);
+
+        // 24시간 이내 해당 점포에 방문 인증한 기록이 있을 경우 예외 발생
+        if (checkVisitCertBy24Hours(storeId, member))
+            throw new CustomException(ErrorCode.STORE_VISIT_CERT_NOT_AVAILABLE);
+
         // 방문 인증 거리 검증 (100m 초과 시 예외 발생)
-        if (locationUtil.calcDistance(newCoordinate, getStoreCoordinates(storeVisitCertDto.getStoreId())) >= 100)
+        if (locationUtil.calcDistance(requestCoordinate, getStoreCoordinates(store.getId())) >= 100)
             throw new CustomException(ErrorCode.DISTANCE_OUT_OF_RANGE);
 
-        Store store = storeRepository.findById(storeVisitCertDto.getStoreId()).orElseThrow(() -> new CustomException(ErrorCode.STORE_NOT_FOUND));
+        if (storeVisitCertDto.getIsVisitSuccessful()) { // 방문 인증 성공
+            storeVisitCertService.addStoreVisitCert(store, member, true);
 
-        LocalDateTime now = LocalDateTime.now();
-        OpenTime openTime = storeUtil.getOpenTime(now);
-        if (storeVisitCertDto.isVisitSuccessful()){ // 방문 인증 성공
-            storeVisitCertRepository.save(StoreVisitCert.builder()
-                    .store(store)
-                    .member(member)
-                    .isVisitSuccessful(true)
-                    .certDate(now)
-                    .openDay(now.getDayOfWeek())
-                    .openTime(openTime)
-                    .build());
-
-            Long successCount = storeVisitCertRepository.countByMemberAndIsVisitSuccessfulIsTrue(member);
-            Long firstStoreVisitCount = storeVisitCertRepository.countByStoreAndIsVisitSuccessfulTrue(store);
-            if (firstStoreVisitCount.equals(1L))
+            final Long successCount = storeVisitCertService.getStoreVisitCertSuccessCount(member);
+            if (successCount.equals(1L))
                 titleService.addTitle(member, Title.FIRST_VISIT_CERT);
             else if (successCount.equals(3L))
                 titleService.addTitle(member, Title.REGULAR_CUSTOMER);
 
-        }else {
-            storeVisitCertRepository.save(StoreVisitCert.builder()
-                    .store(store)
-                    .member(member)
-                    .isVisitSuccessful(false)
-                    .certDate(now)
-                    .openDay(now.getDayOfWeek())
-                    .openTime(openTime)
-                    .build());
+        } else {
+            storeVisitCertService.addStoreVisitCert(store, member, false);
 
-            Long failCount = storeVisitCertRepository.countByMemberAndIsVisitSuccessfulIsFalse(member);
+            final Long failCount = storeVisitCertService.getStoreVisitCertFailCount(member);
             if (failCount.equals(3L))
                 titleService.addTitle(member, Title.FAILED_TO_VISIT);
         }
     }
 
-    public Boolean checkVisitCertBy24Hours(Long storeId, Member member) {
-        Store store = storeRepository.findById(storeId)
-                .orElseThrow(() -> new CustomException(ErrorCode.STORE_NOT_FOUND));
-
-        StoreVisitCert storeVisitCert = storeVisitCertRepository
-                .findTopByStoreAndMemberOrderByCertDateDesc(store, member)
-                .orElse(null);
-
-        if (storeVisitCert == null)
-            return false;
-
-        return storeVisitCert.is24HoursCheck();
+    // 24시간 이내 방문 인증 여부 조회
+    public Boolean checkVisitCertBy24Hours(final Long storeId, final Member member) {
+        return storeVisitCertService.checkStoreVisitCertBy24Hours(findById(storeId), member);
     }
 }

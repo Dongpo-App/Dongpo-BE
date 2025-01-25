@@ -3,6 +3,7 @@ package com.dongyang.dongpo.domain.store;
 import com.dongyang.dongpo.domain.member.entity.Member;
 import com.dongyang.dongpo.domain.store.entity.StoreReview;
 import com.dongyang.dongpo.domain.store.dto.ReviewDto;
+import com.dongyang.dongpo.domain.store.enums.ReviewStatus;
 import com.dongyang.dongpo.domain.store.repository.StoreRepository;
 import com.dongyang.dongpo.domain.store.repository.StoreReviewRepository;
 import com.dongyang.dongpo.domain.store.service.StoreReviewService;
@@ -49,8 +50,8 @@ class StoreReviewServiceTest {
         when(storeReviewRepository.findByMemberWithReviewPicsAndStore(member)).thenReturn(List.of(review1, review2));
         when(review1.toMyPageResponse()).thenReturn(reviewDto1);
         when(review2.toMyPageResponse()).thenReturn(reviewDto2);
-        when(review1.getStatus()).thenReturn(StoreReview.ReviewStatus.VISIBLE);
-        when(review2.getStatus()).thenReturn(StoreReview.ReviewStatus.VISIBLE);
+        when(review1.getStatus()).thenReturn(ReviewStatus.VISIBLE);
+        when(review2.getStatus()).thenReturn(ReviewStatus.VISIBLE);
 
         // when
         List<ReviewDto> reviewDtos = storeReviewService.getMyReviews(member);

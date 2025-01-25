@@ -1,22 +1,21 @@
 package com.dongyang.dongpo.domain.store;
 
+import com.dongyang.dongpo.common.dto.location.CoordinateRange;
+import com.dongyang.dongpo.common.dto.location.LatLong;
 import com.dongyang.dongpo.domain.member.entity.Member;
+import com.dongyang.dongpo.domain.member.entity.Title;
 import com.dongyang.dongpo.domain.store.dto.*;
 import com.dongyang.dongpo.domain.store.entity.Store;
-import com.dongyang.dongpo.domain.store.entity.StoreOperatingDay;
-import com.dongyang.dongpo.domain.store.entity.StorePayMethod;
-import com.dongyang.dongpo.domain.store.repository.StoreOperatingDayRepository;
-import com.dongyang.dongpo.domain.store.repository.StorePayMethodRepository;
+import com.dongyang.dongpo.domain.store.enums.OpenPossibility;
+import com.dongyang.dongpo.domain.store.enums.OperatingDay;
+import com.dongyang.dongpo.domain.store.enums.PayMethod;
 import com.dongyang.dongpo.domain.store.repository.StoreRepository;
-import com.dongyang.dongpo.domain.store.repository.StoreVisitCertRepository;
 import com.dongyang.dongpo.domain.bookmark.service.BookmarkService;
 import com.dongyang.dongpo.domain.store.service.StoreReviewService;
 import com.dongyang.dongpo.domain.store.service.StoreService;
-import com.dongyang.dongpo.domain.store.service.OpenPossibilityService;
 import com.dongyang.dongpo.domain.member.service.TitleService;
 import com.dongyang.dongpo.common.util.location.LocationUtil;
 import com.dongyang.dongpo.common.util.member.MemberUtil;
-import com.dongyang.dongpo.common.util.store.StoreUtil;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -25,6 +24,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Pageable;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -40,19 +40,16 @@ class StoreServiceTest {
     private StoreRepository storeRepository;
 
     @Mock
-    private StoreVisitCertRepository storeVisitCertRepository;
+    private StoreVisitCertServiceTestHelper storeVisitCertService;
 
     @Mock
-    private StorePayMethodRepository storePayMethodRepository;
+    private TitleService titleService;
 
     @Mock
-    private StoreOperatingDayRepository storeOperatingDayRepository;
+    private OpenPossibilityServiceTestHelper openPossibilityService;
 
     @Mock
-    private StoreVisitCertRepository visitCertRepository;
-
-    @InjectMocks
-    private StoreService storeService;
+    private BookmarkService bookmarkService;
 
     @Mock
     private StoreReviewService storeReviewService;
@@ -63,18 +60,8 @@ class StoreServiceTest {
     @Mock
     private MemberUtil memberUtil;
 
-    @Mock
-    private StoreUtil storeUtil;
-
-    @Mock
-    private OpenPossibilityService openPossibilityService;
-
-    @Mock
-    private BookmarkService bookmarkService;
-
-    @Mock
-    private TitleService titleService;
-
+    @InjectMocks
+    private StoreService storeService;
 
     @Test
     @DisplayName("점포_등록")
@@ -83,23 +70,19 @@ class StoreServiceTest {
         StoreRegisterDto storeDto = mock(StoreRegisterDto.class);
         Member member = mock(Member.class);
         Store store = mock(Store.class);
-        StorePayMethod storePayMethod = mock(StorePayMethod.class);
-        StoreOperatingDay storeOperatingDay = mock(StoreOperatingDay.class);
 
         when(locationUtil.verifyStoreRegistration(storeDto)).thenReturn(true);
         when(storeRepository.save(any())).thenReturn(store);
-        when(storePayMethodRepository.save(any())).thenReturn(storePayMethod);
-        when(storeOperatingDayRepository.save(any())).thenReturn(storeOperatingDay);
-        when(storeDto.getPayMethods()).thenReturn(List.of(Store.PayMethod.CASH, Store.PayMethod.CARD));
-        when(storeDto.getOperatingDays()).thenReturn(List.of(Store.OperatingDay.MON, Store.OperatingDay.TUE));
+        when(storeDto.getPayMethods()).thenReturn(List.of(PayMethod.CASH, PayMethod.CARD));
+        when(storeDto.getOperatingDays()).thenReturn(List.of(OperatingDay.MON, OperatingDay.TUE));
 
         // when
         storeService.addStore(storeDto, member);
 
         // then
         verify(storeRepository).save(any());
-        verify(storePayMethodRepository, times(2)).save(any());
-        verify(storeOperatingDayRepository, times(2)).save(any());
+        verify(store, times(1)).addPayMethods(anyList());
+        verify(store, times(1)).addOperatingDays(anyList());
     }
 
     @Test
@@ -114,25 +97,65 @@ class StoreServiceTest {
 
     @Test
     void findStoresByCurrentLocation() {
+        // given
+        LatLong latLong = new LatLong(37.5665, 126.9780);
+        Member member = mock(Member.class);
+        Store store = mock(Store.class);
+        when(locationUtil.calcCoordinateRangeByCurrentLocation(latLong)).thenReturn(new CoordinateRange(37.0, 38.0, 126.0, 127.0));
+        when(storeRepository.findStoresWithBookmarksWithinRange(anyDouble(), anyDouble(), anyDouble(), anyDouble(), anyLong()))
+                .thenReturn(anyList());
+
+        // when
+        List<Object> result = Collections.singletonList(storeService.findStoresByCurrentLocation(latLong, member));
+
+        // then
+        assertThat(result).isNotEmpty();
+        verify(storeRepository).findStoresWithBookmarksWithinRange(anyDouble(), anyDouble(), anyDouble(), anyDouble(), anyLong());
     }
 
     @Test
-    void detailStore() {
+    void getStoreBasicInfo() {
+        // given
+        Store store = mock(Store.class);
+        Member member = mock(Member.class);
+        OpenPossibility openPossibility = mock(OpenPossibility.class);
+        StoreBasicInfoResponseDto storeBasicInfoResponseDto = mock(StoreBasicInfoResponseDto.class);
+
+        when(storeRepository.findById(any())).thenReturn(Optional.of(store));
+        when(openPossibilityService.getOpenPossibility(any())).thenReturn(openPossibility);
+        when(bookmarkService.isStoreBookmarkedByMember(any(), any())).thenReturn(true);
+        when(storeReviewService.getLatestReviewPicsByStoreId(anyLong())).thenReturn(List.of("pic1", "pic2"));
+        when(store.toBasicInfoResponse(any(), anyBoolean(), anyList())).thenReturn(storeBasicInfoResponseDto);
+
+        // when
+        StoreBasicInfoResponseDto result = storeService.getStoreBasicInfo(store.getId(), member);
+
+        // then
+        assertThat(result).isNotNull();
+        verify(storeRepository).findById(any());
+        verify(openPossibilityService).getOpenPossibility(any());
+        verify(bookmarkService).isStoreBookmarkedByMember(any(), any());
+        verify(storeReviewService).getLatestReviewPicsByStoreId(anyLong());
+        verify(store).toBasicInfoResponse(any(), anyBoolean(), anyList());
+    }
+
+    @Test
+    void getStoreDetailInfo() {
         // given
         Store store = mock(Store.class);
         Member member = mock(Member.class);
         Optional<Store> optionalStore = Optional.of(store);
         OpenPossibility openPossibility = mock(OpenPossibility.class);
-        StoreDto storeDto = mock(StoreDto.class);
+        StoreDetailInfoResponseDto storeDetailInfoResponseDto = mock(StoreDetailInfoResponseDto.class);
 
         when(storeRepository.findById(any())).thenReturn(optionalStore);
         when(openPossibilityService.getOpenPossibility(any())).thenReturn(openPossibility);
         when(bookmarkService.isStoreBookmarkedByMember(any(), any())).thenReturn(true);
         when(bookmarkService.getBookmarkCountByStore(any())).thenReturn(1L);
-        when(store.toResponse(any(), anyBoolean(), anyLong())).thenReturn(storeDto);
+        when(store.toDetailInfoResponse(any(), anyBoolean(), anyLong(), anyList())).thenReturn(storeDetailInfoResponseDto);
 
         // when
-        storeService.detailStore(store.getId(), member);
+        storeService.getStoreDetailInfo(store.getId(), member);
 
         // then
         verify(storeRepository).findById(any());
@@ -140,14 +163,33 @@ class StoreServiceTest {
 
     @Test
     void deleteStore() {
+        Store store = mock(Store.class);
+        Member member = mock(Member.class);
+
+        when(storeRepository.findById(any())).thenReturn(Optional.of(store));
+        when(store.getMember()).thenReturn(member);
+        when(member.getId()).thenReturn(1L);
+
+        storeService.deleteStore(1L, member);
+
+        verify(store).updateStoreStatusDeleted();
+        verify(storeRepository).findById(any());
     }
 
     @Test
-    void updateStore() {
-    }
+    void updateStoreInfo() {
+        Store store = mock(Store.class);
+        Member member = mock(Member.class);
+        StoreInfoUpdateDto updateDto = mock(StoreInfoUpdateDto.class);
 
-    @Test
-    void findOne() {
+        when(storeRepository.findById(any())).thenReturn(Optional.of(store));
+        when(store.getMember()).thenReturn(member);
+        when(member.getId()).thenReturn(1L);
+
+        storeService.updateStoreInfo(1L, updateDto, member);
+
+        verify(store).updateInfo(updateDto);
+        verify(storeRepository).findById(any());
     }
 
     @Test
@@ -156,22 +198,22 @@ class StoreServiceTest {
         Member member = mock(Member.class);
         Store store1 = mock(Store.class);
         Store store2 = mock(Store.class);
-        StoreSummaryDto storeSummaryDto1 = mock(StoreSummaryDto.class);
-        StoreSummaryDto storeSummaryDto2 = mock(StoreSummaryDto.class);
+        MyRegisteredStoresResponseDto myRegisteredStoresResponseDto1 = mock(MyRegisteredStoresResponseDto.class);
+        MyRegisteredStoresResponseDto myRegisteredStoresResponseDto2 = mock(MyRegisteredStoresResponseDto.class);
 
         when(storeRepository.findByMember(member)).thenReturn(List.of(store1, store2));
-        when(store1.toSummaryResponse()).thenReturn(storeSummaryDto1);
-        when(store2.toSummaryResponse()).thenReturn(storeSummaryDto2);
+        when(store1.toMyRegisteredStoresResponse()).thenReturn(myRegisteredStoresResponseDto1);
+        when(store2.toMyRegisteredStoresResponse()).thenReturn(myRegisteredStoresResponseDto2);
 
         // when
-        List<StoreSummaryDto> storeSummaryDtos = storeService.getMyRegisteredStores(member);
+        List<MyRegisteredStoresResponseDto> myRegisteredStoresResponseDtos = storeService.getMyRegisteredStores(member);
 
         // then
-        assertThat(storeSummaryDtos).hasSize(2);
-        assertThat(storeSummaryDtos).contains(storeSummaryDto1, storeSummaryDto2);
+        assertThat(myRegisteredStoresResponseDtos).hasSize(2);
+        assertThat(myRegisteredStoresResponseDtos).contains(myRegisteredStoresResponseDto1, myRegisteredStoresResponseDto2);
         verify(storeRepository).findByMember(member);
-        verify(store1).toSummaryResponse();
-        verify(store2).toSummaryResponse();
+        verify(store1).toMyRegisteredStoresResponse();
+        verify(store2).toMyRegisteredStoresResponse();
     }
 
     @Test
@@ -187,6 +229,21 @@ class StoreServiceTest {
         // then
         assertThat(count).isEqualTo(2L);
         verify(storeRepository).countByMember(member);
+    }
+
+    @Test
+    void findOne() {
+        // given
+        Store store = mock(Store.class);
+        when(storeRepository.findById(any())).thenReturn(Optional.of(store));
+        when(store.toResponse()).thenReturn(mock(StoreDto.class));
+
+        // when
+        StoreDto result = storeService.findOne(1L);
+
+        // then
+        assertThat(result).isNotNull();
+        verify(storeRepository).findById(any());
     }
 
     @Test
@@ -233,5 +290,44 @@ class StoreServiceTest {
         // then
         assertThat(result.getRecommendStores()).hasSize(3);
         verify(storeRepository, times(1)).findStoresByMemberGenderWithMostVisits(eq(Member.Gender.GEN_MALE), any(Pageable.class));
+    }
+
+    @Test
+    void visitCert() {
+        // given
+        StoreVisitCertDto storeVisitCertDto = mock(StoreVisitCertDto.class);
+        Member member = mock(Member.class);
+        Store store = mock(Store.class);
+        LatLong latLong = new LatLong(37.5665, 126.9780);
+
+        when(storeRepository.findById(any())).thenReturn(Optional.of(store));
+        when(locationUtil.calcDistance(any(), any())).thenReturn(50L);
+        when(storeVisitCertService.checkStoreVisitCertBy24Hours(any(), any())).thenReturn(false);
+        when(storeVisitCertDto.getIsVisitSuccessful()).thenReturn(true);
+        when(storeVisitCertService.getStoreVisitCertSuccessCount(any())).thenReturn(1L);
+
+        // when
+        storeService.visitCert(1L, storeVisitCertDto, member);
+
+        // then
+        verify(storeVisitCertService).addStoreVisitCert(any(), any(), eq(true));
+        verify(titleService).addTitle(any(), eq(Title.FIRST_VISIT_CERT));
+    }
+
+    @Test
+    void checkVisitCertBy24Hours() {
+        // given
+        Store store = mock(Store.class);
+        Member member = mock(Member.class);
+
+        when(storeRepository.findById(any())).thenReturn(Optional.of(store));
+        when(storeVisitCertService.checkStoreVisitCertBy24Hours(any(), any())).thenReturn(true);
+
+        // when
+        Boolean result = storeService.checkVisitCertBy24Hours(1L, member);
+
+        // then
+        assertThat(result).isTrue();
+        verify(storeVisitCertService).checkStoreVisitCertBy24Hours(any(), any());
     }
 }
