@@ -1,4 +1,4 @@
-package com.dongyang.dongpo.domain.store.enums;
+package com.dongyang.dongpo.domain.review.enums;
 
 public enum ReviewStatus {
     VISIBLE, HIDDEN, DELETED

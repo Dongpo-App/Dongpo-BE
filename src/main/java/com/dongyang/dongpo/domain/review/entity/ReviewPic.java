@@ -1,4 +1,4 @@
-package com.dongyang.dongpo.domain.store.entity;
+package com.dongyang.dongpo.domain.review.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -14,14 +14,14 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Table(name = "store_review_pic")
 @EntityListeners(AuditingEntityListener.class)
-public class StoreReviewPic {
+public class ReviewPic {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "store_review_id")
-    private StoreReview storeReview;
+    private Review review;
 
     @Column(length = 128)
     private String picUrl;
@@ -32,10 +32,10 @@ public class StoreReviewPic {
     @Column(length = 24)
     private String registerIp;
 
-    public StoreReviewPic(final StoreReview storeReview, final String picUrl) {
+    public ReviewPic(final Review review, final String picUrl) {
         this.picUrl = picUrl;
-        this.storeReview = storeReview;
-        storeReview.getReviewPics().add(this);
+        this.review = review;
+        review.getReviewPics().add(this);
     }
 
 }

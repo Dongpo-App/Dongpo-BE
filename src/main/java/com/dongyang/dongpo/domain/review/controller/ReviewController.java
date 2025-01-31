@@ -1,10 +1,10 @@
-package com.dongyang.dongpo.domain.store.controller;
+package com.dongyang.dongpo.domain.review.controller;
 
 import com.dongyang.dongpo.common.dto.apiresponse.ApiResponse;
 import com.dongyang.dongpo.domain.member.entity.Member;
-import com.dongyang.dongpo.domain.store.dto.ReviewRegisterRequestDto;
-import com.dongyang.dongpo.domain.store.dto.StoreReviewResponseDto;
-import com.dongyang.dongpo.domain.store.service.StoreReviewService;
+import com.dongyang.dongpo.domain.review.dto.ReviewRegisterRequestDto;
+import com.dongyang.dongpo.domain.review.dto.ReviewResponseDto;
+import com.dongyang.dongpo.domain.review.service.ReviewService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -19,9 +19,9 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @Tag(name = "StoreReview API", description = "점포 리뷰 관련 API")
 @RequestMapping("/api/stores/{storeId}/reviews")
-public class StoreReviewController {
+public class ReviewController {
 
-    private final StoreReviewService reviewService;
+    private final ReviewService reviewService;
 
     @PostMapping
     @Operation(summary = "리뷰 등록")
@@ -35,7 +35,7 @@ public class StoreReviewController {
 
     @GetMapping
     @Operation(summary = "점포 리뷰 조회")
-    public ResponseEntity<ApiResponse<Page<StoreReviewResponseDto>>> getReviewByStore(
+    public ResponseEntity<ApiResponse<Page<ReviewResponseDto>>> getReviewByStore(
             @PathVariable @Min(1) final Long storeId,
             @RequestParam(value = "page", defaultValue = "0") @Min(0) final int page,
             @RequestParam(value = "size", defaultValue = "10") @Min(3) final int size) {

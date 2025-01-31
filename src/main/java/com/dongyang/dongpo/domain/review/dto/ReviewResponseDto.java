@@ -1,4 +1,4 @@
-package com.dongyang.dongpo.domain.store.dto;
+package com.dongyang.dongpo.domain.review.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
@@ -18,7 +18,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Schema(description = "점포 리뷰 조회 DTO")
-public class StoreReviewResponseDto {
+public class ReviewResponseDto {
 
     @Schema(description = "리뷰 ID", example = "1")
     @NotNull
