@@ -2,7 +2,7 @@ package com.dongyang.dongpo.domain.report.entity;
 
 import com.dongyang.dongpo.domain.member.entity.Member;
 import com.dongyang.dongpo.domain.report.dto.ReportDto;
-import com.dongyang.dongpo.domain.store.entity.StoreReview;
+import com.dongyang.dongpo.domain.review.entity.Review;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -33,7 +33,7 @@ public class ReviewReport {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "reporting_review_id")
-    private StoreReview review;
+    private Review review;
 
     @Column(columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP")
     @Builder.Default

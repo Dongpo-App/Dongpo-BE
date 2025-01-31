@@ -13,7 +13,7 @@ import com.dongyang.dongpo.domain.member.service.TitleService;
 import com.dongyang.dongpo.domain.store.dto.*;
 import com.dongyang.dongpo.domain.store.entity.*;
 import com.dongyang.dongpo.domain.store.repository.StoreRepository;
-import com.dongyang.dongpo.domain.storereview.service.StoreReviewService;
+import com.dongyang.dongpo.domain.review.service.ReviewService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -35,7 +35,7 @@ public class StoreServiceImpl implements StoreService {
     private final TitleService titleService;
     private final OpenPossibilityService openPossibilityService;
     private final BookmarkService bookmarkService;
-    private final StoreReviewService storeReviewService;
+    private final ReviewService reviewService;
     private final LocationUtil locationUtil;
     private final MemberUtil memberUtil;
 
@@ -99,7 +99,7 @@ public class StoreServiceImpl implements StoreService {
         return store.toBasicInfoResponse(
                 openPossibilityService.getOpenPossibility(store),
                 bookmarkService.isStoreBookmarkedByMember(store, member),
-                storeReviewService.getLatestReviewPicsByStoreId(id));
+                reviewService.getLatestReviewPicsByStoreId(id));
     }
 
     // 점포 상세 정보 조회
@@ -116,7 +116,7 @@ public class StoreServiceImpl implements StoreService {
                 openPossibilityService.getOpenPossibility(store),
                 bookmarkService.isStoreBookmarkedByMember(store, member),
                 bookmarkService.getBookmarkCountByStore(store),
-                storeReviewService.getLatestReviewPicsByStoreId(id)
+                reviewService.getLatestReviewPicsByStoreId(id)
         );
     }
 

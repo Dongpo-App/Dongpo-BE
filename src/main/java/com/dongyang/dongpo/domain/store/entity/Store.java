@@ -6,6 +6,7 @@ import com.dongyang.dongpo.domain.store.enums.OpenPossibility;
 import com.dongyang.dongpo.domain.store.enums.OperatingDay;
 import com.dongyang.dongpo.domain.store.enums.PayMethod;
 import com.dongyang.dongpo.domain.store.enums.StoreStatus;
+import com.dongyang.dongpo.domain.review.entity.Review;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.DynamicUpdate;
@@ -71,7 +72,7 @@ public class Store {
 
     @OneToMany(mappedBy = "store", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @Builder.Default
-    private List<StoreReview> reviews = new ArrayList<>();
+    private List<Review> reviews = new ArrayList<>();
 
     @OneToMany(mappedBy = "store", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @Builder.Default

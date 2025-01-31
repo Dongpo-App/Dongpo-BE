@@ -5,7 +5,7 @@ import com.dongyang.dongpo.domain.member.entity.Title;
 import com.dongyang.dongpo.domain.rank.dto.RankDto;
 import com.dongyang.dongpo.domain.rank.service.RankService;
 import com.dongyang.dongpo.domain.store.repository.StoreRepository;
-import com.dongyang.dongpo.domain.store.repository.StoreReviewRepository;
+import com.dongyang.dongpo.domain.review.repository.ReviewRepository;
 import com.dongyang.dongpo.domain.store.repository.StoreVisitCertRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -30,7 +30,7 @@ class RankServiceTest {
     private RankService rankService;
 
     @Mock
-    private StoreReviewRepository reviewRepository;
+    private ReviewRepository reviewRepository;
 
     @Mock
     private StoreVisitCertRepository visitCertRepository;

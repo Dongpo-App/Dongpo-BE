@@ -6,8 +6,8 @@ import com.dongyang.dongpo.domain.admin.service.AdminService;
 import com.dongyang.dongpo.domain.admin.service.NoticeService;
 import com.dongyang.dongpo.domain.member.service.MemberService;
 import com.dongyang.dongpo.domain.report.service.ReportService;
-import com.dongyang.dongpo.domain.store.service.StoreReviewService;
 import com.dongyang.dongpo.domain.store.service.StoreService;
+import com.dongyang.dongpo.domain.review.service.ReviewService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -25,7 +25,7 @@ public class DashBoardController {
     private final AdminService adminService;
     private final NoticeService noticeService;
     private final StoreService storeService;
-    private final StoreReviewService reviewService;
+    private final ReviewService reviewService;
     private final ReportService reportService;
 
 

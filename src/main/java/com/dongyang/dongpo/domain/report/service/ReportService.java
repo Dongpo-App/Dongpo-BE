@@ -10,9 +10,9 @@ import com.dongyang.dongpo.domain.report.entity.StoreReport;
 import com.dongyang.dongpo.domain.report.repository.ReviewReportRepository;
 import com.dongyang.dongpo.domain.report.repository.StoreReportRepository;
 import com.dongyang.dongpo.domain.store.entity.Store;
-import com.dongyang.dongpo.domain.store.entity.StoreReview;
+import com.dongyang.dongpo.domain.review.entity.Review;
 import com.dongyang.dongpo.domain.store.repository.StoreRepository;
-import com.dongyang.dongpo.domain.store.repository.StoreReviewRepository;
+import com.dongyang.dongpo.domain.review.repository.ReviewRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -30,7 +30,7 @@ public class ReportService {
     private final StoreReportRepository storeReportRepository;
     private final ReviewReportRepository reviewReportRepository;
     private final StoreRepository storeRepository;
-    private final StoreReviewRepository storeReviewRepository;
+    private final ReviewRepository reviewRepository;
 
     @Transactional
     public void addStoreReport(Long storeId, Member member, ReportDto request){
@@ -49,7 +49,7 @@ public class ReportService {
         if (request.getReason() == ReportReason.ETC && (request.getText() == null || request.getText().isEmpty()))
             throw new CustomException(ErrorCode.REPORT_REASON_TEXT_REQUIRED);
 
-        StoreReview review = storeReviewRepository.findById(reviewId)
+        Review review = reviewRepository.findById(reviewId)
                 .orElseThrow(() -> new CustomException(ErrorCode.REVIEW_NOT_FOUND));
         review.addReportCount();
 

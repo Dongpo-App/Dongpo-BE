@@ -5,7 +5,7 @@ import com.dongyang.dongpo.domain.report.entity.ReportReason;
 import com.dongyang.dongpo.domain.report.entity.ReviewReport;
 import com.dongyang.dongpo.domain.report.entity.StoreReport;
 import com.dongyang.dongpo.domain.store.entity.Store;
-import com.dongyang.dongpo.domain.store.entity.StoreReview;
+import com.dongyang.dongpo.domain.review.entity.Review;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -39,7 +39,7 @@ public class ReportDto {
                 .build();
     }
 
-    public ReviewReport toReviewEntity(Member member, StoreReview review){
+    public ReviewReport toReviewEntity(Member member, Review review){
         return ReviewReport.builder()
                 .member(member)
                 .review(review)

@@ -6,7 +6,7 @@ import com.dongyang.dongpo.domain.member.dto.MyPageDto;
 import com.dongyang.dongpo.domain.member.dto.MyPageUpdateDto;
 import com.dongyang.dongpo.domain.member.entity.Member;
 import com.dongyang.dongpo.domain.member.service.MyPageService;
-import com.dongyang.dongpo.domain.store.dto.ReviewDto;
+import com.dongyang.dongpo.domain.review.dto.ReviewDto;
 import com.dongyang.dongpo.domain.store.dto.MyRegisteredStoresResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

@@ -11,11 +11,11 @@ import com.dongyang.dongpo.domain.store.enums.OperatingDay;
 import com.dongyang.dongpo.domain.store.enums.PayMethod;
 import com.dongyang.dongpo.domain.store.repository.StoreRepository;
 import com.dongyang.dongpo.domain.bookmark.service.BookmarkService;
-import com.dongyang.dongpo.domain.store.service.StoreReviewService;
 import com.dongyang.dongpo.domain.member.service.TitleService;
 import com.dongyang.dongpo.common.util.location.LocationUtil;
 import com.dongyang.dongpo.common.util.member.MemberUtil;
 import com.dongyang.dongpo.domain.store.service.StoreServiceImpl;
+import com.dongyang.dongpo.domain.review.service.ReviewService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -52,7 +52,7 @@ class StoreServiceTest {
     private BookmarkService bookmarkService;
 
     @Mock
-    private StoreReviewService storeReviewService;
+    private ReviewService reviewService;
 
     @Mock
     private LocationUtil locationUtil;
@@ -124,7 +124,7 @@ class StoreServiceTest {
         when(storeRepository.findById(any())).thenReturn(Optional.of(store));
         when(openPossibilityService.getOpenPossibility(any())).thenReturn(openPossibility);
         when(bookmarkService.isStoreBookmarkedByMember(any(), any())).thenReturn(true);
-        when(storeReviewService.getLatestReviewPicsByStoreId(anyLong())).thenReturn(List.of("pic1", "pic2"));
+        when(reviewService.getLatestReviewPicsByStoreId(anyLong())).thenReturn(List.of("pic1", "pic2"));
         when(store.toBasicInfoResponse(any(), anyBoolean(), anyList())).thenReturn(storeBasicInfoResponseDto);
 
         // when
@@ -135,7 +135,7 @@ class StoreServiceTest {
         verify(storeRepository).findById(any());
         verify(openPossibilityService).getOpenPossibility(any());
         verify(bookmarkService).isStoreBookmarkedByMember(any(), any());
-        verify(storeReviewService).getLatestReviewPicsByStoreId(anyLong());
+        verify(reviewService).getLatestReviewPicsByStoreId(anyLong());
         verify(store).toBasicInfoResponse(any(), anyBoolean(), anyList());
     }
 
