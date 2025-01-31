@@ -12,10 +12,10 @@ import com.dongyang.dongpo.domain.store.enums.PayMethod;
 import com.dongyang.dongpo.domain.store.repository.StoreRepository;
 import com.dongyang.dongpo.domain.bookmark.service.BookmarkService;
 import com.dongyang.dongpo.domain.store.service.StoreReviewService;
-import com.dongyang.dongpo.domain.store.service.StoreService;
 import com.dongyang.dongpo.domain.member.service.TitleService;
 import com.dongyang.dongpo.common.util.location.LocationUtil;
 import com.dongyang.dongpo.common.util.member.MemberUtil;
+import com.dongyang.dongpo.domain.store.service.StoreServiceImpl;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -61,7 +61,7 @@ class StoreServiceTest {
     private MemberUtil memberUtil;
 
     @InjectMocks
-    private StoreService storeService;
+    private StoreServiceImpl storeService;
 
     @Test
     @DisplayName("점포_등록")
