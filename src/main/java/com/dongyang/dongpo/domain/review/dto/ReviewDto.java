@@ -1,6 +1,6 @@
-package com.dongyang.dongpo.domain.store.dto;
+package com.dongyang.dongpo.domain.review.dto;
 
-import com.dongyang.dongpo.domain.store.enums.ReviewStatus;
+import com.dongyang.dongpo.domain.review.enums.ReviewStatus;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

@@ -2,7 +2,7 @@ package com.dongyang.dongpo.domain.admin.controller.dashboard;
 
 import com.dongyang.dongpo.domain.admin.entity.Admin;
 import com.dongyang.dongpo.domain.report.service.ReportService;
-import com.dongyang.dongpo.domain.store.service.StoreReviewService;
+import com.dongyang.dongpo.domain.review.service.ReviewService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -16,13 +16,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequiredArgsConstructor
 public class AdminReviewController {
 
-    private final StoreReviewService storeReviewService;
+    private final ReviewService reviewService;
     private final ReportService reportService;
 
     @GetMapping("/{id}")
     public String reviewDetail(@PathVariable("id") Long id, Model model,
         @AuthenticationPrincipal Admin admin) {
-        model.addAttribute("review", storeReviewService.findOne(id));
+        model.addAttribute("review", reviewService.findOne(id));
         model.addAttribute("admin", admin);
         return "admin/dashboard/review/review_detail";
     }

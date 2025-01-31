@@ -1,13 +1,13 @@
-package com.dongyang.dongpo.domain.store;
+package com.dongyang.dongpo.domain.review;
 
 import com.dongyang.dongpo.domain.member.entity.Member;
-import com.dongyang.dongpo.domain.store.entity.StoreReview;
-import com.dongyang.dongpo.domain.store.dto.ReviewDto;
-import com.dongyang.dongpo.domain.store.enums.ReviewStatus;
+import com.dongyang.dongpo.domain.review.entity.Review;
+import com.dongyang.dongpo.domain.review.dto.ReviewDto;
+import com.dongyang.dongpo.domain.review.enums.ReviewStatus;
 import com.dongyang.dongpo.domain.store.repository.StoreRepository;
-import com.dongyang.dongpo.domain.store.repository.StoreReviewRepository;
-import com.dongyang.dongpo.domain.store.service.StoreReviewService;
+import com.dongyang.dongpo.domain.review.repository.ReviewRepository;
 import com.dongyang.dongpo.domain.member.service.TitleService;
+import com.dongyang.dongpo.domain.review.service.ReviewServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -20,10 +20,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class StoreReviewServiceTest {
+class ReviewServiceTest {
 
     @Mock
-    private StoreReviewRepository storeReviewRepository;
+    private ReviewRepository reviewRepository;
 
     @Mock
     private StoreRepository storeRepository;
@@ -32,7 +32,7 @@ class StoreReviewServiceTest {
     private TitleService titleService;
 
     @InjectMocks
-    private StoreReviewService storeReviewService;
+    private ReviewServiceImpl storeReviewService;
 
     @Test
     void addReview() {
@@ -42,12 +42,12 @@ class StoreReviewServiceTest {
     void getMyReviews() {
         // given
         Member member = mock(Member.class);
-        StoreReview review1 = mock(StoreReview.class);
-        StoreReview review2 = mock(StoreReview.class);
+        Review review1 = mock(Review.class);
+        Review review2 = mock(Review.class);
         ReviewDto reviewDto1 = mock(ReviewDto.class);
         ReviewDto reviewDto2 = mock(ReviewDto.class);
 
-        when(storeReviewRepository.findByMemberWithReviewPicsAndStore(member)).thenReturn(List.of(review1, review2));
+        when(reviewRepository.findByMemberWithReviewPicsAndStore(member)).thenReturn(List.of(review1, review2));
         when(review1.toMyPageResponse()).thenReturn(reviewDto1);
         when(review2.toMyPageResponse()).thenReturn(reviewDto2);
         when(review1.getStatus()).thenReturn(ReviewStatus.VISIBLE);
@@ -59,7 +59,7 @@ class StoreReviewServiceTest {
         // then
         assertThat(reviewDtos).hasSize(2);
         assertThat(reviewDtos).containsExactly(reviewDto1, reviewDto2);
-        verify(storeReviewRepository).findByMemberWithReviewPicsAndStore(member);
+        verify(reviewRepository).findByMemberWithReviewPicsAndStore(member);
     }
 
     @Test

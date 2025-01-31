@@ -1,5 +1,6 @@
-package com.dongyang.dongpo.domain.store.dto;
+package com.dongyang.dongpo.domain.review.dto;
 
+import com.dongyang.dongpo.domain.store.dto.RegisteredBy;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.NotNull;

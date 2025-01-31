@@ -2,7 +2,7 @@ package com.dongyang.dongpo.domain.rank.service;
 
 import com.dongyang.dongpo.domain.rank.dto.RankDto;
 import com.dongyang.dongpo.domain.store.repository.StoreRepository;
-import com.dongyang.dongpo.domain.store.repository.StoreReviewRepository;
+import com.dongyang.dongpo.domain.review.repository.ReviewRepository;
 import com.dongyang.dongpo.domain.store.repository.StoreVisitCertRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public class RankService {
 
-    private final StoreReviewRepository reviewRepository;
+    private final ReviewRepository reviewRepository;
     private final StoreVisitCertRepository visitCertRepository;
     private final StoreRepository storeRepository;
 

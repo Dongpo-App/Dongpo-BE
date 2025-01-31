@@ -5,10 +5,10 @@ import com.dongyang.dongpo.domain.bookmark.service.BookmarkService;
 import com.dongyang.dongpo.domain.member.dto.MyPageDto;
 import com.dongyang.dongpo.domain.member.dto.MyPageUpdateDto;
 import com.dongyang.dongpo.domain.member.entity.Member;
-import com.dongyang.dongpo.domain.store.dto.ReviewDto;
+import com.dongyang.dongpo.domain.review.dto.ReviewDto;
 import com.dongyang.dongpo.domain.store.dto.MyRegisteredStoresResponseDto;
-import com.dongyang.dongpo.domain.store.service.StoreReviewService;
 import com.dongyang.dongpo.domain.store.service.StoreService;
+import com.dongyang.dongpo.domain.review.service.ReviewService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -22,7 +22,7 @@ public class MyPageService {
 
     private final StoreService storeService;
     private final BookmarkService bookmarkService;
-    private final StoreReviewService storeReviewService;
+    private final ReviewService reviewService;
     private final TitleService titleService;
     private final MemberService memberService;
 
@@ -43,7 +43,7 @@ public class MyPageService {
     }
 
     public List<ReviewDto> getMyReviews(Member member) {
-        return storeReviewService.getMyReviews(member); // TODO: 페이징 구현
+        return reviewService.getMyReviews(member); // TODO: 페이징 구현
     }
 
     public void updateMyPageInfo(String email, MyPageUpdateDto myPageUpdateDto) {
