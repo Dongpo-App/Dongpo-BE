@@ -13,6 +13,7 @@ import com.dongyang.dongpo.domain.member.service.TitleService;
 import com.dongyang.dongpo.domain.store.dto.*;
 import com.dongyang.dongpo.domain.store.entity.*;
 import com.dongyang.dongpo.domain.store.repository.StoreRepository;
+import com.dongyang.dongpo.domain.storereview.service.StoreReviewService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -39,8 +40,7 @@ public class StoreServiceImpl implements StoreService {
     private final MemberUtil memberUtil;
 
     // 점포 id로 조회
-    @Override
-    public Store findById(final Long id) {
+    private Store findById(final Long id) {
         return storeRepository.findById(id)
                 .orElseThrow(() -> new CustomException(ErrorCode.STORE_NOT_FOUND));
     }
