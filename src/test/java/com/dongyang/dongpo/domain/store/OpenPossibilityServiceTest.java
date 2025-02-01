@@ -5,12 +5,12 @@ import com.dongyang.dongpo.domain.store.entity.Store;
 import com.dongyang.dongpo.domain.store.enums.OpenPossibility;
 import com.dongyang.dongpo.domain.store.enums.TimeRange;
 import com.dongyang.dongpo.domain.store.repository.StoreVisitCertRepository;
-import org.junit.jupiter.api.BeforeEach;
+import com.dongyang.dongpo.domain.store.service.OpenPossibilityServiceImpl;
+import com.dongyang.dongpo.domain.store.service.StoreVisitCertServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.DayOfWeek;
@@ -31,17 +31,10 @@ class OpenPossibilityServiceTest {
     private StoreVisitCertRepository storeVisitCertRepository;
 
     @Mock
-    private StoreVisitCertServiceTestHelper storeVisitCertService;
+    private StoreVisitCertServiceImpl storeVisitCertService;
 
     @InjectMocks
-    private OpenPossibilityServiceTestHelper openPossibilityService;
-
-    @BeforeEach
-    void setUp() {
-        MockitoAnnotations.openMocks(this);
-        storeVisitCertService = new StoreVisitCertServiceTestHelper(storeVisitCertRepository, storeUtil);
-        openPossibilityService = new OpenPossibilityServiceTestHelper(storeVisitCertService, storeUtil);
-    }
+    private OpenPossibilityServiceImpl openPossibilityService;
 
     @Test
     void getOpenPossibility() {
