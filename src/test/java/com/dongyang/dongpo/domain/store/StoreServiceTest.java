@@ -14,8 +14,10 @@ import com.dongyang.dongpo.domain.bookmark.service.BookmarkService;
 import com.dongyang.dongpo.domain.member.service.TitleService;
 import com.dongyang.dongpo.common.util.location.LocationUtil;
 import com.dongyang.dongpo.common.util.member.MemberUtil;
+import com.dongyang.dongpo.domain.store.service.OpenPossibilityServiceImpl;
 import com.dongyang.dongpo.domain.store.service.StoreServiceImpl;
 import com.dongyang.dongpo.domain.review.service.ReviewService;
+import com.dongyang.dongpo.domain.store.service.StoreVisitCertServiceImpl;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -40,13 +42,13 @@ class StoreServiceTest {
     private StoreRepository storeRepository;
 
     @Mock
-    private StoreVisitCertServiceTestHelper storeVisitCertService;
+    private StoreVisitCertServiceImpl storeVisitCertService;
 
     @Mock
     private TitleService titleService;
 
     @Mock
-    private OpenPossibilityServiceTestHelper openPossibilityService;
+    private OpenPossibilityServiceImpl openPossibilityService;
 
     @Mock
     private BookmarkService bookmarkService;
