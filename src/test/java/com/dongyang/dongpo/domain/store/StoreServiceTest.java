@@ -24,6 +24,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
 import java.util.Collections;
@@ -198,22 +201,24 @@ class StoreServiceTest {
     void getMyRegisteredStores() {
         // given
         Member member = mock(Member.class);
+        PageRequest pageRequest = PageRequest.of(0, 20);
         Store store1 = mock(Store.class);
         Store store2 = mock(Store.class);
         MyRegisteredStoresResponseDto myRegisteredStoresResponseDto1 = mock(MyRegisteredStoresResponseDto.class);
         MyRegisteredStoresResponseDto myRegisteredStoresResponseDto2 = mock(MyRegisteredStoresResponseDto.class);
+        Page<Store> myRegisteredStores = new PageImpl<>(List.of(store1, store2), pageRequest, 2);
 
-        when(storeRepository.findByMember(member)).thenReturn(List.of(store1, store2));
+        when(storeRepository.findByMemberAndPageRequest(member, pageRequest)).thenReturn(myRegisteredStores);
         when(store1.toMyRegisteredStoresResponse()).thenReturn(myRegisteredStoresResponseDto1);
         when(store2.toMyRegisteredStoresResponse()).thenReturn(myRegisteredStoresResponseDto2);
 
         // when
-        List<MyRegisteredStoresResponseDto> myRegisteredStoresResponseDtos = storeService.getMyRegisteredStores(member);
+        Page<MyRegisteredStoresResponseDto> result = storeService.getMyRegisteredStores(member, 0);
 
         // then
-        assertThat(myRegisteredStoresResponseDtos).hasSize(2);
-        assertThat(myRegisteredStoresResponseDtos).contains(myRegisteredStoresResponseDto1, myRegisteredStoresResponseDto2);
-        verify(storeRepository).findByMember(member);
+        assertThat(result.getContent()).hasSize(2);
+        assertThat(result.getContent()).containsExactly(myRegisteredStoresResponseDto1, myRegisteredStoresResponseDto2);
+        verify(storeRepository).findByMemberAndPageRequest(member, pageRequest);
         verify(store1).toMyRegisteredStoresResponse();
         verify(store2).toMyRegisteredStoresResponse();
     }

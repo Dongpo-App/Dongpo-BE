@@ -80,18 +80,19 @@ class MyPageServiceTest {
     void getMyRegisteredStores() {
         // given
         Member member = mock(Member.class);
+        PageRequest pageRequest = PageRequest.of(0, 20);
         MyRegisteredStoresResponseDto store1 = mock(MyRegisteredStoresResponseDto.class);
         MyRegisteredStoresResponseDto store2 = mock(MyRegisteredStoresResponseDto.class);
-        List<MyRegisteredStoresResponseDto> expectedStores = List.of(store1, store2);
+        Page<MyRegisteredStoresResponseDto> expectedStores = new PageImpl<>(List.of(store1, store2), pageRequest, 2);
 
-        when(storeService.getMyRegisteredStores(member)).thenReturn(expectedStores);
+        when(storeService.getMyRegisteredStores(member, 0)).thenReturn(expectedStores);
 
         // when
-        List<MyRegisteredStoresResponseDto> myRegisteredStoresResponseDtos = myPageService.getMyRegisteredStores(member);
+        Page<MyRegisteredStoresResponseDto> myRegisteredStoresResponseDtos = myPageService.getMyRegisteredStores(member, 0);
 
         // then
-        assertThat(myRegisteredStoresResponseDtos).isEqualTo(expectedStores);
-        verify(storeService).getMyRegisteredStores(member);
+        assertThat(myRegisteredStoresResponseDtos.getContent()).isEqualTo(expectedStores.getContent());
+        verify(storeService).getMyRegisteredStores(member, 0);
     }
 
     @Test
