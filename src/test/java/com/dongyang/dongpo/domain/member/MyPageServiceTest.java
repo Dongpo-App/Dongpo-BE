@@ -6,9 +6,8 @@ import com.dongyang.dongpo.domain.bookmark.dto.MyRegisteredBookmarksResponseDto;
 import com.dongyang.dongpo.domain.member.service.MyPageService;
 import com.dongyang.dongpo.domain.member.dto.MyPageDto;
 import com.dongyang.dongpo.domain.member.dto.MyPageUpdateDto;
-import com.dongyang.dongpo.domain.review.dto.ReviewDto;
+import com.dongyang.dongpo.domain.review.dto.MyRegisteredReviewsResponseDto;
 import com.dongyang.dongpo.domain.store.dto.MyRegisteredStoresResponseDto;
-import com.dongyang.dongpo.domain.bookmark.service.BookmarkService;
 import com.dongyang.dongpo.domain.member.service.MemberService;
 import com.dongyang.dongpo.domain.store.service.StoreService;
 import com.dongyang.dongpo.domain.member.service.TitleService;
@@ -136,17 +135,15 @@ class MyPageServiceTest {
     void getMyReviews() {
         // given
         Member member = mock(Member.class);
-        ReviewDto reviewDto1 = mock(ReviewDto.class);
-        ReviewDto reviewDto2 = mock(ReviewDto.class);
-        List<ReviewDto> expectedReviews = List.of(reviewDto1, reviewDto2);
+        Page<MyRegisteredReviewsResponseDto> expectedPage = mock(Page.class);
 
-        when(storeReviewService.getMyReviews(member)).thenReturn(expectedReviews);
+        when(storeReviewService.getMyReviews(member, 0)).thenReturn(expectedPage);
 
         // when
-        List<ReviewDto> reviewDtos = myPageService.getMyReviews(member);
+        Page<MyRegisteredReviewsResponseDto> result = myPageService.getMyReviews(member, 0);
 
         // then
-        assertThat(reviewDtos).isEqualTo(expectedReviews);
-        verify(storeReviewService).getMyReviews(member);
+        assertThat(result).isEqualTo(expectedPage);
+        verify(storeReviewService).getMyReviews(member, 0);
     }
 }

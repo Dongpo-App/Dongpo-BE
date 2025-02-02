@@ -6,7 +6,7 @@ import com.dongyang.dongpo.domain.member.dto.MyPageDto;
 import com.dongyang.dongpo.domain.member.dto.MyPageUpdateDto;
 import com.dongyang.dongpo.domain.member.entity.Member;
 import com.dongyang.dongpo.domain.member.service.MyPageService;
-import com.dongyang.dongpo.domain.review.dto.ReviewDto;
+import com.dongyang.dongpo.domain.review.dto.MyRegisteredReviewsResponseDto;
 import com.dongyang.dongpo.domain.store.dto.MyRegisteredStoresResponseDto;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
@@ -45,9 +45,10 @@ public class MyPageController {
         return ResponseEntity.ok(new ApiResponse<>(myPageService.getMyBookmarks(member, page)));
     }
 
-    @GetMapping("/reviews") // TODO: 페이징 구현
-    public ResponseEntity<ApiResponse<List<ReviewDto>>> getMyReviews(@AuthenticationPrincipal Member member) {
-        return ResponseEntity.ok(new ApiResponse<>(myPageService.getMyReviews(member)));
+    @GetMapping("/reviews")
+    public ResponseEntity<ApiResponse<Page<MyRegisteredReviewsResponseDto>>> getMyReviews(@AuthenticationPrincipal final Member member,
+                                                                                          @RequestParam(value = "page", defaultValue = "0") @Min(0) final int page) {
+        return ResponseEntity.ok(new ApiResponse<>(myPageService.getMyReviews(member, page)));
     }
 
 
