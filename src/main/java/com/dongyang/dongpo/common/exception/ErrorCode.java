@@ -41,6 +41,7 @@ public enum ErrorCode {
     REVIEW_NOT_FOUND(400, "C008", "리뷰를 찾지 못하였습니다."),
     RESOURCE_NOT_OWNED_BY_USER(403, "C009", "권한이 없습니다."),
     STORE_VISIT_CERT_NOT_AVAILABLE(400, "C010", "24시간 이내에 이미 방문 인증을 완료하였습니다."),
+    BOOKMARKS_REGISTERED_BY_MEMBER_NOT_FOUND(400, "C011", "회원이 등록한 북마크가 없습니다."),
     ;
 
     private final int status;
