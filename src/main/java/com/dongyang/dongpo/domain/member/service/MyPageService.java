@@ -31,8 +31,8 @@ public class MyPageService {
         return memberService.getMemberInfoIndex(member);
     }
 
-    public List<MyRegisteredStoresResponseDto> getMyRegisteredStores(Member member) {
-        return storeService.getMyRegisteredStores(member);
+    public Page<MyRegisteredStoresResponseDto> getMyRegisteredStores(final Member member, final int page) {
+        return storeService.getMyRegisteredStores(member, page);
     }
 
     public List<MyPageDto.TitleDto> getMyTitles(Member member) {

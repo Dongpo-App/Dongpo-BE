@@ -3,6 +3,7 @@ package com.dongyang.dongpo.domain.store.service;
 import com.dongyang.dongpo.common.dto.location.LatLong;
 import com.dongyang.dongpo.domain.member.entity.Member;
 import com.dongyang.dongpo.domain.store.dto.*;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 
@@ -21,7 +22,7 @@ public interface StoreService {
 
     void updateStoreInfo(Long id, StoreInfoUpdateDto storeInfoUpdateDto, Member member);
 
-    List<MyRegisteredStoresResponseDto> getMyRegisteredStores(Member member);
+    Page<MyRegisteredStoresResponseDto> getMyRegisteredStores(Member member, int page);
 
     Long getMyRegisteredStoreCount(Member member);
 

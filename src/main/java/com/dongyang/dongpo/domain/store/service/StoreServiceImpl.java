@@ -16,6 +16,8 @@ import com.dongyang.dongpo.domain.store.repository.StoreRepository;
 import com.dongyang.dongpo.domain.review.service.ReviewService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -29,6 +31,8 @@ import java.util.List;
 @Transactional
 @Slf4j
 public class StoreServiceImpl implements StoreService {
+
+    private final static int DEFAULT_PAGE_SIZE = 20;
 
     private final StoreRepository storeRepository;
     private final StoreVisitCertService storeVisitCertService;
@@ -147,8 +151,15 @@ public class StoreServiceImpl implements StoreService {
 
     // 내가 등록한 점포 조회
     @Override
-    public List<MyRegisteredStoresResponseDto> getMyRegisteredStores(final Member member) {
-        return storeRepository.findByMember(member).stream().map(Store::toMyRegisteredStoresResponse).toList();
+    public Page<MyRegisteredStoresResponseDto> getMyRegisteredStores(final Member member, final int page) {
+        Page<Store> myRegisteredStores = storeRepository.findByMemberAndPageRequest(member, PageRequest.of(page, DEFAULT_PAGE_SIZE));
+
+        if (myRegisteredStores.isEmpty())
+            throw new CustomException(ErrorCode.STORES_REGISTERED_BY_MEMBER_NOT_FOUND);
+
+        return new PageImpl<>(myRegisteredStores.stream()
+                .map(Store::toMyRegisteredStoresResponse)
+                .toList(), myRegisteredStores.getPageable(), myRegisteredStores.getTotalElements());
     }
 
     // 내가 등록한 점포 수 조회
