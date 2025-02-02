@@ -3,20 +3,21 @@ package com.dongyang.dongpo.domain.bookmark.repository;
 
 import com.dongyang.dongpo.domain.member.entity.Member;
 import com.dongyang.dongpo.domain.store.entity.Store;
-import com.dongyang.dongpo.domain.bookmark.entity.StoreBookmark;
+import com.dongyang.dongpo.domain.bookmark.entity.Bookmark;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
-import java.util.List;
 import java.util.Optional;
 
-public interface BookmarkRepository extends JpaRepository<StoreBookmark, Long> {
-    List<StoreBookmark> findByMemberId(Long id);
+public interface BookmarkRepository extends JpaRepository<Bookmark, Long> {
+    Page<Bookmark> findByMember(final Member member, final Pageable pageable);
 
-    List<StoreBookmark> findByMember(Member member);
+    Optional<Bookmark> findByStoreAndMember(final Store store, final Member member);
 
-    Optional<StoreBookmark> findByStoreAndMember(Store store, Member member);
+    @Query("SELECT COUNT(b) > 0 FROM Bookmark b WHERE b.store = :store AND b.member = :member")
+    boolean existsByStoreAndMember(final Store store, final Member member);
 
-    boolean existsByStoreAndMember(Store store, Member member);
-
-    Long countByStore(Store store);
+    Long countByStore(final Store store);
 }
