@@ -1,14 +1,16 @@
 package com.dongyang.dongpo.domain.member.controller;
 
 import com.dongyang.dongpo.common.dto.apiresponse.ApiResponse;
-import com.dongyang.dongpo.domain.bookmark.dto.BookmarkDto;
+import com.dongyang.dongpo.domain.bookmark.dto.MyRegisteredBookmarksResponseDto;
 import com.dongyang.dongpo.domain.member.dto.MyPageDto;
 import com.dongyang.dongpo.domain.member.dto.MyPageUpdateDto;
 import com.dongyang.dongpo.domain.member.entity.Member;
 import com.dongyang.dongpo.domain.member.service.MyPageService;
 import com.dongyang.dongpo.domain.review.dto.ReviewDto;
 import com.dongyang.dongpo.domain.store.dto.MyRegisteredStoresResponseDto;
+import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -38,8 +40,9 @@ public class MyPageController {
     }
 
     @GetMapping("/bookmarks")
-    public ResponseEntity<ApiResponse<List<BookmarkDto>>> getMyBookmarks(@AuthenticationPrincipal Member member) {
-        return ResponseEntity.ok(new ApiResponse<>(myPageService.getMyBookmarks(member)));
+    public ResponseEntity<ApiResponse<Page<MyRegisteredBookmarksResponseDto>>> getMyBookmarks(@AuthenticationPrincipal Member member,
+                                                                                              @RequestParam(value = "page", defaultValue = "0") @Min(0) int page) {
+        return ResponseEntity.ok(new ApiResponse<>(myPageService.getMyBookmarks(member, page)));
     }
 
     @GetMapping("/reviews") // TODO: 페이징 구현

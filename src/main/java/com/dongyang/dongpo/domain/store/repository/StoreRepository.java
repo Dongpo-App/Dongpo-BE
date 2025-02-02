@@ -13,7 +13,7 @@ public interface StoreRepository extends JpaRepository<Store, Long> {
 
     List<Store> findByMember(Member member);
 
-    @Query("SELECT s, sb FROM Store s LEFT JOIN StoreBookmark sb " +
+    @Query("SELECT s, sb FROM Store s LEFT JOIN Bookmark sb " +
             "ON s.id = sb.store.id AND sb.member.id = :memberId " +
             "WHERE s.latitude BETWEEN :minLat AND :maxLat " +
             "AND s.longitude BETWEEN :minLong AND :maxLong " +

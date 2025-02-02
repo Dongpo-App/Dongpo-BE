@@ -1,7 +1,8 @@
 package com.dongyang.dongpo.domain.member;
 
+import com.dongyang.dongpo.domain.bookmark.service.BookmarkServiceImpl;
 import com.dongyang.dongpo.domain.member.entity.Member;
-import com.dongyang.dongpo.domain.bookmark.dto.BookmarkDto;
+import com.dongyang.dongpo.domain.bookmark.dto.MyRegisteredBookmarksResponseDto;
 import com.dongyang.dongpo.domain.member.service.MyPageService;
 import com.dongyang.dongpo.domain.member.dto.MyPageDto;
 import com.dongyang.dongpo.domain.member.dto.MyPageUpdateDto;
@@ -17,6 +18,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 
 import java.util.List;
 
@@ -36,7 +40,7 @@ class MyPageServiceTest {
     private StoreService storeService;
 
     @Mock
-    private BookmarkService bookmarkService;
+    private BookmarkServiceImpl bookmarkService;
 
     @Mock
     private ReviewServiceImpl storeReviewService;
@@ -113,18 +117,19 @@ class MyPageServiceTest {
     void getMyBookmarks() {
         // given
         Member member = mock(Member.class);
-        BookmarkDto bookmarkDto1 = mock(BookmarkDto.class);
-        BookmarkDto bookmarkDto2 = mock(BookmarkDto.class);
-        List<BookmarkDto> expectedBookmarks = List.of(bookmarkDto1, bookmarkDto2);
+        PageRequest pageRequest = PageRequest.of(0, 20);
+        MyRegisteredBookmarksResponseDto bookmark1 = mock(MyRegisteredBookmarksResponseDto.class);
+        MyRegisteredBookmarksResponseDto bookmark2 = mock(MyRegisteredBookmarksResponseDto.class);
+        Page<MyRegisteredBookmarksResponseDto> expectedBookmarks = new PageImpl<>(List.of(bookmark1, bookmark2), pageRequest, 2);
 
-        when(bookmarkService.getMyBookmarks(member)).thenReturn(expectedBookmarks);
+        when(bookmarkService.getMyBookmarks(member, 0)).thenReturn(expectedBookmarks);
 
         // when
-        List<BookmarkDto> bookmarkDtos = myPageService.getMyBookmarks(member);
+        Page<MyRegisteredBookmarksResponseDto> myRegisteredBookmarksResponseDtos = myPageService.getMyBookmarks(member, 0);
 
         // then
-        assertThat(bookmarkDtos).isEqualTo(expectedBookmarks);
-        verify(bookmarkService).getMyBookmarks(member);
+        assertThat(myRegisteredBookmarksResponseDtos.getContent()).isEqualTo(expectedBookmarks.getContent());
+        verify(bookmarkService).getMyBookmarks(member, 0);
     }
 
     @Test

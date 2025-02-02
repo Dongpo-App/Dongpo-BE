@@ -1,6 +1,6 @@
 package com.dongyang.dongpo.domain.member.service;
 
-import com.dongyang.dongpo.domain.bookmark.dto.BookmarkDto;
+import com.dongyang.dongpo.domain.bookmark.dto.MyRegisteredBookmarksResponseDto;
 import com.dongyang.dongpo.domain.bookmark.service.BookmarkService;
 import com.dongyang.dongpo.domain.member.dto.MyPageDto;
 import com.dongyang.dongpo.domain.member.dto.MyPageUpdateDto;
@@ -11,6 +11,7 @@ import com.dongyang.dongpo.domain.store.service.StoreService;
 import com.dongyang.dongpo.domain.review.service.ReviewService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -38,8 +39,8 @@ public class MyPageService {
         return titleService.getMemberTitles(member);
     }
 
-    public List<BookmarkDto> getMyBookmarks(Member member) {
-        return bookmarkService.getMyBookmarks(member);
+    public Page<MyRegisteredBookmarksResponseDto> getMyBookmarks(Member member, int page) {
+        return bookmarkService.getMyBookmarks(member, page);
     }
 
     public List<ReviewDto> getMyReviews(Member member) {
