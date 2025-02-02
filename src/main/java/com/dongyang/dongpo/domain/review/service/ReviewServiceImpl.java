@@ -5,13 +5,13 @@ import com.dongyang.dongpo.common.exception.ErrorCode;
 import com.dongyang.dongpo.domain.member.entity.Member;
 import com.dongyang.dongpo.domain.member.entity.Title;
 import com.dongyang.dongpo.domain.member.service.TitleService;
+import com.dongyang.dongpo.domain.review.dto.MyRegisteredReviewsResponseDto;
 import com.dongyang.dongpo.domain.review.dto.ReviewDto;
 import com.dongyang.dongpo.domain.review.dto.ReviewRegisterRequestDto;
 import com.dongyang.dongpo.domain.review.dto.ReviewResponseDto;
 import com.dongyang.dongpo.domain.store.entity.Store;
 import com.dongyang.dongpo.domain.review.entity.Review;
 import com.dongyang.dongpo.domain.review.entity.ReviewPic;
-import com.dongyang.dongpo.domain.review.enums.ReviewStatus;
 import com.dongyang.dongpo.domain.store.repository.ReadOnlyStoreRepository;
 import com.dongyang.dongpo.domain.review.repository.ReviewRepository;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +30,8 @@ import java.util.Objects;
 @RequiredArgsConstructor
 @Slf4j
 public class ReviewServiceImpl implements ReviewService {
+
+    private static final int DEFAULT_PAGE_SIZE = 20;
 
     private final ReviewRepository reviewRepository;
     private final ReviewPicService reviewPicService;
@@ -55,11 +57,16 @@ public class ReviewServiceImpl implements ReviewService {
 
     // 마이페이지: 내가 등록한 리뷰 조회
     @Override
-    public List<ReviewDto> getMyReviews(final Member member) { // TODO: 페이징 구현
-        return reviewRepository.findByMemberWithReviewPicsAndStore(member).stream()
-                .filter(r -> r.getStatus().equals(ReviewStatus.VISIBLE))
-                .map(Review::toMyPageResponse)
-                .toList();
+    public Page<MyRegisteredReviewsResponseDto> getMyReviews(final Member member, final int page) {
+        final Page<Long> reviewIds = reviewRepository.findReviewIdsByMemberAndPageRequest(member, PageRequest.of(page, DEFAULT_PAGE_SIZE));
+
+        if (reviewIds.isEmpty())
+            throw new CustomException(ErrorCode.REVIEW_NOT_FOUND);
+
+        return new PageImpl<>(reviewRepository.findMyRegisteredReviewsByReviewIds(reviewIds.getContent())
+                .stream()
+                .map(Review::toMyRegisteredReviewsResponse)
+                .toList(), reviewIds.getPageable(), reviewIds.getTotalElements());
     }
 
     // 모든 리뷰 조회
