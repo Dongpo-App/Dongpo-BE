@@ -1,6 +1,6 @@
 package com.dongyang.dongpo.domain.auth.dto;
 
-import com.dongyang.dongpo.domain.member.entity.Member;
+import com.dongyang.dongpo.domain.member.enums.Gender;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -9,7 +9,7 @@ import lombok.Getter;
 public class AppleSignupContinueDto {
     private String nickname;
     private String birthday;
-    private Member.Gender gender;
+    private Gender gender;
     private String socialId;
     private String email;
     private Boolean isServiceTermsAgreed;

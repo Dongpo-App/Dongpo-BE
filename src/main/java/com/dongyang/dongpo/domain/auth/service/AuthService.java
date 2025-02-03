@@ -7,6 +7,7 @@ import com.dongyang.dongpo.common.exception.CustomSignupException;
 import com.dongyang.dongpo.common.exception.ErrorCode;
 import com.dongyang.dongpo.domain.auth.dto.*;
 import com.dongyang.dongpo.domain.member.entity.Member;
+import com.dongyang.dongpo.domain.member.enums.SocialType;
 import com.dongyang.dongpo.domain.member.service.MemberService;
 import io.jsonwebtoken.Claims;
 import io.micrometer.common.util.StringUtils;
@@ -30,7 +31,7 @@ public class AuthService {
         final UserInfo userInfo = getKakaoUserInfo(oauthAccessToken);
 
         // 존재하는 회원일 경우 엔티티 조회 / 존재하지 않는 회원일 경우 회원가입 진행
-        Member member = memberService.validateMemberExistence(userInfo.getEmail(), userInfo.getId()) ?
+        Member member = memberService.validateMemberExistence(userInfo.getEmail(), userInfo.getSocialId()) ?
                 memberService.findByEmail(userInfo.getEmail()) : memberService.registerNewMember(userInfo);
 
         // 로그인 처리
@@ -76,8 +77,8 @@ public class AuthService {
                 .birthyear(appleSignupContinueDto.getBirthday().substring(0, 4))
                 .birthday(appleSignupContinueDto.getBirthday().substring(5))
                 .gender(appleSignupContinueDto.getGender())
-                .provider(Member.SocialType.APPLE)
-                .id(appleSignupContinueDto.getSocialId())
+                .provider(SocialType.APPLE)
+                .socialId(appleSignupContinueDto.getSocialId())
                 .build();
 
         // 존재하지 않는 회원인 경우 회원가입 진행

@@ -1,6 +1,7 @@
 package com.dongyang.dongpo.domain.review.entity;
 
 import com.dongyang.dongpo.domain.member.entity.Member;
+import com.dongyang.dongpo.domain.review.dto.MyRegisteredReviewsResponseDto;
 import com.dongyang.dongpo.domain.store.entity.Store;
 import com.dongyang.dongpo.domain.review.dto.ReviewDto;
 import com.dongyang.dongpo.domain.review.dto.ReviewRegisteredBy;
@@ -104,17 +105,16 @@ public class Review {
                 .build();
     }
 
-    public ReviewDto toMyPageResponse() {
-        List<String> reviewOnlyPic = reviewPics.stream().map(ReviewPic::getPicUrl).toList();
-
-        return ReviewDto.builder()
+    public MyRegisteredReviewsResponseDto toMyRegisteredReviewsResponse() {
+        return MyRegisteredReviewsResponseDto.builder()
                 .id(this.id)
-                .registerDate(this.registerDate)
+                .storeName(this.store.getName())
                 .reviewStar(this.reviewStar)
                 .reviewText(this.text)
-                .storeId(this.store.getId())
-                .storeName(this.store.getName())
-                .reviewPics(reviewOnlyPic)
+                .reviewPics(this.reviewPics.stream()
+                        .map(ReviewPic::getPicUrl)
+                        .toList())
+                .registerDate(this.registerDate)
                 .build();
     }
 

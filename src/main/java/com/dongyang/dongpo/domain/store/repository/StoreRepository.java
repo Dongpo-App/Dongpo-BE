@@ -1,7 +1,9 @@
 package com.dongyang.dongpo.domain.store.repository;
 
 import com.dongyang.dongpo.domain.member.entity.Member;
+import com.dongyang.dongpo.domain.member.enums.Gender;
 import com.dongyang.dongpo.domain.store.entity.Store;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -11,7 +13,8 @@ import java.util.List;
 
 public interface StoreRepository extends JpaRepository<Store, Long> {
 
-    List<Store> findByMember(Member member);
+    @Query("SELECT s FROM Store s WHERE s.member = :member ORDER BY s.id DESC")
+    Page<Store> findByMemberAndPageRequest(@Param("member") Member member, Pageable pageable);
 
     @Query("SELECT s, sb FROM Store s LEFT JOIN Bookmark sb " +
             "ON s.id = sb.store.id AND sb.member.id = :memberId " +
@@ -50,5 +53,5 @@ public interface StoreRepository extends JpaRepository<Store, Long> {
         "AND m.gender = :gender " +
         "GROUP BY s.id " +
         "ORDER BY COUNT(svc) DESC")
-    List<Store> findStoresByMemberGenderWithMostVisits(@Param("gender") Member.Gender gender, Pageable pageable);
+    List<Store> findStoresByMemberGenderWithMostVisits(@Param("gender") Gender gender, Pageable pageable);
 }

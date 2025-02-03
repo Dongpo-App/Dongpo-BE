@@ -4,6 +4,7 @@ import com.dongyang.dongpo.domain.member.entity.Member;
 import com.dongyang.dongpo.domain.auth.dto.JwtToken;
 import com.dongyang.dongpo.common.exception.CustomException;
 import com.dongyang.dongpo.common.exception.ErrorCode;
+import com.dongyang.dongpo.domain.member.enums.Role;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -46,7 +47,7 @@ class JwtServiceTest {
         final String email = "test@example.com";
         final String accessTokenKey = "access_token_" + email;
         final String refreshTokenKey = "refresh_token_" + email;
-        final Member.Role role = Member.Role.ROLE_MEMBER;
+        final Role role = Role.ROLE_MEMBER;
 
         when(member.getEmail()).thenReturn(email);
         when(member.getRole()).thenReturn(role);
@@ -74,7 +75,7 @@ class JwtServiceTest {
     void reissueAccessTokenExpired() {
         // Given
         final String email = "test@example.com";
-        final Member.Role role = Member.Role.ROLE_MEMBER;
+        final Role role = Role.ROLE_MEMBER;
 
         when(member.getEmail()).thenReturn(email);
         when(member.getRole()).thenReturn(role);
@@ -89,7 +90,7 @@ class JwtServiceTest {
     void reissueAccessTokenMemberNotFound() {
         // Given
         final String email = "nonexistent@example.com";
-        final Member.Role role = Member.Role.ROLE_MEMBER;
+        final Role role = Role.ROLE_MEMBER;
 
         when(member.getEmail()).thenReturn(email);
         when(member.getRole()).thenReturn(role);
@@ -106,7 +107,7 @@ class JwtServiceTest {
         final String email = "test@example.com";
         final String accessTokenKey = "access_token_" + email;
         final String refreshTokenKey = "refresh_token_" + email;
-        final Member.Role role = Member.Role.ROLE_MEMBER;
+        final Role role = Role.ROLE_MEMBER;
 
         when(member.getEmail()).thenReturn(email);
         when(member.getRole()).thenReturn(role);

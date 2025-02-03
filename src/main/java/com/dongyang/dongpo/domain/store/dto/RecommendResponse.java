@@ -1,6 +1,6 @@
 package com.dongyang.dongpo.domain.store.dto;
 
-import com.dongyang.dongpo.domain.member.entity.Member;
+import com.dongyang.dongpo.domain.member.enums.Gender;
 import com.dongyang.dongpo.domain.store.entity.Store;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -41,7 +41,7 @@ public class RecommendResponse {
 			.build();
 	}
 
-	public static RecommendResponse fromGender(List<Store> stores, Member.Gender gender) {
+	public static RecommendResponse fromGender(List<Store> stores, Gender gender) {
 		return RecommendResponse.builder()
 			.recommendationCategory(gender.toString())
 			.recommendStores(stores.stream()

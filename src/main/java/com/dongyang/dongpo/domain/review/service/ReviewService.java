@@ -1,6 +1,7 @@
 package com.dongyang.dongpo.domain.review.service;
 
 import com.dongyang.dongpo.domain.member.entity.Member;
+import com.dongyang.dongpo.domain.review.dto.MyRegisteredReviewsResponseDto;
 import com.dongyang.dongpo.domain.review.dto.ReviewDto;
 import com.dongyang.dongpo.domain.review.dto.ReviewRegisterRequestDto;
 import com.dongyang.dongpo.domain.review.dto.ReviewResponseDto;
@@ -12,7 +13,7 @@ import java.util.List;
 public interface ReviewService {
     void addReview(Member member, Long storeId, ReviewRegisterRequestDto reviewRegisterRequestDto);
 
-    List<ReviewDto> getMyReviews(Member member);
+    Page<MyRegisteredReviewsResponseDto> getMyReviews(Member member, int page);
 
     List<Review> findAll();
 

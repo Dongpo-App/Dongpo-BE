@@ -1,11 +1,11 @@
 package com.dongyang.dongpo.domain.member;
 
+import com.dongyang.dongpo.domain.member.dto.MyTitlesResponseDto;
 import com.dongyang.dongpo.domain.member.entity.Member;
 import com.dongyang.dongpo.domain.member.entity.MemberTitle;
-import com.dongyang.dongpo.domain.member.entity.Title;
-import com.dongyang.dongpo.domain.member.dto.MyPageDto;
+import com.dongyang.dongpo.domain.member.enums.Title;
 import com.dongyang.dongpo.domain.member.repository.MemberTitleRepository;
-import com.dongyang.dongpo.domain.member.service.TitleService;
+import com.dongyang.dongpo.domain.member.service.TitleServiceImpl;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -13,8 +13,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
@@ -26,61 +26,79 @@ class TitleServiceTest {
     private MemberTitleRepository memberTitleRepository;
 
     @InjectMocks
-    private TitleService titleService;
+    private TitleServiceImpl titleService;
 
     @Test
     @DisplayName("칭호_추가")
     void addTitle() {
         Member member = mock(Member.class);
+        Title title = Title.FAILED_TO_VISIT;
 
-        titleService.addTitle(member, Title.FAILED_TO_VISIT);
+        when(memberTitleRepository.findByMemberOrderByIdDesc(member)).thenReturn(List.of());
 
+        titleService.addTitle(member, title);
 
-        verify(memberTitleRepository).save(any());
+        verify(memberTitleRepository).save(any(MemberTitle.class));
     }
 
     @Test
     @DisplayName("칭호_추가_중복")
     void addTitleDuplicate() {
         Member member = mock(Member.class);
+        Title title = Title.FAILED_TO_VISIT;
         MemberTitle memberTitle = MemberTitle.builder()
-                .title(Title.FAILED_TO_VISIT)
+                .title(title)
                 .build();
 
-        when(memberTitleRepository.findByMember(member)).thenReturn(List.of(memberTitle));
-        titleService.addTitle(member, Title.FAILED_TO_VISIT);
+        when(memberTitleRepository.findByMemberOrderByIdDesc(member)).thenReturn(List.of(memberTitle));
 
-        verify(memberTitleRepository, never()).save(any());
+        titleService.addTitle(member, title);
+
+        verify(memberTitleRepository, never()).save(any(MemberTitle.class));
     }
 
     @Test
     void getMemberTitles() {
-        // given
         Member member = mock(Member.class);
-        Title title1 = mock(Title.class);
-        Title title2 = mock(Title.class);
         MemberTitle memberTitle1 = mock(MemberTitle.class);
         MemberTitle memberTitle2 = mock(MemberTitle.class);
-        MyPageDto.TitleDto titleDto1 = mock(MyPageDto.TitleDto.class);
-        MyPageDto.TitleDto titleDto2 = mock(MyPageDto.TitleDto.class);
+        MyTitlesResponseDto titleDto1 = mock(MyTitlesResponseDto.class);
+        MyTitlesResponseDto titleDto2 = mock(MyTitlesResponseDto.class);
 
-        when(memberTitleRepository.findByMember(member)).thenReturn(List.of(memberTitle1, memberTitle2));
-        when(memberTitle1.getTitle()).thenReturn(title1);
-        when(memberTitle2.getTitle()).thenReturn(title2);
-        when(title1.getDescription()).thenReturn("Title 1 Description");
-        when(title2.getDescription()).thenReturn("Title 2 Description");
-        when(title1.getAchieveCondition()).thenReturn("Condition 1");
-        when(title2.getAchieveCondition()).thenReturn("Condition 2");
-        when(memberTitle1.getAchieveDate()).thenReturn(LocalDateTime.now());
-        when(memberTitle2.getAchieveDate()).thenReturn(LocalDateTime.now().plusDays(1));
-        when(MyPageDto.toTitleDto(memberTitle1)).thenCallRealMethod();
-        when(MyPageDto.toTitleDto(memberTitle2)).thenCallRealMethod();
+        when(memberTitleRepository.findByMemberOrderByIdDesc(member)).thenReturn(List.of(memberTitle1, memberTitle2));
+        when(memberTitle1.toMyTitlesResponse()).thenReturn(titleDto1);
+        when(memberTitle2.toMyTitlesResponse()).thenReturn(titleDto2);
 
-        // when
-        List<MyPageDto.TitleDto> memberTitles = titleService.getMemberTitles(member);
+        List<MyTitlesResponseDto> memberTitles = titleService.getMemberTitles(member);
 
-        // then
-        assertThat(memberTitles).hasSize(2);
-        verify(memberTitleRepository).findByMember(member);
+        assertThat(memberTitles).containsExactly(titleDto1, titleDto2);
+        verify(memberTitleRepository).findByMemberOrderByIdDesc(member);
+    }
+
+    @Test
+    void getMemberTitlesCount() {
+        Member member = mock(Member.class);
+        long expectedCount = 5L;
+
+        when(memberTitleRepository.countByMember(member)).thenReturn(expectedCount);
+
+        long count = titleService.getMemberTitlesCount(member);
+
+        assertThat(count).isEqualTo(expectedCount);
+        verify(memberTitleRepository).countByMember(member);
+    }
+
+    @Test
+    void findByMemberAndTitle() {
+        Member member = mock(Member.class);
+        Title title = Title.FAILED_TO_VISIT;
+        MemberTitle expectedMemberTitle = mock(MemberTitle.class);
+
+        when(memberTitleRepository.findByMemberAndTitle(member, title)).thenReturn(Optional.ofNullable(expectedMemberTitle));
+
+        MemberTitle result = titleService.findByMemberAndTitle(member, title);
+
+        assertThat(result).isEqualTo(expectedMemberTitle);
+        verify(memberTitleRepository).findByMemberAndTitle(member, title);
     }
 }

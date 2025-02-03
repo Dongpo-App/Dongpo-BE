@@ -2,13 +2,16 @@ package com.dongyang.dongpo.domain.member.repository;
 
 import com.dongyang.dongpo.domain.member.entity.Member;
 import com.dongyang.dongpo.domain.member.entity.MemberTitle;
-import com.dongyang.dongpo.domain.member.entity.Title;
+import com.dongyang.dongpo.domain.member.enums.Title;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface MemberTitleRepository extends JpaRepository<MemberTitle, Long> {
-    List<MemberTitle> findByMember(Member member);
+    List<MemberTitle> findByMemberOrderByIdDesc(final Member member);
 
-    MemberTitle findByMemberAndTitle(Member member, Title title);
+    Optional<MemberTitle> findByMemberAndTitle(final Member member, final Title title);
+
+    Long countByMember(final Member member);
 }

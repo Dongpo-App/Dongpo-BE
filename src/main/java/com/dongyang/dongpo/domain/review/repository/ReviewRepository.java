@@ -38,7 +38,10 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
 
     List<Review> findByMember(final Member member);
 
-    @Query("SELECT rv FROM Review rv LEFT JOIN FETCH rv.reviewPics LEFT JOIN FETCH rv.store WHERE rv.member = :member")
-    List<Review> findByMemberWithReviewPicsAndStore(@Param("member") final Member member);
+    @Query("SELECT rv.id FROM Review rv WHERE rv.member = :member ORDER BY rv.id DESC")
+    Page<Long> findReviewIdsByMemberAndPageRequest(@Param("member") final Member member, final Pageable pageable);
 
+    @Query("SELECT rv FROM Review rv LEFT JOIN FETCH rv.reviewPics LEFT JOIN FETCH rv.store " +
+            "WHERE rv.id IN :reviewIds ORDER BY rv.id DESC")
+    List<Review> findMyRegisteredReviewsByReviewIds(@Param("reviewIds") final List<Long> reviewIds);
 }

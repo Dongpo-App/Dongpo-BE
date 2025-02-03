@@ -10,6 +10,8 @@ import com.dongyang.dongpo.domain.auth.dto.*;
 import com.dongyang.dongpo.domain.auth.entity.AppleRefreshToken;
 import com.dongyang.dongpo.domain.auth.repository.AppleRefreshTokenRepository;
 import com.dongyang.dongpo.domain.member.entity.Member;
+import com.dongyang.dongpo.domain.member.enums.Gender;
+import com.dongyang.dongpo.domain.member.enums.SocialType;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -109,26 +111,26 @@ public class SocialPlatformService {
             String birthyear = kakaoAccount.getString("birthyear");
             String birthday = kakaoAccount.getString("birthday").substring(0, 2) + "-" + kakaoAccount.getString("birthday").substring(2, 4);
             String nickname = profile.getString("nickname");
-            Member.Gender gender;
+            Gender gender;
 
             if (kakaoAccount.getString("gender").equals("female"))
-                gender = Member.Gender.GEN_FEMALE;
+                gender = Gender.GEN_FEMALE;
             else if (kakaoAccount.getString("gender").equals("male"))
-                gender = Member.Gender.GEN_MALE;
+                gender = Gender.GEN_MALE;
             else
-                gender = Member.Gender.NONE;
+                gender = Gender.NONE;
 
             // 간편 가입 과정에서 동의한 서비스 이용 약관 조회
             Map<String, Boolean> termsAgreementInfo = getServiceTermsAgreementInfoFromKakao(accessToken);
 
             return UserInfo.builder()
-                    .id(id)
+                    .socialId(id)
                     .email(email)
                     .nickname(nickname)
                     .birthyear(birthyear)
                     .birthday(birthday)
                     .gender(gender)
-                    .provider(Member.SocialType.KAKAO)
+                    .provider(SocialType.KAKAO)
                     .isServiceTermsAgreed(termsAgreementInfo.get(serviceTermsTag))
                     .isMarketingTermsAgreed(termsAgreementInfo.get(marketingTermsTag))
                     .build();
