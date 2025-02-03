@@ -6,7 +6,7 @@ import com.dongyang.dongpo.domain.auth.dto.UserInfo;
 import com.dongyang.dongpo.domain.member.dto.MyPageResponseDto;
 import com.dongyang.dongpo.domain.member.entity.Member;
 import com.dongyang.dongpo.domain.member.entity.MemberTitle;
-import com.dongyang.dongpo.domain.member.entity.Title;
+import com.dongyang.dongpo.domain.member.enums.Title;
 import com.dongyang.dongpo.domain.member.dto.MyPageUpdateRequestDto;
 import com.dongyang.dongpo.domain.member.repository.MemberRepository;
 import com.dongyang.dongpo.domain.member.service.MemberService;

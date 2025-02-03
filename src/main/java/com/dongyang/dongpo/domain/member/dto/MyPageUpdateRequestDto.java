@@ -1,6 +1,6 @@
 package com.dongyang.dongpo.domain.member.dto;
 
-import com.dongyang.dongpo.domain.member.entity.Title;
+import com.dongyang.dongpo.domain.member.enums.Title;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;

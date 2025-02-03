@@ -3,7 +3,7 @@ package com.dongyang.dongpo.domain.member;
 import com.dongyang.dongpo.domain.member.dto.MyTitlesResponseDto;
 import com.dongyang.dongpo.domain.member.entity.Member;
 import com.dongyang.dongpo.domain.member.entity.MemberTitle;
-import com.dongyang.dongpo.domain.member.entity.Title;
+import com.dongyang.dongpo.domain.member.enums.Title;
 import com.dongyang.dongpo.domain.member.repository.MemberTitleRepository;
 import com.dongyang.dongpo.domain.member.service.TitleService;
 import org.junit.jupiter.api.DisplayName;

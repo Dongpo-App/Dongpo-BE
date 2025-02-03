@@ -8,6 +8,7 @@ import com.dongyang.dongpo.domain.member.dto.MyPageResponseDto;
 import com.dongyang.dongpo.domain.member.dto.MyPageUpdateRequestDto;
 import com.dongyang.dongpo.domain.member.entity.Member;
 import com.dongyang.dongpo.domain.member.entity.MemberTitle;
+import com.dongyang.dongpo.domain.member.enums.Status;
 import com.dongyang.dongpo.domain.member.repository.MemberRepository;
 import com.dongyang.dongpo.domain.store.service.StoreService;
 import lombok.RequiredArgsConstructor;
@@ -77,7 +78,7 @@ public class MemberService {
             final Member existingMember = existingMemberOpt.get();
 
             // 탈퇴한 회원인 경우 (탈퇴 시 개인 정보를 모두 삭제하므로 이 검증 과정이 필수는 아님. 더블 체크를 위해 남겨둠.)
-            if (existingMember.getStatus() == Member.Status.LEAVE)
+            if (existingMember.getStatus() == Status.LEAVE)
                 throw new CustomException(ErrorCode.MEMBER_ALREADY_LEFT);
 
             // 모든 조건 통과 시 로그인 처리

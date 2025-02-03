@@ -5,7 +5,7 @@ import com.dongyang.dongpo.common.exception.ErrorCode;
 import com.dongyang.dongpo.domain.member.dto.MyTitlesResponseDto;
 import com.dongyang.dongpo.domain.member.entity.Member;
 import com.dongyang.dongpo.domain.member.entity.MemberTitle;
-import com.dongyang.dongpo.domain.member.entity.Title;
+import com.dongyang.dongpo.domain.member.enums.Title;
 import com.dongyang.dongpo.domain.member.repository.MemberTitleRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

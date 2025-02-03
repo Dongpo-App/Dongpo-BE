@@ -1,6 +1,7 @@
 package com.dongyang.dongpo.domain.store.repository;
 
 import com.dongyang.dongpo.domain.member.entity.Member;
+import com.dongyang.dongpo.domain.member.enums.Gender;
 import com.dongyang.dongpo.domain.store.entity.Store;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -52,5 +53,5 @@ public interface StoreRepository extends JpaRepository<Store, Long> {
         "AND m.gender = :gender " +
         "GROUP BY s.id " +
         "ORDER BY COUNT(svc) DESC")
-    List<Store> findStoresByMemberGenderWithMostVisits(@Param("gender") Member.Gender gender, Pageable pageable);
+    List<Store> findStoresByMemberGenderWithMostVisits(@Param("gender") Gender gender, Pageable pageable);
 }

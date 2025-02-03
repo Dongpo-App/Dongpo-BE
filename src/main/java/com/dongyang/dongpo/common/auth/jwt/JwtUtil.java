@@ -3,7 +3,7 @@ package com.dongyang.dongpo.common.auth.jwt;
 import com.dongyang.dongpo.common.exception.CustomException;
 import com.dongyang.dongpo.common.exception.ErrorCode;
 import com.dongyang.dongpo.domain.auth.dto.JwtToken;
-import com.dongyang.dongpo.domain.member.entity.Member.Role;
+import com.dongyang.dongpo.domain.member.enums.Role;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;

@@ -7,6 +7,7 @@ import com.dongyang.dongpo.common.exception.CustomSignupException;
 import com.dongyang.dongpo.common.exception.ErrorCode;
 import com.dongyang.dongpo.domain.auth.dto.*;
 import com.dongyang.dongpo.domain.member.entity.Member;
+import com.dongyang.dongpo.domain.member.enums.SocialType;
 import com.dongyang.dongpo.domain.member.service.MemberService;
 import io.jsonwebtoken.Claims;
 import io.micrometer.common.util.StringUtils;
@@ -76,7 +77,7 @@ public class AuthService {
                 .birthyear(appleSignupContinueDto.getBirthday().substring(0, 4))
                 .birthday(appleSignupContinueDto.getBirthday().substring(5))
                 .gender(appleSignupContinueDto.getGender())
-                .provider(Member.SocialType.APPLE)
+                .provider(SocialType.APPLE)
                 .socialId(appleSignupContinueDto.getSocialId())
                 .build();
 

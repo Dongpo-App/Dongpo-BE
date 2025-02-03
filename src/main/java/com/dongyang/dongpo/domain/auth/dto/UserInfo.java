@@ -1,7 +1,7 @@
 package com.dongyang.dongpo.domain.auth.dto;
 
 import com.dongyang.dongpo.domain.member.entity.Member;
-import com.dongyang.dongpo.domain.member.entity.Title;
+import com.dongyang.dongpo.domain.member.enums.*;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Null;
@@ -15,8 +15,8 @@ import lombok.*;
 public class UserInfo {
 
     private static final Title DEFAULT_MAIN_TITLE = Title.BASIC_TITLE;
-    private static final Member.Role DEFAULT_ROLE = Member.Role.ROLE_MEMBER;
-    private static final Member.Status DEFAULT_STATUS = Member.Status.ACTIVE;
+    private static final Role DEFAULT_ROLE = Role.ROLE_MEMBER;
+    private static final Status DEFAULT_STATUS = Status.ACTIVE;
 
     @Schema(description = "소셜 ID", example = "1234567890")
     @NotNull
@@ -32,7 +32,7 @@ public class UserInfo {
 
     @Schema(description = "성별", example = "GEN_MALE")
     @NotNull
-    private Member.Gender gender;
+    private Gender gender;
 
     @Schema(description = "생년", example = "1990")
     @NotNull
@@ -48,7 +48,7 @@ public class UserInfo {
 
     @Schema(description = "소셜 타입", example = "KAKAO")
     @NotNull
-    private Member.SocialType provider;
+    private SocialType provider;
 
     @Schema(description = "서비스 약관 동의 여부", example = "true")
     @NotNull

@@ -1,7 +1,7 @@
 package com.dongyang.dongpo.domain.rank;
 
 import com.dongyang.dongpo.domain.member.entity.Member;
-import com.dongyang.dongpo.domain.member.entity.Title;
+import com.dongyang.dongpo.domain.member.enums.Title;
 import com.dongyang.dongpo.domain.rank.dto.RankDto;
 import com.dongyang.dongpo.domain.rank.service.RankService;
 import com.dongyang.dongpo.domain.store.repository.StoreRepository;

@@ -1,6 +1,7 @@
 package com.dongyang.dongpo.domain.member.entity;
 
 import com.dongyang.dongpo.domain.member.dto.MyTitlesResponseDto;
+import com.dongyang.dongpo.domain.member.enums.Title;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;

@@ -1,6 +1,6 @@
 package com.dongyang.dongpo.domain.store.dto;
 
-import com.dongyang.dongpo.domain.member.entity.Title;
+import com.dongyang.dongpo.domain.member.enums.Title;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

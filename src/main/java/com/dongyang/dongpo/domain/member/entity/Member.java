@@ -1,5 +1,6 @@
 package com.dongyang.dongpo.domain.member.entity;
 
+import com.dongyang.dongpo.domain.member.enums.*;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.DynamicUpdate;
@@ -137,19 +138,4 @@ public class Member implements UserDetails {
         return true;
     }
 
-    public enum Role {
-        ROLE_MEMBER, ROLE_ADMIN
-    }
-
-    public enum Gender {
-        GEN_MALE, NONE, GEN_FEMALE
-    }
-
-    public enum SocialType {
-        KAKAO, APPLE, NAVER
-    }
-
-    public enum Status {
-        ACTIVE, INACTIVE, LEAVE
-    }
 }

@@ -3,7 +3,8 @@ package com.dongyang.dongpo.domain.store;
 import com.dongyang.dongpo.common.dto.location.CoordinateRange;
 import com.dongyang.dongpo.common.dto.location.LatLong;
 import com.dongyang.dongpo.domain.member.entity.Member;
-import com.dongyang.dongpo.domain.member.entity.Title;
+import com.dongyang.dongpo.domain.member.enums.Gender;
+import com.dongyang.dongpo.domain.member.enums.Title;
 import com.dongyang.dongpo.domain.store.dto.*;
 import com.dongyang.dongpo.domain.store.entity.Store;
 import com.dongyang.dongpo.domain.store.enums.OpenPossibility;
@@ -282,13 +283,13 @@ class StoreServiceTest {
     void testRecommendStoreByGender() {
         // given
         Member member = mock(Member.class);
-        when(member.getGender()).thenReturn(Member.Gender.GEN_MALE);
+        when(member.getGender()).thenReturn(Gender.GEN_MALE);
 
         Store store1 = mock(Store.class);
         Store store2 = mock(Store.class);
         Store store3 = mock(Store.class);
 
-        when(storeRepository.findStoresByMemberGenderWithMostVisits(eq(Member.Gender.GEN_MALE), any(Pageable.class)))
+        when(storeRepository.findStoresByMemberGenderWithMostVisits(eq(Gender.GEN_MALE), any(Pageable.class)))
             .thenReturn(List.of(store1, store2, store3));
 
         // when
@@ -296,7 +297,7 @@ class StoreServiceTest {
 
         // then
         assertThat(result.getRecommendStores()).hasSize(3);
-        verify(storeRepository, times(1)).findStoresByMemberGenderWithMostVisits(eq(Member.Gender.GEN_MALE), any(Pageable.class));
+        verify(storeRepository, times(1)).findStoresByMemberGenderWithMostVisits(eq(Gender.GEN_MALE), any(Pageable.class));
     }
 
     @Test
