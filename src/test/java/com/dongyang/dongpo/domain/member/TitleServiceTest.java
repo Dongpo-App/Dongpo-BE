@@ -5,7 +5,7 @@ import com.dongyang.dongpo.domain.member.entity.Member;
 import com.dongyang.dongpo.domain.member.entity.MemberTitle;
 import com.dongyang.dongpo.domain.member.enums.Title;
 import com.dongyang.dongpo.domain.member.repository.MemberTitleRepository;
-import com.dongyang.dongpo.domain.member.service.TitleService;
+import com.dongyang.dongpo.domain.member.service.TitleServiceImpl;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -26,7 +26,7 @@ class TitleServiceTest {
     private MemberTitleRepository memberTitleRepository;
 
     @InjectMocks
-    private TitleService titleService;
+    private TitleServiceImpl titleService;
 
     @Test
     @DisplayName("칭호_추가")

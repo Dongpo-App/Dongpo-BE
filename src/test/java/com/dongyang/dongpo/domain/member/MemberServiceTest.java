@@ -9,10 +9,10 @@ import com.dongyang.dongpo.domain.member.entity.MemberTitle;
 import com.dongyang.dongpo.domain.member.enums.Title;
 import com.dongyang.dongpo.domain.member.dto.MyPageUpdateRequestDto;
 import com.dongyang.dongpo.domain.member.repository.MemberRepository;
-import com.dongyang.dongpo.domain.member.service.MemberService;
-import com.dongyang.dongpo.domain.member.service.TitleService;
-import com.dongyang.dongpo.domain.store.service.StoreService;
+import com.dongyang.dongpo.domain.member.service.MemberServiceImpl;
+import com.dongyang.dongpo.domain.member.service.TitleServiceImpl;
 import com.dongyang.dongpo.common.fileupload.s3.S3Service;
+import com.dongyang.dongpo.domain.store.service.StoreServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -34,16 +34,16 @@ class MemberServiceTest {
     private MemberRepository memberRepository;
 
     @Mock
-    private TitleService titleService;
+    private TitleServiceImpl titleService;
 
     @Mock
-    private StoreService storeService;
+    private StoreServiceImpl storeService;
 
     @Mock
     private S3Service s3Service;
 
     @InjectMocks
-    private MemberService memberService;
+    private MemberServiceImpl memberService;
 
     @Test
     void registerNewMember() {

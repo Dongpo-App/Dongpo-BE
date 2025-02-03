@@ -4,15 +4,13 @@ import com.dongyang.dongpo.domain.bookmark.service.BookmarkServiceImpl;
 import com.dongyang.dongpo.domain.member.dto.MyTitlesResponseDto;
 import com.dongyang.dongpo.domain.member.entity.Member;
 import com.dongyang.dongpo.domain.bookmark.dto.MyRegisteredBookmarksResponseDto;
-import com.dongyang.dongpo.domain.member.service.MyPageService;
+import com.dongyang.dongpo.domain.member.service.*;
 import com.dongyang.dongpo.domain.member.dto.MyPageResponseDto;
 import com.dongyang.dongpo.domain.member.dto.MyPageUpdateRequestDto;
 import com.dongyang.dongpo.domain.review.dto.MyRegisteredReviewsResponseDto;
 import com.dongyang.dongpo.domain.store.dto.MyRegisteredStoresResponseDto;
-import com.dongyang.dongpo.domain.member.service.MemberService;
-import com.dongyang.dongpo.domain.store.service.StoreService;
-import com.dongyang.dongpo.domain.member.service.TitleService;
 import com.dongyang.dongpo.domain.review.service.ReviewServiceImpl;
+import com.dongyang.dongpo.domain.store.service.StoreServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -31,13 +29,13 @@ import static org.mockito.Mockito.*;
 class MyPageServiceTest {
 
     @Mock
-    private MemberService memberService;
+    private MemberServiceImpl memberService;
 
     @Mock
-    private TitleService titleService;
+    private TitleServiceImpl titleService;
 
     @Mock
-    private StoreService storeService;
+    private StoreServiceImpl storeService;
 
     @Mock
     private BookmarkServiceImpl bookmarkService;
@@ -46,7 +44,7 @@ class MyPageServiceTest {
     private ReviewServiceImpl storeReviewService;
 
     @InjectMocks
-    private MyPageService myPageService;
+    private MyPageServiceImpl myPageService;
 
     @Test
     void getMyPageInfo() {
