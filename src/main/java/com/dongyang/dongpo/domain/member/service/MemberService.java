@@ -34,8 +34,8 @@ public class MemberService {
     private final S3Service s3Service;
 
     // 회원 가입 처리
-    public Member registerNewMember(UserInfo userInfo) {
-        Member member = userInfo.toMemberEntity();
+    public Member registerNewMember(final UserInfo userInfo) {
+        final Member member = userInfo.toMemberEntity();
         memberRepository.save(member);
         titleService.addTitle(member, member.getMainTitle());
         log.info("Registered Member {} successfully - id: {}", member.getEmail(), member.getId());
@@ -48,13 +48,13 @@ public class MemberService {
     }
 
     // id로 사용자 조회
-    public Member findById(Long id) {
+    public Member findById(final Long id) {
         return memberRepository.findById(id)
                 .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
     }
 
     // 이메일로 사용자 조회
-    public Member findByEmail(String email) {
+    public Member findByEmail(final String email) {
         return memberRepository.findByEmail(email)
                 .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
     }
@@ -68,13 +68,13 @@ public class MemberService {
     }
 
     // 이미 가입 된 회원인지, 가입 가능한 회원인지 검증
-    public boolean validateMemberExistence(String email, String socialId) {
+    public boolean validateMemberExistence(final String email, final String socialId) {
         // 이미 가입된 회원인지 확인
-        Optional<Member> existingMemberOpt = memberRepository.findBySocialId(socialId);
+        final Optional<Member> existingMemberOpt = memberRepository.findBySocialId(socialId);
 
         // 이미 가입된 회원인 경우
         if (existingMemberOpt.isPresent()) {
-            Member existingMember = existingMemberOpt.get();
+            final Member existingMember = existingMemberOpt.get();
 
             // 탈퇴한 회원인 경우 (탈퇴 시 개인 정보를 모두 삭제하므로 이 검증 과정이 필수는 아님. 더블 체크를 위해 남겨둠.)
             if (existingMember.getStatus() == Member.Status.LEAVE)
@@ -91,7 +91,7 @@ public class MemberService {
         return false;
     }
 
-    public MyPageResponseDto getMemberInfo(Member member) {
+    public MyPageResponseDto getMemberInfo(final Member member) {
         return MyPageResponseDto.builder()
                 .nickname(member.getNickname())
                 .profilePic(member.getProfilePic())
@@ -101,11 +101,11 @@ public class MemberService {
                 .build();
     }
 
-    public void updateMemberInfo(Member member, MyPageUpdateRequestDto myPageUpdateRequestDto) {
+    public void updateMemberInfo(final Member member, final MyPageUpdateRequestDto myPageUpdateRequestDto) {
         if (myPageUpdateRequestDto.getNickname().length() > 7) // 문자 수 7자 초과시 예외 발생
             throw new CustomException(ErrorCode.ARGUMENT_NOT_SATISFIED);
 
-        Member existingMember = findById(member.getId());
+        final Member existingMember = findById(member.getId());
 
         if (myPageUpdateRequestDto.getProfilePic() != null && !myPageUpdateRequestDto.getProfilePic().isBlank() &&
                 !myPageUpdateRequestDto.getProfilePic().equals(existingMember.getProfilePic())) {
