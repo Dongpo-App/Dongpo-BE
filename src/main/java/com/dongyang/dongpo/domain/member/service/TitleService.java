@@ -1,6 +1,8 @@
 package com.dongyang.dongpo.domain.member.service;
 
-import com.dongyang.dongpo.domain.member.dto.MyPageDto;
+import com.dongyang.dongpo.common.exception.CustomException;
+import com.dongyang.dongpo.common.exception.ErrorCode;
+import com.dongyang.dongpo.domain.member.dto.MyTitlesResponseDto;
 import com.dongyang.dongpo.domain.member.entity.Member;
 import com.dongyang.dongpo.domain.member.entity.MemberTitle;
 import com.dongyang.dongpo.domain.member.entity.Title;
@@ -11,7 +13,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -22,8 +23,8 @@ public class TitleService {
     private final MemberTitleRepository memberTitleRepository;
 
     @Transactional
-    public void addTitle(Member member, Title title) {
-        List<MemberTitle> memberTitles = memberTitleRepository.findByMember(member);
+    public void addTitle(final Member member, final Title title) {
+        List<MemberTitle> memberTitles = memberTitleRepository.findByMemberOrderByIdDesc(member);
         if (memberTitles.stream().noneMatch(t -> t.getTitle().equals(title))) {
             memberTitleRepository.save(MemberTitle.builder()
                     .title(title)
@@ -35,11 +36,19 @@ public class TitleService {
         }
     }
 
-    public List<MyPageDto.TitleDto> getMemberTitles(Member member) {
-        List<MyPageDto.TitleDto> titleDtos = new ArrayList<>();
-        memberTitleRepository.findByMember(member).forEach(memberTitle -> {
-            titleDtos.add(MyPageDto.toTitleDto(memberTitle));
-        });
-        return titleDtos;
+    public List<MyTitlesResponseDto> getMemberTitles(final Member member) {
+        return memberTitleRepository.findByMemberOrderByIdDesc(member)
+                .stream()
+                .map(MemberTitle::toMyTitlesResponse)
+                .toList();
+    }
+
+    public Long getMemberTitlesCount(final Member member) {
+        return memberTitleRepository.countByMember(member);
+    }
+
+    public MemberTitle findByMemberAndTitle(final Member member, final Title title) {
+        return memberTitleRepository.findByMemberAndTitle(member, title)
+                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_TITLE_NOT_FOUND));
     }
 }

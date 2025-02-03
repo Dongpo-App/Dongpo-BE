@@ -43,6 +43,7 @@ public enum ErrorCode {
     STORE_VISIT_CERT_NOT_AVAILABLE(400, "C010", "24시간 이내에 이미 방문 인증을 완료하였습니다."),
     BOOKMARKS_REGISTERED_BY_MEMBER_NOT_FOUND(400, "C011", "회원이 등록한 북마크가 없습니다."),
     STORES_REGISTERED_BY_MEMBER_NOT_FOUND(400, "C012", "회원이 등록한 점포가 없습니다."),
+    MEMBER_TITLE_NOT_FOUND(400, "C013", "회원에게 해당 칭호가 없습니다."),
     ;
 
     private final int status;
