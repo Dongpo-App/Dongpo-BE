@@ -1,11 +1,12 @@
 package com.dongyang.dongpo.domain.member;
 
 import com.dongyang.dongpo.domain.bookmark.service.BookmarkServiceImpl;
+import com.dongyang.dongpo.domain.member.dto.MyTitlesResponseDto;
 import com.dongyang.dongpo.domain.member.entity.Member;
 import com.dongyang.dongpo.domain.bookmark.dto.MyRegisteredBookmarksResponseDto;
 import com.dongyang.dongpo.domain.member.service.MyPageService;
-import com.dongyang.dongpo.domain.member.dto.MyPageDto;
-import com.dongyang.dongpo.domain.member.dto.MyPageUpdateDto;
+import com.dongyang.dongpo.domain.member.dto.MyPageResponseDto;
+import com.dongyang.dongpo.domain.member.dto.MyPageUpdateRequestDto;
 import com.dongyang.dongpo.domain.review.dto.MyRegisteredReviewsResponseDto;
 import com.dongyang.dongpo.domain.store.dto.MyRegisteredStoresResponseDto;
 import com.dongyang.dongpo.domain.member.service.MemberService;
@@ -48,32 +49,32 @@ class MyPageServiceTest {
     private MyPageService myPageService;
 
     @Test
-    void getMyPageIndex() {
+    void getMyPageInfo() {
         // given
         Member member = mock(Member.class);
-        MyPageDto myPageDto = mock(MyPageDto.class);
+        MyPageResponseDto myPageResponseDto = mock(MyPageResponseDto.class);
 
-        when(memberService.getMemberInfoIndex(member)).thenReturn(myPageDto);
+        when(memberService.getMemberInfo(member)).thenReturn(myPageResponseDto);
 
         // when
-        MyPageDto myPageIndex = myPageService.getMyPageIndex(member);
+        MyPageResponseDto myPageIndex = myPageService.getMyPageInfo(member);
 
         // then
-        assertThat(myPageIndex).isEqualTo(myPageDto);
-        verify(memberService).getMemberInfoIndex(member);
+        assertThat(myPageIndex).isEqualTo(myPageResponseDto);
+        verify(memberService).getMemberInfo(member);
     }
 
     @Test
     void updateMyPageInfo() {
         // given
         Member member = mock(Member.class);
-        MyPageUpdateDto myPageUpdateDto = mock(MyPageUpdateDto.class);
+        MyPageUpdateRequestDto myPageUpdateRequestDto = mock(MyPageUpdateRequestDto.class);
 
         // when
-        myPageService.updateMyPageInfo(member.getEmail(), myPageUpdateDto);
+        myPageService.updateMyPageInfo(member, myPageUpdateRequestDto);
 
         // then
-        verify(memberService).updateMemberInfo(member.getEmail(), myPageUpdateDto);
+        verify(memberService).updateMemberInfo(member, myPageUpdateRequestDto);
     }
 
     @Test
@@ -99,17 +100,17 @@ class MyPageServiceTest {
     void getMyTitles() {
         // given
         Member member = mock(Member.class);
-        MyPageDto.TitleDto titleDto1 = mock(MyPageDto.TitleDto.class);
-        MyPageDto.TitleDto titleDto2 = mock(MyPageDto.TitleDto.class);
-        List<MyPageDto.TitleDto> expectedTitleDtos = List.of(titleDto1, titleDto2);
+        MyTitlesResponseDto titleDto1 = mock(MyTitlesResponseDto.class);
+        MyTitlesResponseDto titleDto2 = mock(MyTitlesResponseDto.class);
+        List<MyTitlesResponseDto> expectedTitles = List.of(titleDto1, titleDto2);
 
-        when(titleService.getMemberTitles(member)).thenReturn(expectedTitleDtos);
+        when(titleService.getMemberTitles(member)).thenReturn(expectedTitles);
 
         // when
-        List<MyPageDto.TitleDto> titleDtos = myPageService.getMyTitles(member);
+        List<MyTitlesResponseDto> titleDtos = myPageService.getMyTitles(member);
 
         // then
-        assertThat(titleDtos).isEqualTo(expectedTitleDtos);
+        assertThat(titleDtos).isEqualTo(expectedTitles);
         verify(titleService).getMemberTitles(member);
     }
 
