@@ -122,7 +122,7 @@ public class SocialPlatformService {
             Map<String, Boolean> termsAgreementInfo = getServiceTermsAgreementInfoFromKakao(accessToken);
 
             return UserInfo.builder()
-                    .id(id)
+                    .socialId(id)
                     .email(email)
                     .nickname(nickname)
                     .birthyear(birthyear)
