@@ -44,7 +44,8 @@ public class StoreServiceImpl implements StoreService {
     private final MemberUtil memberUtil;
 
     // 점포 id로 조회
-    private Store findById(final Long id) {
+    @Override
+    public Store findById(final Long id) {
         return storeRepository.findById(id)
                 .orElseThrow(() -> new CustomException(ErrorCode.STORE_NOT_FOUND));
     }
