@@ -1,4 +1,4 @@
-package com.dongyang.dongpo.domain.report.entity;
+package com.dongyang.dongpo.domain.report.enums;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
