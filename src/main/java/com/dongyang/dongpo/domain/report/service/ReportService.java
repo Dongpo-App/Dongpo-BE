@@ -3,104 +3,81 @@ package com.dongyang.dongpo.domain.report.service;
 import com.dongyang.dongpo.common.exception.CustomException;
 import com.dongyang.dongpo.common.exception.ErrorCode;
 import com.dongyang.dongpo.domain.member.entity.Member;
-import com.dongyang.dongpo.domain.report.dto.ReportDto;
-import com.dongyang.dongpo.domain.report.entity.ReportReason;
-import com.dongyang.dongpo.domain.report.entity.ReviewReport;
-import com.dongyang.dongpo.domain.report.entity.StoreReport;
-import com.dongyang.dongpo.domain.report.repository.ReviewReportRepository;
-import com.dongyang.dongpo.domain.report.repository.StoreReportRepository;
-import com.dongyang.dongpo.domain.store.entity.Store;
-import com.dongyang.dongpo.domain.review.entity.Review;
-import com.dongyang.dongpo.domain.store.repository.StoreRepository;
-import com.dongyang.dongpo.domain.review.repository.ReviewRepository;
+import com.dongyang.dongpo.domain.report.dto.ReportResponseDto;
+import com.dongyang.dongpo.domain.report.dto.ReportRequestDto;
+import com.dongyang.dongpo.domain.report.entity.Report;
+import com.dongyang.dongpo.domain.report.enums.ReportReason;
+import com.dongyang.dongpo.domain.report.enums.ReportType;
+import com.dongyang.dongpo.domain.report.repository.ReportRepository;
+import com.dongyang.dongpo.domain.review.service.ReviewService;
+import com.dongyang.dongpo.domain.store.service.StoreService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
-@Transactional(readOnly = true)
 @RequiredArgsConstructor
 @Slf4j
+@Transactional
 public class ReportService {
 
-    private final StoreReportRepository storeReportRepository;
-    private final ReviewReportRepository reviewReportRepository;
-    private final StoreRepository storeRepository;
-    private final ReviewRepository reviewRepository;
+    private static final int DEFAULT_PAGE_SIZE = 20;
 
-    @Transactional
-    public void addStoreReport(Long storeId, Member member, ReportDto request){
-        Store store = storeRepository.findById(storeId)
-                .orElseThrow(() -> new CustomException(ErrorCode.STORE_NOT_FOUND));
-        store.addReportCount();
+    private final ReportRepository reportRepository;
+    private final StoreService storeService;
+    private final ReviewService reviewService;
 
-        StoreReport storeReport = request.toStoreEntity(member, store);
-        storeReportRepository.save(storeReport);
-
-        log.info("Member {} added Store Report - ID : {}", member.getEmail(), store.getId());
-    }
-
-    @Transactional
-    public void addReviewReport(Long reviewId, Member member, ReportDto request){
+    public void addReport(final ReportRequestDto request, final Member member) {
         if (request.getReason() == ReportReason.ETC && (request.getText() == null || request.getText().isEmpty()))
             throw new CustomException(ErrorCode.REPORT_REASON_TEXT_REQUIRED);
 
-        Review review = reviewRepository.findById(reviewId)
-                .orElseThrow(() -> new CustomException(ErrorCode.REVIEW_NOT_FOUND));
-        review.addReportCount();
+        switch (request.getType()) {
+            case STORE:
+                storeService.findById(request.getTargetId()).addReportCount();
+                break;
+            case REVIEW:
+                reviewService.findReviewById(request.getTargetId()).addReportCount();
+                break;
+            default:
+                throw new CustomException(ErrorCode.ARGUMENT_NOT_SATISFIED);
+        }
 
-        ReviewReport reviewReport = request.toReviewEntity(member, review);
-        reviewReportRepository.save(reviewReport);
-
-        log.info("Member {} added Review Report - ID : {}", member.getEmail(), review.getId());
+        reportRepository.save(request.toEntity(member));
+        log.info("Member {} added {} Report - ID : {}", member.getEmail(), request.getType(), request.getTargetId());
     }
 
-    public List<ReportDto> myRegStoreReport(Member member){
-        List<StoreReport> storeReportList = storeReportRepository.findByMemberId(member.getId());
-        List<ReportDto> reportList = new ArrayList<>();
+    public Page<ReportResponseDto> getMyReports(final Member member, final ReportType type, final int page) {
+        Page<Report> byMemberAndType = reportRepository.findByMemberAndType(member, type, PageRequest.of(page, DEFAULT_PAGE_SIZE));
 
-        if (storeReportList.isEmpty())
-            return reportList;
+        if (byMemberAndType.isEmpty())
+            throw new CustomException(ErrorCode.REPORTS_REGISTERED_BY_MEMBER_NOT_FOUND);
 
-        for (StoreReport storeReport : storeReportList)
-            reportList.add(storeReport.toDto());
-
-        return reportList;
-
+        return new PageImpl<>(byMemberAndType.map(Report::toResponseDto).getContent(),
+                byMemberAndType.getPageable(),
+                byMemberAndType.getTotalElements());
     }
 
-    public List<ReportDto> myRegReviewReport(Member member){
-        List<ReviewReport> storeReportList = reviewReportRepository.findByMemberId(member.getId());
-        List<ReportDto> reportList = new ArrayList<>();
-
-        if (storeReportList.isEmpty())
-            return reportList;
-
-        for (ReviewReport reviewReport : storeReportList)
-            reportList.add(reviewReport.toDto());
-
-        return reportList;
+    public List<Report> findAllReviewReport() {
+        return reportRepository.findByType(ReportType.REVIEW);
     }
 
-    public List<ReviewReport> findAllReviewReport() {
-        return reviewReportRepository.findAll();
-    }
-
-    public ReviewReport findOneReviewReport(Long id){
-        return reviewReportRepository.findById(id)
+    public Report findOneReviewReport(final Long id) {
+        return reportRepository.findById(id)
                 .orElse(null);
     }
 
-    public List<StoreReport> findAllStoreReport(){
-        return storeReportRepository.findAll();
+    public List<Report> findAllStoreReport() {
+        return reportRepository.findByType(ReportType.STORE);
     }
 
-    public StoreReport findOneStoreReport(Long id){
-        return storeReportRepository.findById(id)
+    public Report findOneStoreReport(final Long id) {
+        return reportRepository.findById(id)
                 .orElse(null);
     }
 }

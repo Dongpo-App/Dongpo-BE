@@ -44,6 +44,7 @@ public enum ErrorCode {
     BOOKMARKS_REGISTERED_BY_MEMBER_NOT_FOUND(400, "C011", "회원이 등록한 북마크가 없습니다."),
     STORES_REGISTERED_BY_MEMBER_NOT_FOUND(400, "C012", "회원이 등록한 점포가 없습니다."),
     MEMBER_TITLE_NOT_FOUND(400, "C013", "회원에게 해당 칭호가 없습니다."),
+    REPORTS_REGISTERED_BY_MEMBER_NOT_FOUND(400, "C014", "회원이 등록한 신고가 없습니다."),
     ;
 
     private final int status;
