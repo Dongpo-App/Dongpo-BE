@@ -20,8 +20,7 @@
                             <thead>
                             <tr>
                                 <th style="width: 10px">ID</th>
-                                <th>점포명</th>
-                                <th>점포주</th>
+                                <th>점포 ID</th>
                                 <th>내용</th>
                                 <th>신고자</th>
                                 <th>신고 일시</th>
@@ -33,9 +32,9 @@
                                 <td>
                                     <a th:href="@{/admin/store/report/{id}(id=${report.id})}" th:text="${report.id}"></a>
                                 </td>
-                                <td th:text="${report.store.name}"></td>
-                                <td th:text="${report.store.member.nickname}"></td>
+                                <td th:text="${report.targetId}"></td>
                                 <td th:text="${report.text}"></td>
+                                <td th:text="${report.member.id}"></td>
                                 <td th:text="${report.issueDate}"></td>
                                 <td><input type="checkbox" name="selectedReports" th:value="${report.id}"></td>
                             </tr>
