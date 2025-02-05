@@ -25,4 +25,6 @@ public interface ReviewService {
     List<String> getLatestReviewPicsByStoreId(Long storeId);
 
     void deleteReview(Long storeId, Long reviewId, Member member);
+
+    Review findReviewById(Long reviewId);
 }

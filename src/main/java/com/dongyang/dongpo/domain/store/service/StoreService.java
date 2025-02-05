@@ -3,11 +3,14 @@ package com.dongyang.dongpo.domain.store.service;
 import com.dongyang.dongpo.common.dto.location.LatLong;
 import com.dongyang.dongpo.domain.member.entity.Member;
 import com.dongyang.dongpo.domain.store.dto.*;
+import com.dongyang.dongpo.domain.store.entity.Store;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
 
 public interface StoreService {
+    Store findById(Long id);
+
     void addStore(StoreRegisterDto registerDto, Member member);
 
     List<StoreDto> findAll();

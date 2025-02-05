@@ -120,7 +120,8 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     // 리뷰 id로 조회
-    private Review findReviewById(final Long reviewId) {
+    @Override
+    public Review findReviewById(final Long reviewId) {
         return reviewRepository.findById(reviewId)
                 .orElseThrow(() -> new CustomException(ErrorCode.REVIEW_NOT_FOUND));
     }
