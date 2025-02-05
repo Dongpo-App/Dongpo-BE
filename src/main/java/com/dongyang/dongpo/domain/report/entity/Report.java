@@ -26,11 +26,11 @@ public class Report {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "reporting_member_id")
+    @JoinColumn(name = "member_id")
     @NotNull
     private Member member;
 
-    @Column(name = "report_reason", columnDefinition = "VARCHAR(255)")
+    @Column(name = "reason", columnDefinition = "VARCHAR(32)")
     @Enumerated(EnumType.STRING)
     @NotNull
     private ReportReason reason;
@@ -38,7 +38,7 @@ public class Report {
     @Column(columnDefinition = "TEXT")
     private String text;
 
-    @Column(name = "report_type", columnDefinition = "VARCHAR(255)")
+    @Column(name = "type", columnDefinition = "VARCHAR(16)")
     @Enumerated(EnumType.STRING)
     @NotNull
     private ReportType type;
@@ -52,7 +52,7 @@ public class Report {
     @NotNull
     private LocalDateTime issueDate;
 
-    @Column(columnDefinition = "VARCHAR(255)")
+    @Column(columnDefinition = "VARCHAR(16)")
     @Enumerated(EnumType.STRING)
     @Builder.Default
     private ReportStatus status = ReportStatus.OPEN;
