@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/my-page")
+@RequestMapping("/my-page")
 @RequiredArgsConstructor
 public class MyPageController {
 
