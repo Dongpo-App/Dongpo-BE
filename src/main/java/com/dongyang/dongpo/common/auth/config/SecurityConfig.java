@@ -39,8 +39,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/admin/**").denyAll()
                         .requestMatchers("/auth/logout", "/auth/leave").authenticated()
-                        .requestMatchers("/health-check", "/auth/**", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
-                        .anyRequest().authenticated()
+//                        .requestMatchers("/health-check", "/auth/**", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                        .anyRequest().permitAll()
                 )
                 .addFilterBefore(new JwtAuthenticationFilter(authenticationManager), UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling(handler -> handler
