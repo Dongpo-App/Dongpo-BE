@@ -1,20 +1,22 @@
 package com.dongyang.dongpo.common.fileupload;
 
 import com.dongyang.dongpo.common.dto.apiresponse.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
 
-@Controller
+@RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/file-upload")
+@RequestMapping("/file-upload")
+@Tag(name = "FileUpload API", description = "파일 업로드 API")
 public class FileUploadController {
 
     private final FileUploadService fileUploadService;
